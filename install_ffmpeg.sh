@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# Skip if ffmpeg already installed
+if [ -f /usr/local/bin/ffmpeg ]; then
+    echo "ffmpeg already installed"
+    exit 0
+fi
+
 # Install Ffmpeg and required libraries
 # From: https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu
 
