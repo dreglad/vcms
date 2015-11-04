@@ -152,7 +152,7 @@ THUMBNAIL_REDIS_HOST = 'localhost'
 STATIC_ROOT = '/storage/static/'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
-    "/vagrant/src/omm-admin"
+    "/vagrant/src/omm-admin",
 )
 
 
