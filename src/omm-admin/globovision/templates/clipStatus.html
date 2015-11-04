@@ -1,0 +1,11 @@
+<script id="status-progress" type="text/html">
+<h4>{{status}}</h4>
+<h5 class="i18n">Puede esperar o cerrar esta ventana en cualquier momento</h5>
+{{#progress}}
+<div class="progress">
+  <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: {{progress}}%;">
+    {{progress}}%
+  </div>
+</div>
+{{/progress}}
+</script>

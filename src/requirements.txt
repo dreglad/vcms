@@ -1,0 +1,11 @@
+django==1.8
+Pillow
+sorl-thumbnail
+MySQL-python
+django_rq
+djangorestframework
+markdown
+django-filter
+django-supervisor
+python-dateutil
+django-rest-swagger

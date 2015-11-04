@@ -1,0 +1,9 @@
+*.py[cod]
+.vagrant
+.Python
+
+src/bin
+src/includes
+src/local
+src/lib
+

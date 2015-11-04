@@ -1,0 +1,38 @@
+[
+  {
+    "model": "clips.programa",
+    "pk": 1,
+    "fields": {
+      "slug": "alta-densidad",
+      "orden": 1,
+      "nombre": "Alta Densidad",
+      "descripcion": "Espacio que informa sobre las novedades y tendencias, desde el mismo instante de su lanzamiento, del universo de la telefonía celular, del ciberespacio, de los videos juegos, de las novedades de la era digital y los últimos avances tecnológicos, presentados con todo detalle. Ofrece otras informaciones de interés nacional sobre el mundo de la tecnología.",
+      "horario": "Todos los sábados de 10:30 a.m. a 11:00 a.m. y de 2:30 a 3:00 p.m.",
+      "tipo": 5
+    }
+  },
+  {
+    "model": "clips.programa",
+    "pk": 2,
+    "fields": {
+      "slug": "analisis-situacional",
+      "orden": 2,
+      "nombre": "Análisis Situacional",
+      "descripcion": "",
+      "horario": "",
+      "tipo": 4
+    }
+  },
+  {
+    "model": "clips.programa",
+    "pk": 3,
+    "fields": {
+      "slug": "biografias",
+      "orden": 3,
+      "nombre": "Biografías",
+      "descripcion": "Espacio que muestra, acerca y recuerda aquellos notables venezolanos y su trayectoria que han hecho de nuestro país un lugar diferente en el mundo, como forma de educar, formar y realzar los principios y valores de los venezolanos.",
+      "horario": "Sábados de 4:30 p.m. a 5:00 p.m. y Domingos de 6:00 p.m. a 7:00 p.m.",
+      "tipo": 5
+    }
+  }
+]

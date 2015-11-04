@@ -1,0 +1,33 @@
+<script id="programa-row" type="text/html">
+
+ <div class="row">
+     <div class="col-xs-2">
+         <a href="#"><img class="img-responsive img-thumbnail" src="{{programa.imagen_url}}"></a>
+     </div>
+     <div class="col-xs-6">
+        {{^programa.mismo_idioma}}
+            <span class="label label-primary i18n">Programa original de otro idioma</span>
+         {{/programa.mismo_idioma}}
+        <h4 class="media-heading">{{programa.nombre}}</h4>
+        <small class="date">
+            {{#programa.horario}}<span class="i18n">Horario</span>: {{programa.horario}}{{/programa.horario}}
+            {{#programa.twitter}} | <em class="fa fa-twitter"></em> {{programa.twitter}}{{/programa.twitter}}
+        </small>
+
+        {{#programa.descripcion}}
+        <p class="text-overflow">{{programa.descripcion}}</p>
+        {{/programa.descripcion}}
+        {{^programa.descripcion}}
+        <p class="text-overflow"><em class="i18n">Sin sinopsis</em></p>
+        {{/programa.descripcion}}
+        
+    </div>
+    <div class="col-xs-4">
+        <div class="pull-right">
+            <a data-action="programa-edit" class="btn btn-primary i18n">Editar</a>
+        </div>
+        <img style="max-height: 150px" src="{{programa.banner_url}}" alt="Banner"/>
+    </div>
+</div>
+
+</script>

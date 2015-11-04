@@ -1,0 +1,101 @@
+<script id="home-row" type="text/html">
+
+    <div class="row">
+        <div class="col-sm-3">
+            {{#isTop}}
+            <label for="title" class="i18n titulo">Título</label>
+            <input type="text" name="title" class="title form-control" value="{{setting.title}}"/>
+            <img src="img/mockup-top.jpg" class="mockup top" />
+            {{/isTop}}
+            {{^isTop}}
+            <img src="img/mockup-{{top}}.jpg" class="mockup header" />
+            {{/isTop}}
+        </div>
+        <div class="col-sm-3">
+            <label for="mode" class="i18n">Modo</label>
+            <select name="mode" class="mode {{top}} form-control">
+                <option value="ids" class="i18n">Manual</option>
+                <option value="filter" class="i18n">Filtro</option>
+                <option value="history" class="i18n">Vistos recientemente</option>
+                <option value="busqueda" class="i18n">Última búsqueda</option>
+            </select>
+            <div class="helpText"></div>
+        </div>
+
+        <div class="col-sm-6">
+            {{#isTop}}
+            <div class="pull-right">
+                <a href="#" class="delete i18n-dot i18n-title" data-toggle="tooltip" data-placement="left"
+                   data-original-title="Eliminar fila" title="Eliminar fila"><em class="fa fa-trash"></em></a>
+            </div>
+            {{/isTop}}
+
+            <div class="ids">
+                <label style="display: block">IDs:</label>
+            </div>
+
+            <div class="col-xs-6 no-padding-left">
+                <div class="filterSelect">
+                    <label for="tipo" class="i18n">Tipo</label>
+                    <select class="form-control chosen-select i18n-data-placeholder" multiple name="tipo" data-placeholder="Todos los tipos">
+                        {{#resources_data.tipo_clip}}
+                        <option value="{{slug}}">{{nombre}}</option>
+                        {{/resources_data.tipo_clip}}
+                    </select>
+
+                    <label for="programa" class="i18n">Programa</label>
+                    <select class="form-control chosen-select i18n-data-placeholder" multiple name="programa"
+                            data-placeholder="Todos los programas">
+                        {{#resources_data.programa}}
+                        <option value="{{slug}}">{{nombre}}</option>
+                        {{/resources_data.programa}}
+                    </select>
+
+                    <label for="categoria" class="i18n">Categoría</label>
+                    <select class="form-control chosen-select i18n-data-placeholder" multiple name="categoria"
+                            data-placeholder="Todas las categorías">
+                        {{#resources_data.categoria}}
+                        <option value="{{slug}}">{{nombre}}</option>
+                        {{/resources_data.categoria}}
+                    </select>
+                </div>
+            </div>
+            <div class="col-xs-6 no-padding-left">
+                <div class="filterSelect">
+                    <label for="tema" class="i18n">Tema</label>
+                    <select class="form-control chosen-select i18n-data-placeholder" name="tema" multiple data-placeholder="Todos los temas">
+                        {{#resources_data.tema}}
+                        <option value="{{slug}}">{{nombre}}</option>
+                        {{/resources_data.tema}}
+                    </select>
+
+                    <label for="corresponsal" class="i18n">Corresponsal</label>
+                    <select class="form-control chosen-select i18n-data-placeholder" name="corresponsal" multiple
+                            data-placeholder="Todos los corresponsales">
+                        {{#resources_data.corresponsal}}
+                        <option value="{{slug}}">{{nombre}}</option>
+                        {{/resources_data.corresponsal}}
+                    </select>
+
+                    <label for="pais" class="i18n">País</label>
+                    <select name="pais" class="form-control chosen-select i18n-data-placeholder" multiple data-placeholder="Todos los países">
+                        {{#resources_data.pais}}
+                        <option value="{{slug}}">{{nombre}}</option>
+                        {{/resources_data.pais}}
+                    </select>
+                </div>
+            </div>
+            <div class="filterText">
+                <label for="primero" class="i18n">Primero</label>
+                <input type="text" class="primero form-control small" size="4" name="primero"
+                       value="{{setting.filters.primero}}"/>
+
+                <label for="ultimo" class="i18n">Último</label>
+                <input type="text" class="ultimo form-control small" size="4" name="ultimo"
+                       value="{{setting.filters.ultimo}}"/>
+            </div>
+
+        </div>
+    </div>
+
+</script>

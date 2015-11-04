@@ -1,0 +1,42 @@
+<script id="menu-tipos-item" type="text/html">
+{{#tipos}}
+<li>
+    <a href="#" data-tipo="{{slug}}" title="{{nombre_plural}}">
+        <em class="{{slug}}"></em>
+        <span>{{nombre_plural}}</span>
+    </a>
+</li>
+{{/tipos}}
+</script>
+
+<script id="menu-secciones-item" type="text/html">
+{{#categorias}}
+<li><a href="#" data-modo="secciones" data-valor="{{slug}}" title="{{nombre}}">{{nombre}}</a></li>
+{{/categorias}}
+</script>
+
+<script id="menu-programas-item" type="text/html">
+{{#programas}}
+<li><a href="#" data-modo="programas" data-valor="{{slug}}" title="{{nombre}}"><img src="{{imagen_url}}" width="25" style="margin-bottom:2px;" /> {{nombre}}</a></li>
+{{/programas}}
+</script>
+
+<script id="menu-corresponsales-item" type="text/html">
+{{#corresponsales}}
+<li><a href="#" data-modo="corresponsales" data-valor="{{slug}}" title="{{nombre}}">{{nombre}}</a></li>
+{{/corresponsales}}
+</script>
+
+<script id="menu-temas-item" type="text/html">
+{{#temas}}
+<li><a href="#" data-modo="temas" data-valor="{{slug}}" title="{{nombre}}">{{nombre}}</a></li>
+{{/temas}}
+</script>
+
+<script id="empty-query" type="text/html">
+    <h1 class="text-muted text-center text-lg"><em class="fa fa-ban"></em></h1>
+    <h5 class="text-muted text-center text-uppercase i18n">Sin resultados</h5>
+</script>
+
+
+

@@ -1,0 +1,26 @@
+dashboard.html
+
+//js/app.js 
+Aquí se encuentran las funciones que trae la plantilla por defecto
+
+
+edit.html
+
+//js/app.js 
+Aquí se encuentran las funciones que trae la plantilla por defecto
+
+//js/funciones.js
+Se encuentra la función para añadir los metadatos introducidos al DOM, específicamente en la tabla que muestra los metadatos. 
+
+
+programas.html
+
+//js/app.js 
+Aquí se encuentran las funciones que trae la plantilla por defecto
+
+//js/editable.js
+Se encuentran las funciones que hacen la tabla 'editable inline'. Cada uno de los elementos editables tiene asignada la función editable() del plugin x-editable. Aquí es donde se controla el comportamiento de cada elemento al ser editado.
+
+//js/sortable.js
+Se encuentra la función que hace un elemento 'sortable'. En esta función se controla qué pasa luego de ordenar los elementos de la tabla.
+

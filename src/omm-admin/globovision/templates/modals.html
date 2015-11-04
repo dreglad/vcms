@@ -1,0 +1,25 @@
+<script id="modal-linksembed" type="text/html">
+
+<div class="form-group">
+    <label class="i18n">Link permanente</label> <small class="i18n">URL oficial para compartir</small>
+    <input class="form-control input-sm linksembed" readonly="readonly" type="text" id="links_permalink" value="{{clip.navegador_url}}">
+</div>
+<div class="form-group">
+    <label class="i18n">Código embed</label> <small class="i18n">Ppara incrustar en una página web con comportamiento responsive</small>
+    <textarea class="form-control input-sm linksembed"  readonly="readonly" rows="1" id="links_embed_inline_3">&lt;script src="{{clip.player_javascript_url}}"&gt;&lt;/script&gt;</textarea>
+</div>
+<div class="form-group">
+    <label class="i18n">URL de Player</label> <small class="i18n">Para incrustar como iframe, generalmente para ambientes donde no se pueda usar Javascript</small>
+    <input class="form-control input-sm linksembed"  readonly="readonly" type="text" id="links_embed_iframe" value="{{clip.player_html_url}}">
+</div>
+<div class="form-group">
+    <label class="i18n">Archivo</label> <small class="i18n">de video</small>
+    <input class="form-control input-sm linksembed"  readonly="readonly" type="text" id="links_archivo_url" value="{{clip.archivo_url}}">
+</div>
+<div class="form-group">
+    <label class="i18n">API</label> <small class="i18n">Para desarrolladores e integración de sistemas</small>
+    <input class="form-control input-sm linksembed" readonly="readonly" type="text" id="links_apiurl" value="{{clip.api_url}}">
+</div>
+
+</script>
+
