@@ -1,7 +1,7 @@
-
+#!/usr/bin/env bash
 
 # Install packages
-apt-get install -y virtualenv redis-server libjpeg-dev python-dev
+apt-get install -y python-virtualenv redis-server libjpeg-dev python-dev
 
 # MySQL
 sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password pass'
