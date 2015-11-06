@@ -3,9 +3,11 @@ Pillow
 sorl-thumbnail
 MySQL-python
 django_rq
+rq-scheduler
 djangorestframework
 markdown
 django-filter
 django-supervisor
 python-dateutil
 django-rest-swagger
+mandrill

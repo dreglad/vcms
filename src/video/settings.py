@@ -129,12 +129,12 @@ RQ_QUEUES = {
         'PASSWORD': '',
         'DEFAULT_TIMEOUT': 3600,
     },
-    'procesos': {
+    'low': {
         'HOST': 'localhost',
         'PORT': 6379,
         'DB': 0,
     },
-    'crear': {
+    'high': {
         'HOST': 'localhost',
         'PORT': 6379,
         'DB': 0,
@@ -162,3 +162,5 @@ SITE_NAME = u'Globovisión'
 STORAGE_DIR = '/storage/'
 MEDIA_ROOT = '/storage/'
 MEDIA_URL = HOST + '/media/'
+
+import jobs

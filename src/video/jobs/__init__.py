@@ -19,10 +19,10 @@ from django.contrib.auth.models import User
 from time import sleep
 from django.core.mail import send_mail
 import redis
-from video_ops import *
+from video.video_ops import *
 
 
-@job('crear', timeout=3600)
+@job('high', timeout=3600)
 def crear_nuevo_clip_job(request_dict):
     print u"Petición de nuevo clip con request: %s" % request_dict
 
@@ -130,7 +130,7 @@ def crear_nuevo_clip_job(request_dict):
     print u"FIN"
 
 
-@job('sprites', timeout=3600)
+@job('low', timeout=3600)
 def sprites_job(clip_pk):
     import makesprites
 
@@ -169,7 +169,7 @@ def sprites_job(clip_pk):
 
 
 
-@job('segmentar', timeout=3*3600)
+@job('low', timeout=3*3600)
 def segmentar_video_job(clip_pk):
     connection.close()
 
