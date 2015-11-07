@@ -3,7 +3,7 @@
 .Python
 
 src/bin
-src/includes
+src/include
 src/local
 src/lib
 
