@@ -33,7 +33,7 @@ pip install -r requirements.txt
 cp /vagrant/etc/etc--init--django-supervisor.conf /etc/init/django-supervisor.conf
 cp /vagrant/etc/etc--init--workaround-vagrant-bug-6074.conf /etc/init/workaround-vagrant-bug-6074.conf
 initctl reload-configuration
-start workaround-vagrant-bug-6074.conf
+start workaround-vagrant-bug-6074
 start django-supervisor
 
 # Configure web server
