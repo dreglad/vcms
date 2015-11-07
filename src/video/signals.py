@@ -6,9 +6,11 @@ from subprocess import Popen, PIPE, call
 from django.dispatch import receiver
 from clips.models import Clip
 from video_ops import *
+from video.jobs.ops import segmentar_video_job, sprites_job
 import datetime
 import time
 import os
+
 
 
 @receiver(post_save, sender=Clip)
@@ -57,11 +59,15 @@ def procesar_clip(sender, **kwargs):
         os.remove('/tmp/%s' % nombre_audio)
 
         clip.transferido = True
+        clip.save()
+
+        # Segments and sprites
+        segmentar_video_job.delay(clip.pk)
+        sprites_job.delay(clip.pk)
+
     except:
         clip.fps = -1.0
-
-    clip.save()
-
+        clip.save()
 
 
 # def obtener_geotag(sender, **kwargs):

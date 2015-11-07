@@ -132,7 +132,7 @@ def crear_nuevo_clip_job(request_dict):
 
 @job('low', timeout=3600)
 def sprites_job(clip_pk):
-    import makesprites
+    from video import makesprites
 
     connection.close()
     try:
@@ -161,11 +161,7 @@ def sprites_job(clip_pk):
     makesprites.run(sprites, thumbRate=interval)
 
     # Finish
-    connection.close()
     Clip.objects.filter(pk=clip_pk).update(sprites=interval)
-
-    r = redis.Redis('localhost', db=2)
-    r.delete('sprites-%d' % clip.pk)
 
 
 
@@ -190,7 +186,7 @@ def segmentar_video_job(clip_pk):
         {'height': 1080, 'cut_height': 900, 'bitrate': 3500, 'fps': 30, 'gop': 72, 'profile': 'main',     'level': 32, 'bandwidth': 3500000},
         {'height': 720,  'cut_height': 600, 'bitrate': 1800, 'fps': 24, 'gop': 72, 'profile': 'main',     'level': 32, 'bandwidth': 2000000},
         {'height': 480,  'cut_height': 400, 'bitrate': 900,  'fps': 24, 'gop': 72, 'profile': 'baseline', 'level': 31, 'bandwidth': 1000000},
-        #{'height': 360,  'cut_height': 300, 'bitrate': 600,  'fps': 24, 'gop': 72, 'profile': 'baseline', 'level': 31, 'bandwidth': 700000},
+        {'height': 360,  'cut_height': 300, 'bitrate': 600,  'fps': 24, 'gop': 72, 'profile': 'baseline', 'level': 31, 'bandwidth': 700000},
         {'height': 240,  'cut_height': 200, 'bitrate': 320,  'fps': 12, 'gop': 36, 'profile': 'baseline', 'level': 31, 'bandwidth': 400000},
         {'height': 120,  'cut_height': 100, 'bitrate': 180,  'fps': 12, 'gop': 36, 'profile': 'baseline', 'level': 31, 'bandwidth': 200000},
     )
@@ -238,10 +234,6 @@ def segmentar_video_job(clip_pk):
     # Finish
     connection.close()
     Clip.objects.filter(pk=clip_pk).update(resolucion=modes[0]['height'])
-
-    r = redis.Redis('localhost', db=2)
-    r.delete('segmentar-%d' % clip.pk)
-
 
 # @job('subtitulaje', timeout=2*3600)
 # def generar_archivo_subtitulado_job(clip_pk, archivo_path, srt_path, user_pk):

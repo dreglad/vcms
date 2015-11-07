@@ -25,6 +25,10 @@ from django.http import Http404
 
 is_staff = lambda user: user.is_staff
 
+def crossdomain(request, **kwargs):
+    return render(request, 'crossdomain.xml', {})
+
+
 @user_passes_test(is_staff)
 def user_info(request):
     return HttpResponse(json.dumps({

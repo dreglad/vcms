@@ -896,12 +896,22 @@
                         if (params.clip.tema) $('#tema').val(params.clip.tema.slug);
                         if (params.clip.pais) $('#pais').val(params.clip.pais.codigo);
 
-                        jwplayer("video-player").setup({
-                          file: params.clip.archivo_url,
-                          image: params.clip.thumbnail_grande,
-                          width: "100%",
-                          aspectratio: "4:3"
-                        });
+                        var options = {
+                            width: "100%",
+                            aspectratio: "4:3",
+                            playlist: [{
+                                file: params.clip.hls_url || params.clip.archivo_url,
+                                image: params.clip.thumbnail_grande,
+                                tracks: []
+                            }]
+                        };
+                        if (params.clip.sprites_url) {
+                            options.playlist[0].tracks.push({
+                                file: params.clip.sprites_url,
+                                kind: "thumbnails"
+                            })
+                        }
+                        jwplayer("video-player").setup(options);
 
                         var img_uploader = OMUpload.setup({
                             element: document.getElementById('uploader_img'),

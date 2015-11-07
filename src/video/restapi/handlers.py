@@ -20,39 +20,20 @@ class ClipHandler(BaseHandler):
     medio = None
 
     # Juegos de campos
-    fields_escenciales = ('slug', 'api_url', 'origen')
+    fields_escenciales = ('id', 'slug', 'api_url', 'origen')
     fields_basicos = ('titulo', 'descripcion', 'fecha', 'duracion', 'seleccionado')
-    fields_urls = ('archivo_video', 'navegador_url', 'player_url', 'player_url_publicidad', 'audio_url', 'archivo_url', 'descarga_url', 'thumbnail_grande', 'thumbnail_mediano', 'thumbnail_pequeno', 'metodo_preferido')
+    fields_urls = ('sprites_url', 'hls_url', 'navegador_url', 'player_url',
+                   'audio_url', 'archivo_url', 'descarga_url', 'thumbnail_grande',
+                   'thumbnail_mediano', 'thumbnail_pequeno')
     #fields_detalles = ('vistas', 'id_youtube', 'id_vimeo')
-    fields_detalles = ('vistas',)
+    fields_detalles = ('vistas', 'resolucion')
     fields_relaciones = ('tipo', 'categoria')
 
-    fields_desuso = ('url',)
-    fields_antiguos = fields_desuso + ('slug', 'titulo', 'descripcion', 'fecha', 'duracion', 'geotag',
-                                       'audio_url', 'archivo_url', 'thumbnail_grande', 'thumbnail_mediano', 'thumbnail_pequeno',
-                                       'ciudad', 'hashtags', 'tipo', 'pais', 'personajes', 'categoria', 'programa', 'corresponsal', 'tema')
-
-    fields = fields_escenciales + fields_basicos + fields_urls + fields_detalles + fields_relaciones + fields_desuso
+    fields = fields_escenciales + fields_basicos + fields_urls + fields_detalles + fields_relaciones
 
     @classmethod
     def origen(cls, obj):
-        return {
-            'id': obj.origen,
-            'descripcion': obj.get_origen_display()
-        }
-
-    @classmethod
-    def vistas(cls, obj):
-        return obj.vistas
-
-    # @classmethod
-    # def estadisticas(cls, obj):
-    #     return {
-    #         'popularidad': obj.indice_yt_viewcount,
-    #         'yt_viewcount': obj.yt_viewcount,
-    #         'fecha_yt_viewcount': obj.fecha_yt_viewcount,
-    #         'indice_yt_viewcount': obj.indice_yt_viewcount
-    #     }
+        return {'id': obj.origen, 'descripcion': obj.get_origen_display()}
 
     @classmethod
     def archivo_url(cls, obj):
@@ -62,27 +43,9 @@ class ClipHandler(BaseHandler):
             return obj.archivo_url()
 
     @classmethod
-    def id_youtube(cls, obj):
-        return obj.ciudad
-
-    # @classmethod
-    # def id_vimeo(cls, obj):
-    #     return obj.produccion
-
-    @classmethod
     def api_url(cls, obj):
         if obj.slug:
-            return '%s/api/v1/clip/%s/?detalle=completo' % (settings.HOST, obj.slug)
-
-    @classmethod
-    def archivo_video(cls, obj):
-        if obj.ciudad:
-            return None
-
-        if obj.fps == 990:
-            return [{ 'mimetype': 'video/mp4', 'url': obj.get_archivo_url() }, { 'mimetype': 'video/webm', 'url': obj.get_archivo_url().replace('.mp4', '.webm')}, { 'mimetype': 'video/ogg', 'url': obj.get_archivo_url().replace('.mp4', '.ogv')}]
-        else:
-            return [{ 'mimetype': 'video/mp4', 'url': obj.get_archivo_url() }]
+            return '%s/api/v1/clip/%s/' % (settings.HOST, obj.slug)
 
     @classmethod
     def embed_tag_inline(cls, obj):
@@ -100,8 +63,8 @@ class ClipHandler(BaseHandler):
     def player_url(cls, obj):
         if obj.origen == Clip.ORIGEN_PROPIO:
             return '%s/player/iframe/?slug=%s' % (settings.HOST, obj.slug)
-        else:
-            return 'http://www.youtube.com/embed/%s?' % obj.ciudad
+        elif obj.origen == Clip.ORIGEN_YOUTUBE:
+            return 'http://www.youtube.com/embed/%s?' % obj.external_id
 
     @classmethod
     def player_html_url(cls, obj):
@@ -109,38 +72,17 @@ class ClipHandler(BaseHandler):
 
     @classmethod
     def descarga_url(cls, obj):
-        if obj.ciudad:
-            return None
+        if obj.origen == Clip.ORIGEN_PROPIO:
+            return '%s?descarga' % obj.archivo.url
         else:
-            return '%s?descarga' % obj.get_archivo_url()
-
-    @classmethod
-    def streaming(cls, obj):
-        identificador = obj.archivo.name.replace('clips/', '')
-        return None
-        return {
-            'rtmp_server': 'rtmp://vod.openmultimedia.biz:1935/vod',
-            'rtmp_file': 'mp4:%s' % identificador,
-            'apple_hls_url': 'http://vod.openmultimedia.biz:1935/vod/mp4:%s/playlist.m3u8' % identificador,
-            'rtsp_url': 'rtsp://vod.openmultimedia.biz:554/vod/mp4:%s' % identificador,
-        }
-
-    @classmethod
-    def nitf_url(cls, obj):
-        return obj.representacion_nitf_url()
+            return None
 
     @classmethod
     def navegador_url(cls, obj):
         return getattr(obj, 'make_url')()
 
-    @classmethod
-    def metodo_preferido(cls, obj):
-        if obj.duracion and obj.duracion.minute > 10:
-            return 'http'
-        else:
-            return 'http'
 
-    def create(self, request, slug=None):
+    def deprecated_create(self, request, slug=None):
         if slug is not None or 'slug' in request.POST or not 'archivo' in request.POST or not request.POST['archivo']:
             return rc.BAD_REQUEST
 
@@ -161,7 +103,7 @@ class ClipHandler(BaseHandler):
         #clip.save()
         return clip
 
-    def update(self, request, slug=None):
+    def deprecated_update(self, request, slug=None):
         if not slug and not request.PUT['slug']:
             return rc.NOT_FOUND
 
@@ -195,51 +137,37 @@ class ClipHandler(BaseHandler):
             self.fields = self.fields_escenciales + self.fields_basicos + self.fields_urls
         elif request.GET.get('detalle') == 'normal':
             self.fields = self.fields_escenciales + self.fields_basicos + self.fields_urls + self.fields_detalles
-        elif request.GET.get('detalle') == 'completo':
+        else: # completo
             self.fields = self.fields_escenciales + self.fields_basicos + self.fields_urls + self.fields_detalles + self.fields_relaciones
-        else:
-            return rc.BAD_REQUEST
-            #self.fields = self.fields_antiguos
-            #self.fields = self.fields_escenciales + self.fields_basicos + self.fields_urls + self.fields_detalles + self.fields_relaciones + self.fields_desuso
 
-        if 'HTTP_X_OMMEDIO' in request.META and request.META['HTTP_X_OMMEDIO'] == 'radiosur':
-            ClipHandler.medio = 'radiosur'
-            self.fields = [x for x in self.fields if x not in ('descarga_url', 'navegador_url', 'thumbnail_grande', 'thumbnail_mediano', 'thumbnail_pequeno', 'archivo_video')]
-        else:
-            ClipHandler.medio = 'vtv'
-
-        if validar_request(request.GET) or request.GET.get('autenticado'):
+        if validar_request(request.GET):
             autenticado = True
-            self.fields = self.fields + ('publicado', 'id')
+            self.fields = self.fields + ('publicado', 'usuario_creacion')
         else:
             autenticado = False
 
-        #if slug:
         if slug and not relacionados: # temporal para usar solo un hanlder para modelo Clip
             try:
-                clips = Clip.objects.filter(slug=slug)
-                clip = clips[0]
-                if not clip.publicado:
-                    return clip if autenticado else rc.NOT_FOUND
+                if slug.isdigit():
+                    clip = Clip.objects.get(pk=slug)
                 else:
-                    return clip
-            except IndexError:
-                if slug.isdigit() and autenticado:
-                    try:
-                        return Clip.objects.get(pk=slug)
-                    except Clip.DoesNotExist:
-                        return rc.NOT_FOUND
+                    clips = Clip.objects.filter(slug=slug)
+                    clip = clips[0]
+
+                return clip if (autenticado or clip.publicado) else rc.NOT_FOUND 
+
+            except (IndexError, Clip.DoesNotExist) as e:
                 return rc.NOT_FOUND
 
-        elif autenticado and request.GET.get('id'):
+        elif len(request.GET.getlist('id')) == 1:
+            # requested by pk
             try:
-                clip = Clip.objects.get(id=request.GET.get('id'))
-                return clip
+                clip = Clip.objects.get(pk=request.GET.get('id'))
+                return clip if (autenticado or clip.publicado) else rc.NOT_FOUND
             except Clip.DoesNotExist:
                 return rc.NOT_FOUND
 
         else:
-
             if autenticado:
                 clips = Clip.objects.filter(transferido=True)
                 if request.GET.get('publicado') in ('1', 'true'):
@@ -248,20 +176,21 @@ class ClipHandler(BaseHandler):
                     clips = clips.filter(publicado=False)
             else:
                 clips = Clip.objects.filter(transferido=True, publicado=True)
-                #clips = get_clips()
+
+            # exclude tipos < 0
+            if not request.GET.get('tipo'):
+                clips = clips.exclude(tipo__orden__lt=0)
 
             # Orden
-            if request.GET.get('orden') in ('yt_viewcount', 'popularidad'):
-                clips = clips.order_by('-indice_yt_viewcount', '-yt_viewcount')
+            if request.GET.get('orden') == 'vistas':
+                clips = clips.order_by('-vistas')
             else:
                 clips = clips.order_by('-fecha')
 
             # Tiempo
             desde, hasta = None, None
-
             if request.GET.get('desde'):
                 desde = datetime.strptime(request.GET.get('desde'), "%Y-%m-%d")
-
             if request.GET.get('hasta'):
                 hasta = datetime.strptime(request.GET.get('hasta') + ' 23:59:59', "%Y-%m-%d %H:%M:%S")
 

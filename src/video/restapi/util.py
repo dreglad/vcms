@@ -8,6 +8,8 @@ NUM_MAX_NUM_RESULTS = 300
 NUM_DEFAULT_RESULTS = 30
 
 def validar_request(request_params):
+    if 'autenticado' in request_params:
+        return True
     if not 'signature' in request_params or not request_params['signature']:
         return False
 

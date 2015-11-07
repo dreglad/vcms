@@ -323,13 +323,13 @@ class Clip(models.Model):
     def make_url(self):
         return ''
 
-    def make_hls_url(self):
+    def hls_url(self):
         if self.resolucion and self.resolucion > 0:
-            return '%s%shls/%d/playlist.m3u8' % (settings.MEDIA_URL, self.pk)
+            return '%shls/%d/playlist.m3u8' % (settings.MEDIA_URL, self.pk)
 
-    def make_vtt_url(self):
+    def sprites_url(self):
         if self.sprites and self.sprites > 0:
-            return '%s%ssprites/%d/s.vtt' % (settings.MEDIA_URL, self.pk)
+            return '%ssprites/%d/s.vtt' % (settings.MEDIA_URL, self.pk)
 
     def get_imagen_url(self, transf):
         return self.get_imagen_url
