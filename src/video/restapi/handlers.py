@@ -301,7 +301,7 @@ class ClipHandler(BaseHandler):
                     return rc.NOT_FOUND
 
             # filtros generales
-            filtros = (('slug', 'slug'), ('tipo', 'tipo__slug'), ('categoria', 'categoria__slug'), ('pais', 'pais__slug'),
+            filtros = (('id', 'id'), ('slug', 'slug'), ('seleccionado', 'seleccionado'), ('tipo', 'tipo__slug'), ('categoria', 'categoria__slug'), ('pais', 'pais__slug'),
                       ('tema', 'tema__slug'), ('programa', 'programa__slug'),
                       ('geotag', 'geotag'), ('programa_tipo', 'programa__tipo__slug'),
                       ('corresponsal', 'corresponsal__slug',), ('usuario_creacion', 'usuario_creacion'),)

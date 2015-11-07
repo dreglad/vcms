@@ -17,7 +17,7 @@
                      './templates/modals.html', './templates/clipStatus.html',
                      './templates/homeRow.html'],
         // defaults
-        tipo_slug = 'noticia', tipo_nombre_plural = 'Noticias', usuario_creacion = 'Admin',
+        tipo_slug = 'noticia', tipo_nombre_plural = 'Noticias',
         // required API resources
         resources = ['tipo_clip', 'categoria', 'pais', 'corresponsal', 'programa', 'tema'],
         // custom resources
@@ -103,12 +103,8 @@
                label = __("Publicados");
                 break;
             case "despublicados":
-                params = {publicado: false, usuario_creacion: usuario_creacion};
+                params = {publicado: false};
                 label = __("Despublicados");
-                break;
-            case "cargados":
-                params = {usuario_creacion: usuario_creacion};
-                label = __("Cargados manualmente");
                 break;
             case "seleccion":
                 params = {seleccionado: true};

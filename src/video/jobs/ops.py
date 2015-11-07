@@ -164,7 +164,7 @@ def sprites_job(clip_pk):
     connection.close()
     Clip.objects.filter(pk=clip_pk).update(sprites=interval)
 
-    r = redis.Redis('redis-rw.local', db=1)
+    r = redis.Redis('localhost', db=2)
     r.delete('sprites-%d' % clip.pk)
 
 
@@ -239,7 +239,7 @@ def segmentar_video_job(clip_pk):
     connection.close()
     Clip.objects.filter(pk=clip_pk).update(resolucion=modes[0]['height'])
 
-    r = redis.Redis('redis-rw.local', db=1)
+    r = redis.Redis('localhost', db=2)
     r.delete('segmentar-%d' % clip.pk)
 
 
