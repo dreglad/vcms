@@ -69,7 +69,7 @@ def cambiar_thumbnail(request):
 
 @csrf_exempt
 def crear_nuevo(request):
-    from video.jobs import crear_nuevo_clip_job
+    from video.jobs.ops import crear_nuevo_clip_job
 
     if request.POST.get('archivo_id'):
         status_path = settings.STORAGE_DIR + 'temp/status/%s.txt' % request.POST.get('archivo_id')

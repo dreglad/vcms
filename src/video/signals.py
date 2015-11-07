@@ -4,7 +4,7 @@ from django.core.files.base import ContentFile
 from django.conf import settings
 from subprocess import Popen, PIPE, call
 from django.dispatch import receiver
-from clips.models import *
+from clips.models import Clip
 from video_ops import *
 import datetime
 import time

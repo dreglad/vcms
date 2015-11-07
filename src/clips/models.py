@@ -8,7 +8,6 @@ import urllib2
 import uuid
 import json
 import random
-from django.core.cache import cache
 import datetime
 import os
 from sorl.thumbnail import get_thumbnail, ImageField
@@ -246,9 +245,9 @@ class Clip(models.Model):
     ORIGEN_YOUTUBE = 2
     ORIGEN_DAILYMOTION = 3
     ORIGEN_CHOICES = (
-        (0, 'Video propio'),
-        (1, 'Externo: TouTube'),
-        (2, 'Externo: Dailymotion'),
+        (ORIGEN_PROPIO, 'Video propio'),
+        (ORIGEN_YOUTUBE, 'Externo: TouTube'),
+        (ORIGEN_DAILYMOTION, 'Externo: Dailymotion'),
     )
     slug = models.SlugField(max_length=100, blank=True, null=True, help_text=u'Identificador para la URL del clip, sin espacios ni caracteres especiales')
     tipo = models.ForeignKey(TipoClip)

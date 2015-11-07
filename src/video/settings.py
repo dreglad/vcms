@@ -164,4 +164,4 @@ STORAGE_DIR = '/storage/'
 MEDIA_ROOT = '/storage/'
 MEDIA_URL = HOST + '/media/'
 
-import jobs
+#import jobs

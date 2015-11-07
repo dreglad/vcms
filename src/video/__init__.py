@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*- #
+import signals
 
 def init_scheduler():
     from jobs import scheduled

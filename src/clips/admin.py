@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 from django import forms
 from django.conf.urls import patterns
+from django.core.cache import cache
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.admin import GroupAdmin, UserAdmin

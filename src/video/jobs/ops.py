@@ -9,7 +9,6 @@ import time
 import os
 import re
 import urllib
-import random
 import json
 import uuid
 import shutil
@@ -20,11 +19,12 @@ from time import sleep
 from django.core.mail import send_mail
 import redis
 from video.video_ops import *
+from clips.models import Clip, TipoClip
 
 
 @job('high', timeout=3600)
 def crear_nuevo_clip_job(request_dict):
-    print u"Petición de nuevo clip con request: %s" % request_dict
+    print u"Peticion de nuevo clip con request: %s" % request_dict
 
     tmp_base = settings.STORAGE_DIR + 'temp'
     archivo_id = request_dict.get('archivo_id', request_dict.get('archivo'))
@@ -62,11 +62,11 @@ def crear_nuevo_clip_job(request_dict):
 
     with open(status_path, 'w') as status_file:
         if not stream_info or not duration:
-            print u"Archivo inválido, temrinando"
+            print u"Archivo invalido, temrinando"
             status_file.write('invalid')
             return
         else:
-            print u"Archivo válido, video de duración: %s" % duration
+            print u"Archivo valido, video de duracion: %s" % duration
             status_file.write('valid %s' % duration)
 
     # compress

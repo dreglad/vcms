@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('slug', models.SlugField(help_text='Identificador para la URL del clip, sin espacios ni caracteres especiales', max_length=100, null=True, blank=True)),
-                ('origen', models.IntegerField(default=1, choices=[(0, b'Video propio'), (1, b'Externo: TouTube'), (2, b'Externo: Dailymotion')])),
+                ('origen', models.IntegerField(default=1, choices=[(1, b'Video propio'), (2, b'Externo: TouTube'), (3, b'Externo: Dailymotion')])),
                 ('publicado', models.BooleanField(default=False)),
                 ('transferido', models.BooleanField(default=False, verbose_name='procesado')),
                 ('seleccionado', models.BooleanField(default=False, help_text='selecci\xf3n del editor')),
