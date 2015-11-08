@@ -5,17 +5,12 @@ from django.template.defaultfilters import slugify, timesince
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from email.utils import parseaddr
-import urllib2
 import uuid
-import json
 import random
 import datetime
 import os
 from sorl.thumbnail import get_thumbnail, ImageField
 
-
-def upload_clip_hls_to(a):
-    return ''
 
 class Categoria(models.Model):
     slug = models.SlugField(max_length=100, blank=True, null=True, editable=False)
@@ -128,8 +123,21 @@ class Programa(models.Model):
     playlist = models.CharField(max_length=100, blank=True, null=True)
     horario = models.CharField(max_length=255, blank=True, null=True)
     tipo = models.ForeignKey(TipoPrograma)
-    servicios = models.ManyToManyField('Servicio', help_text=u'Sericios a definir para este programa')
-    excluir_servicios = models.ManyToManyField('Servicio', related_name='programas_excluidos', help_text=u'Servicios a excluir en caso de que haya servicios habilitados para todos los clips tipo programa pero que no se desean aplicar a este programa en particular')
+    servicios = models.ManyToManyField('Servicio', help_text=u'Servicios externos a distribuir para clips de este programa')
+    excluir_servicios = models.ManyToManyField('Servicio', related_name='programas_excluidos', help_text=u'Servicios externos a excluir en caso de que haya servicios habilitados para todos los clips tipo programa pero que no se desean aplicar a este programa en particular')
+
+    def thumbnail_pequeno(self):
+        if self.imagen:
+            im = get_thumbnail(self.imagen, '150x150', quality=99)
+            return im.url
+    def thumbnail_mediano(self):
+        if self.imagen:
+            im = get_thumbnail(self.imagen, '300x300', quality=99)
+            return im.url
+    def thumbnail_grande(self):
+        if self.imagen:
+            im = get_thumbnail(self.imagen, '300x300', quality=99)
+            return im.url
 
     def __unicode__(self):
         return self.nombre
@@ -173,12 +181,26 @@ class ServicioClip(models.Model):
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = 'clip cargado a servicio externo'
-        verbose_name_plural = 'clips cargados a servicios externos'
+        verbose_name = u'clip cargado a servicio externo'
+        verbose_name_plural = u'clips cargados a servicios externos'
 
 
-UBICACION_CHOICES = [(0, u'América Latina'), (1, u'América'), (2, u'Europa'), (3, u'Asia'), (4, u'Oceanía'), (5, u'África')]
+
 class Pais(models.Model):
+    UBICACION_AMERICA_LATINA = 0
+    UBICACION_AMERICA = 1
+    UBICACION_EUROPA = 2
+    UBICACION_ASIA = 3
+    UBICACION_OCEANIA = 4
+    UBICACION_AFRICA = 5
+    UBICACION_CHOICES = [
+        (UBICACION_AMERICA_LATINA, u'América Latina'),
+        (UBICACION_AMERICA, u'América'),
+        (UBICACION_EUROPA, u'Europa'),
+        (UBICACION_ASIA, u'Asia'),
+        (UBICACION_OCEANIA, u'Oceanía'),
+        (UBICACION_AFRICA, u'África')
+    ]
     slug = models.SlugField(max_length=100, blank=True, null=True, editable=False)
     nombre = models.CharField(max_length=100)
     codigo = models.CharField(max_length=2)
@@ -225,7 +247,7 @@ def upload_clip_archivo_to(instance, filename):
     nombre, ext = os.path.splitext(filename)
     if instance.pk:
         ext = "-%s%s" % (instance.pk, ext)
-    return 'clips/video-%s%s' % (slugify(datetime.datetime.now()), ext)
+    return 'clips/video-%s%s' % (uuid.uuid4(), ext)
 
 def upload_clip_imagen_to(instance, filename):
     nombre, ext = os.path.splitext(filename)
@@ -353,10 +375,6 @@ class Clip(models.Model):
         return ''
     def navegador_url(self):
         return ''
-
-
-    def get_imagen_url(self, transf):
-        return self.get_imagen_url
 
     def thumbnail_pequeno(self):
         if self.imagen:

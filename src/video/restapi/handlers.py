@@ -256,7 +256,8 @@ class CategoriaHanlder(BaseHandler):
 class ProgramaHanlder(BaseHandler):
     allowed_methods = ('GET',)
 
-    fields = ('slug', 'nombre', 'tipo', 'descripcion', 'imagen_url')
+    fields = ('slug', 'nombre', 'tipo', 'descripcion', 'thumbnail_grande',
+              'thumbnail_mediano', 'thumbnail_pequeno')
     model = Programa
 
     def read(self, request, slug=None):

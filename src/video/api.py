@@ -67,34 +67,50 @@ class ClipViewSet(viewsets.ModelViewSet):
 class CategoriaViewSet(viewsets.ModelViewSet):
     queryset = Categoria.objects.all()
     serializer_class = CategoriaSerializer
+    filter_fields = ('nombre',)
+    search_fields = ('nombre',)
 
 class ProgramaViewSet(viewsets.ModelViewSet):
     queryset = Programa.objects.all()
     serializer_class = ProgramaSerializer
+    filter_fields = ('tipo',)
+    search_fields = ('nombre',)
 
 class SerieViewSet(viewsets.ModelViewSet):
     queryset = Serie.objects.all()
     serializer_class = SerieSerializer
+    filter_fields = ('nombre',)
+    search_fields = ('nombre',)
 
 class TipoProgramaViewSet(viewsets.ModelViewSet):
     queryset = TipoPrograma.objects.all()
     serializer_class = TipoProgramaSerializer
+    filter_fields = ('nombre',)
+    search_fields = ('nombre',)
 
 class TipoClipViewSet(viewsets.ModelViewSet):
     queryset = TipoClip.objects.all()
     serializer_class = TipoClipSerializer
+    filter_fields = ('nombre',)
+    search_fields = ('nombre',)
 
 class PaisViewSet(viewsets.ModelViewSet):
     queryset = Pais.objects.all()
     serializer_class = PaisSerializer
+    filter_fields = ('nombre',)
+    search_fields = ('nombre',)
 
 class CorresponsalViewSet(viewsets.ModelViewSet):
     queryset = Corresponsal.objects.all()
     serializer_class = CorresponsalSerializer
+    filter_fields = ('nombre',)
+    search_fields = ('nombre',)
 
 class TemaViewSet(viewsets.ModelViewSet):
     queryset = Tema.objects.all()
     serializer_class = TemaSerializer
+    filter_fields = ('nombre',)
+    search_fields = ('nombre',)
 
 
 
