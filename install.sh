@@ -1,15 +1,23 @@
 #!/usr/bin/env bash
 
+# Add PPA repository for ffmpeg and codecs
+add-apt-repository -y ppa:mc3man/trusty-media
+
+# Update APT cache and upgrade packages
+apt-get update
+apt-get -y dist-upgrade
+
+# Install packages
+debconf-set-selections <<< 'mysql-server mysql-server/root_password password pass'
+debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password pass'
+apt-get install -y python-virtualenv redis-server libjpeg-dev python-dev \
+    libyaml-dev imagemagick mysql-server libmysqlclient-dev \
+    ffmpeg x264 fdkaac-encoder apache2-mpm-prefork libapache2-mod-wsgi
+
 # Create storage directories
-mkdir /storage && chmod 777 /storage
-mkdir /storage/static && chmod 777 /storage/static
-mkdir /storage/clips && chmod 777 /storage/clips
-mkdir /storage/images && chmod 777 /storage/images
-mkdir /storage/temp && chmod 777 /storage/temp
-mkdir /storage/temp/status && chmod 777 /storage/temp/status
-mkdir /storage/sprites && chmod 777 /storage/sprites
-mkdir /storage/hls && chmod 777 /storage/hls
-mkdir /var/log/video && chmod 777 /var/log/video
+mkdir /storage /storage/static /storage/clips /storage/images /storage/temp \
+    /storage/temp/status /storage/sprites /storage/hls /var/log/video
+chmod -R 777 /storage /var/log/video
 
 # Create database
 echo "CREATE DATABASE video" | mysql -u root -ppass
@@ -26,7 +34,6 @@ pip install -r requirements.txt
 # Data and migrations
 ./manage.py migrate
 ./manage.py loaddata users tipo_clips tipo_programas categorias paises programas corresponsales servicios
-
 ./manage.py collectstatic --noinput
 
 # django supervisor upstart
