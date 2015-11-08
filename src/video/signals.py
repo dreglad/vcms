@@ -29,7 +29,7 @@ def procesar_clip(sender, **kwargs):
     nombre_base = '%s-%s' % (datetime.datetime.now().strftime('%F'), clip.pk)
     nombre_imagen = 'imagen-%s.jpg' % nombre_base
     nombre_audio = 'audio-%s.mp3' % nombre_base
-    nombre_clip = 'clip-%s.mp4' % clip.pk
+    nombre_clip = 'video-%s.mp4' % clip.pk
 
     try:
         cmd_duracion = 'ffmpeg -i %s 2>&1 | grep "Duration" | cut -d " " -f 4 | cut -d "." -f 1' % clip.archivo.path

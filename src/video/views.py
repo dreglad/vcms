@@ -60,6 +60,7 @@ def cambiar_thumbnail(request):
     cmd_imagen = 'ffmpeg -y -ss %d -i %s -vcodec png -vframes 1 -an -f rawvideo %s' % (offset, clip.archivo.path, temp_path)
     call(cmd_imagen, shell=True)
     clip.imagen.save(nombre_imagen, ContentFile(open(temp_path, 'r').read()))
+    os.remove(temp_path)
 
     if not clip.observaciones: clip.observaciones = ''
     clip.observaciones += u"\nThumbnail regenerado por %s desde Admin en %s" % (request.POST.get('usuario_remoto'), datetime.now().isoformat())
