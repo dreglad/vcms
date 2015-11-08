@@ -7,7 +7,7 @@
         MULTIMEDIA_API = SERVER_URL + 'api/v1/',
         USER_INFO_URL = SERVER_URL + 'admin/user_info',
         SITE_NAME = 'Globovisión',
-        LOGIN_URL = '/admin/login/?next=' + window.location.href;
+        LOGIN_URL = '/admin/login/?next=' + top.window.location.href + top.window.location.hash;
 
     /* * * * * *  VARIABLES  * * * * */
     var api_url = MULTIMEDIA_API,
@@ -828,6 +828,9 @@
     /* * * * * *  FUNCTIONS  * * * * */
 
     var go = function(view, params) {
+        if (top.window.location.hash) {
+            top.window.location.hash = '';
+        }
         $('section.view').hide();
         $('section#'+view).data('params', params).show();
         window.scrollTo(0, 0);
@@ -877,6 +880,7 @@
                     break;
 
                 case 'edit-view':
+                    top.window.location.hash = params.clip.id;
                     $('.editar-label').html(params.clip ? '<em>' + params.clip.titulo + '</em>' : __('Subir nuevo clip'));
                     
                     $('#edit-form').empty().mustache('clip-edit-form', {
@@ -1266,10 +1270,23 @@
 
             buildMenus();
 
-            $('#list-view').show();
+            var hash = top.location.hash.replace('#', '');
 
             // Simulate click over the default menu item
+            $('#list-view').show();
             $('#menu_tipos a[data-tipo='+ tipo_slug +']').trigger('click');
+
+            // if clip requested
+            if (hash && !isNaN(hash)) {
+                $.ajax({
+                    url: api_url + 'clip/' + hash + '/?nc=' + Math.random(),
+                    data: { detalle: 'completo', autenticado: 'admin20' },
+                    dataType: 'json'
+                }).done(function(clip) {
+                    // clip ready
+                    go('edit-view', {clip: clip});
+                });
+            }
         });
     });
 
