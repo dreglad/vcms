@@ -253,7 +253,7 @@ def upload_clip_imagen_to(instance, filename):
     nombre, ext = os.path.splitext(filename)
     if instance.pk:
         ext = "-%s%s" % (instance.pk, ext)
-    return 'images/imagen-%s%s' % (uuid.uuid4(), ext)
+    return 'images/image-%s%s' % (uuid.uuid4(), ext)
 
 def upload_clip_audio_to(instance, filename):
     nombre, ext = os.path.splitext(filename)

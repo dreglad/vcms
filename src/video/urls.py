@@ -27,6 +27,7 @@ urlpatterns = [
     # ops
     url(r'^ops/crear/', 'video.views.crear_nuevo'),
     url(r'^ops/query_nuevo/', 'video.views.query_nuevo'),
+    url(r'^ops/cambiar_thumbnail/', 'video.views.cambiar_thumbnail'),
     url(r'^ops/editar/', 'video.views.editar_clip'),
     url(r'^ops/publicar/', 'video.views.publicar_clip'),
     url(r'^ops/despublicar/', 'video.views.despublicar_clip'),

@@ -170,7 +170,7 @@
         row.css('opacity', 0.5);
 
         $.ajax({
-            url: CAPTURA_API + '/cambiar_thumbnail/',
+            url: CAPTURA_API + 'cambiar_thumbnail/',
             dataType: 'json',
             type: 'POST',
             data: {

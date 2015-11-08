@@ -17,6 +17,7 @@ from time import sleep
 from django.core.files.base import ContentFile
 from django.views.decorators.csrf import csrf_exempt
 import os
+import uuid
 import random
 import redis
 import json
@@ -45,6 +46,7 @@ def user_info(request):
             'last_name': request.user.last_name
         }), content_type="application/json")
 
+
 @csrf_exempt
 def cambiar_thumbnail(request):
     if request.POST.get('id'):
@@ -52,13 +54,12 @@ def cambiar_thumbnail(request):
     else:
         clip = Clip.objects.get(slug=request.POST.get('slug'))
 
-    nombre_base = '%s-%s' % (datetime.now().strftime('%F'), clip.pk)
-    nombre_imagen = 'imagen-%s.png' % nombre_base
+    nombre_imagen = 'images/image-%s.png' % uuid.uuid4()
+    temp_path = '/tmp/%s.png' % uuid.uuid4()
     offset = (clip.duracion.minute*60 + clip.duracion.second) * random.random()
-    cmd_imagen = 'ffmpeg -y -ss %d -i %s -vcodec png -vframes 1 -an -f rawvideo /tmp/%s' % (offset, clip.archivo.path, nombre_imagen)
+    cmd_imagen = 'ffmpeg -y -ss %d -i %s -vcodec png -vframes 1 -an -f rawvideo %s' % (offset, clip.archivo.path, temp_path)
     call(cmd_imagen, shell=True)
-    imagen_content = ContentFile(open('/tmp/%s' % nombre_imagen, 'r').read())
-    clip.imagen.save(nombre_imagen, imagen_content)
+    clip.imagen.save(nombre_imagen, ContentFile(open(temp_path, 'r').read()))
 
     if not clip.observaciones: clip.observaciones = ''
     clip.observaciones += u"\nThumbnail regenerado por %s desde Admin en %s" % (request.POST.get('usuario_remoto'), datetime.now().isoformat())
