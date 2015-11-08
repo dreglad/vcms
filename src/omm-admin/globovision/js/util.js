@@ -176,6 +176,7 @@ var strings = {
     'Se mostrarán los resultados de la última búsqueda que realizó el usuario': {'en': "It will display the user's latest search results", 'pt': 'Se mostrarán los resultados de la última búsqueda que realizó el usuario'},
     'Especifique un clip para mostrar sus videos relacionados.': {'en': 'Specify a video ID to display videos related o it', 'pt': 'Especifique un clip para mostrar sus videos relacionados.'},
     'Especifique una búsqueda de texto. Adicionalmente puede filtrar el resultado': {'en': 'Specify a text search, additionally you can filter the results.', 'pt': 'Especifique una búsqueda de texto. Adicionalmente puede filtrar el resultado'},
+    'Todos los videos': {'en': 'All videos', 'pt': 'Todos los videos'},
     'Todos los tipos': {'en': 'Any type', 'pt': 'Todos los tipos'},
     'Todos los programas': {'en': 'Any show', 'pt': 'Todos los programas'},
     'Todos los temas': {'en': 'Any topic', 'pt': 'Todos los temas'},

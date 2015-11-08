@@ -14,14 +14,14 @@
 
           <div class="hidden-xs">
               
-              <span class="label label-primary i18n i18n-dot" data-toggle="tooltip" data-placement="bottom" data-original-title="ID">{{clip.id}}</span>
+              <span class="label label-green i18n i18n-dot" data-toggle="tooltip" data-placement="bottom" data-original-title="ID">{{clip.id}}</span>
               
 
               {{^clip.publicado}}
               <span class="label label-danger i18n-dot i18n" data-toggle="tooltip" data-placement="bottom" data-original-title="Este clip NO se encuentra publicado">DESPUBLICADO</span>
               {{/clip.publicado}}
 
-              <span class="label label-success i18n-dot" data-toggle="tooltip" data-placement="bottom" data-original-title="Vistas completas">{{clip.vistas}} <span class="i18n">vistas</span></span>
+              <span class="label label-primary i18n-dot" data-toggle="tooltip" data-placement="bottom" data-original-title="Tipo de clip">{{clip.tipo.nombre}}</span>
 
               {{#clip.seleccionado}}
               <span class="label label-pink i18n i18n-dot" data-toggle="tooltip" data-placement="bottom" data-original-title="Selección del Editor">SELECCIÓN</span>
@@ -44,7 +44,7 @@
               {{/clip.corresponsal}}
 
               {{#clip.tema}}
-              <span class="label label-primary i18n-dot" data-toggle="tooltip" data-placement="bottom" data-original-title="Tema"><span class="i18n">Tema</span>: {{ clip.tema.nombre }}</span>
+              <span class="label label-danger i18n-dot" data-toggle="tooltip" data-placement="bottom" data-original-title="Tema"><span class="i18n">Tema</span>: {{ clip.tema.nombre }}</span>
               {{/clip.tema}}
 
               {{#clip.serie}}

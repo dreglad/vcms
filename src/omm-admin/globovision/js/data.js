@@ -16,8 +16,8 @@
                      './templates/programaRow.html', './templates/mediaRow.html',
                      './templates/modals.html', './templates/clipStatus.html',
                      './templates/homeRow.html'],
-        // defaults
-        tipo_slug = 'noticia', tipo_nombre_plural = 'Noticias',
+        // initial state
+        tipo_slug = '', tipo_nombre_plural = 'Todos los videos',
         // required API resources
         resources = ['tipo_clip', 'categoria', 'pais', 'corresponsal', 'programa', 'tema'],
         // custom resources
@@ -881,7 +881,7 @@
 
                 case 'edit-view':
                     top.window.location.hash = params.clip.id;
-                    $('.editar-label').html(params.clip ? '<em>' + params.clip.titulo + '</em>' : __('Subir nuevo clip'));
+                    $('.editar-label').html(params.clip ? params.clip.titulo + ' <em><small>(video ID: ' + params.clip.id + ')</small></em>' : __('Subir nuevo clip'));
                     
                     $('#edit-form').empty().mustache('clip-edit-form', {
                         clip: params.clip,
@@ -981,7 +981,6 @@
         $('#cargando').show();
         $('div.content-heading h2').html('<span style="top:25px;left:20px;" class="whirl line"></span>');
         $('ul.media-list').css('min-height','0px');
-
         current_params = $.extend(opts.params, {tipo: tipo_slug, primero: current_offset+1, ultimo: current_offset+page_size, detalle: 'completo', autenticado: 'admin20' });
 
         var random = Math.random();
@@ -1272,9 +1271,9 @@
 
             var hash = top.location.hash.replace('#', '');
 
-            // Simulate click over the default menu item
+            // Simulate click over the first menu item
             $('#list-view').show();
-            $('#menu_tipos a[data-tipo='+ tipo_slug +']').trigger('click');
+            $('#menu_tipos a:first').trigger('click');
 
             // if clip requested
             if (hash && !isNaN(hash)) {
