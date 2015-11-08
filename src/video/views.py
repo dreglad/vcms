@@ -162,34 +162,19 @@ def editar_clip(request):
 
     clip.titulo = request.POST.get('titulo')
     clip.descripcion = request.POST.get('descripcion')
-    clip.usuario_modificacion = request.POST.get('usuario_remoto')
-
-    if request.POST.get('tipo'):
-        clip.tipo = TipoClip.objects.get(slug=request.POST.get('tipo'))
-
-    categoria = Categoria.objects.get(slug=request.POST.get('categoria')) if request.POST.get('categoria') else None
-    clip.categoria = categoria
-
-    programa = Programa.objects.get(slug=request.POST.get('programa')) if request.POST.get('programa') else None
-    clip.programa = programa
-
+    clip.hashtags = request.POST.get('hashtags')
     clip.seleccionado = request.POST.get('seleccionado') in ['1', 'true']
+    clip.publicado = request.POST.get('publicado') in ['1', 'true']
+    clip.tipo = TipoClip.objects.get(slug=request.POST.get('tipo'))
+    clip.categoria = Categoria.objects.get(slug=request.POST.get('categoria')) if request.POST.get('categoria') else None
+    clip.programa = Programa.objects.get(slug=request.POST.get('programa')) if request.POST.get('programa') else None
+    clip.corresponsal = Corresponsal.objects.filter(slug=request.POST.get('corresponsal'))[0] if request.POST.get('corresponsal') else None
+    clip.tema = Tema.objects.get(slug=request.POST.get('tema')) if request.POST.get('tema') else None
+    clip.pais = Pais.objects.get(codigo=request.POST.get('pais')) if request.POST.get('pais') else None
 
     clip.observaciones = u'%s\nEditado desde Admin por %s en %s' % (clip.observaciones or '', request.POST.get('usuario_remoto'), datetime.now().isoformat())
-    # if request.POST.get('tags'):
-    #     clip.tags = request.POST.get('tags')
-    if request.POST.get('hashtags'):
-        clip.hashtags = request.POST.get('hashtags')
-    clip.corresponsal = Corresponsal.objects.filter(slug=request.POST.get('corresponsal'))[0] if request.POST.get('corresponsal') else None
-    # if 'ciudad' in request.POST:
-    #     clip.ciudad = request.POST.get('ciudad')
-    if 'pais' in request.POST:
-        pais = Pais.objects.get(codigo=request.POST.get('pais')) if request.POST.get('pais') else None
-        clip.pais = pais
-    if 'publicado' in request.POST:
-        clip.publicado = request.POST.get('publicado') in ['1', 'true']
-    if 'tema' in request.POST and request.POST.get('tema'):
-        clip.tema = Tema.objects.get(slug=request.POST.get('tema'))
+    clip.usuario_modificacion = request.POST.get('usuario_remoto')
+
     clip.save()
 
     return HttpResponse('{"success": true}', content_type="application/json")
