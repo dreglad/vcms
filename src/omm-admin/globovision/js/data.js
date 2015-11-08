@@ -1115,7 +1115,7 @@
 
     // logout
     $('a.user-block-logout').on('click', function(ev) {
-        top.window.location.href = "/admin/logout/?next=/admin-videos/";
+        top.window.location.href = '/admin/logout/?next=' + top.window.location.href + top.window.location.hash;
         // Cookies.remove('login_email');
         // Cookies.remove('login_password');
         // user = null;
