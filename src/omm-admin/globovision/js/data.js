@@ -1115,12 +1115,13 @@
 
     // logout
     $('a.user-block-logout').on('click', function(ev) {
-        Cookies.remove('login_email');
-        Cookies.remove('login_password');
-        user = null;
-        login();
-        $('.user-block-info').hide();
-        $('.user-block-upper').hide();
+        top.window.location.href = "/admin/logout/?next=/admin-videos/";
+        // Cookies.remove('login_email');
+        // Cookies.remove('login_password');
+        // user = null;
+        // login();
+        // $('.user-block-info').hide();
+        // $('.user-block-upper').hide();
     });
 
     var checkLogin = function(callback) {
