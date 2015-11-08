@@ -4,7 +4,7 @@ from clips.models import *
 
 
 # Serializers define the API representation.
-class ClipSerializer(serializers.HyperlinkedModelSerializer):
+class ClipSerializer(serializers.ModelSerializer):
     class Meta:
         model = Clip
         fields = ('id', 'slug', 'origen', 'fecha', 'tipo', 'titulo', 'descripcion',
@@ -14,42 +14,42 @@ class ClipSerializer(serializers.HyperlinkedModelSerializer):
                   'categoria', 'programa', 'tema', 'corresponsal', 'pais',
                   'serie', 'capitulo',)
 
-class CategoriaSerializer(serializers.HyperlinkedModelSerializer):
+class CategoriaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categoria
         fields = ('id', 'slug', 'nombre')
 
-class SerieSerializer(serializers.HyperlinkedModelSerializer):
+class SerieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Serie
         fields = ('id', 'slug', 'nombre', 'descripcion')
 
-class ProgramaSerializer(serializers.HyperlinkedModelSerializer):
+class ProgramaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Programa
         fields = ('id', 'nombre', 'descripcion', 'horario', 'tipo',)
 
-class TipoProgramaSerializer(serializers.HyperlinkedModelSerializer):
+class TipoProgramaSerializer(serializers.ModelSerializer):
     class Meta:
         model = TipoPrograma
         fields = ('id', 'nombre')
 
-class TipoClipSerializer(serializers.HyperlinkedModelSerializer):
+class TipoClipSerializer(serializers.ModelSerializer):
     class Meta:
         model = TipoClip
         fields = ('id', 'nombre', 'nombre_plural', 'descargable')
 
-class PaisSerializer(serializers.HyperlinkedModelSerializer):
+class PaisSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pais
         fields = ('id', 'nombre', 'codigo', 'ubicacion')
 
-class TemaSerializer(serializers.HyperlinkedModelSerializer):
+class TemaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tema
         fields = ('id', 'nombre', 'descripcion', 'fecha_creacion')
 
-class CorresponsalSerializer(serializers.HyperlinkedModelSerializer):
+class CorresponsalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Corresponsal
         fields = ('id', 'nombre', 'twitter', 'email', 'pais')
