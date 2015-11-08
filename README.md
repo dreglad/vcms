@@ -46,9 +46,11 @@ En su mayoría auto-documentada
 
 **Endpoint de operaciones**
         
-        POST http://127.0.0.1:8080/ops/crear_nuevo
-        POST http://127.0.0.1:8080/ops/query_nuevo
-        POST http://127.0.0.1:8080/ops/editar_clip
-        POST http://127.0.0.1:8080/ops/publicar_clip
-        POST http://127.0.0.1:8080/ops/despublicar_clip
-        POST http://127.0.0.1:8080/ops/eliminar_clip
+        POST http://127.0.0.1:8080/ops/crear/
+        POST http://127.0.0.1:8080/ops/query_nuevo/
+        POST http://127.0.0.1:8080/ops/cambiar_thumbnail/
+        POST http://127.0.0.1:8080/ops/editar/
+        POST http://127.0.0.1:8080/ops/publicar/
+        POST http://127.0.0.1:8080/ops/despublicar/
+        POST http://127.0.0.1:8080/ops/eliminar/
+
