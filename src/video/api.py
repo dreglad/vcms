@@ -7,22 +7,27 @@ from clips.models import *
 class ClipSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Clip
-        fields = ('id', 'titulo', 'descripcion', 'fecha')
+        fields = ('id', 'slug', 'origen', 'fecha', 'tipo', 'titulo', 'descripcion',
+                  'player_url', 'archivo_url', 'hls_url', 'sprites_url',
+                  'descarga_url', 'audio_url', 'thumbnail_pequeno',
+                  'thumbnail_mediano', 'thumbnail_grande', 'vistas', 'resolucion',
+                  'categoria', 'programa', 'tema', 'corresponsal', 'pais',
+                  'serie', 'capitulo',)
 
 class CategoriaSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Categoria
-        fields = ('id', 'nombre')
+        fields = ('id', 'slug', 'nombre')
 
 class SerieSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Serie
-        fields = ('id', 'nombre', 'descripcion')
+        fields = ('id', 'slug', 'nombre', 'descripcion')
 
 class ProgramaSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Programa
-        fields = ('id', 'nombre', 'descripcion', 'horario', 'tipo')
+        fields = ('id', 'nombre', 'descripcion', 'horario', 'tipo',)
 
 class TipoProgramaSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -37,24 +42,27 @@ class TipoClipSerializer(serializers.HyperlinkedModelSerializer):
 class PaisSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Pais
-        fields = ('nombre', 'codigo', 'ubicacion', 'geotag')
+        fields = ('id', 'nombre', 'codigo', 'ubicacion')
 
 class TemaSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Tema
-        fields = ('nombre', 'descripcion', 'fecha_creacion')
+        fields = ('id', 'nombre', 'descripcion', 'fecha_creacion')
 
 class CorresponsalSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Corresponsal
-        fields = ('nombre', 'twitter', 'email', 'pais')
+        fields = ('id', 'nombre', 'twitter', 'email', 'pais')
 
 
 
 # ViewSets define the view behavior.
 class ClipViewSet(viewsets.ModelViewSet):
-    queryset = Clip.objects.all()
+    queryset = Clip.objects.filter(publicado=True, transferido=True)
     serializer_class = ClipSerializer
+    filter_fields = ('tipo', 'programa', 'categoria', 'pais',
+                     'corresponsal', 'serie', 'origen')
+    search_fields = ('titulo', 'descripcion')
 
 class CategoriaViewSet(viewsets.ModelViewSet):
     queryset = Categoria.objects.all()

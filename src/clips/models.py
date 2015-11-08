@@ -2,6 +2,7 @@
 from django.db import models
 from django.conf import settings
 from django.template.defaultfilters import slugify, timesince
+from django.core.urlresolvers import reverse
 from django.db.models import Q
 from email.utils import parseaddr
 import urllib2
@@ -314,22 +315,45 @@ class Clip(models.Model):
         else:
             return u'%s' % self.pk
 
+
+    def player_url(self):
+        if self.origen == Clip.ORIGEN_PROPIO:
+            return '%s%s' % (settings.HOST, reverse('player',kwargs={'clip_id': self.pk}))
+        elif self.origen == Clip.ORIGEN_YOUTUBE:
+            return 'http://www.youtube.com/embed/%s?' % self.external_id
+
+    def hls_url(self):
+        if self.origen == Clip.ORIGEN_PROPIO:
+            if self.resolucion and self.resolucion > 0:
+                return '%shls/%d/playlist.m3u8' % (settings.MEDIA_URL, self.pk)
+
+    def archivo_url(self):
+        if self.origen == Clip.ORIGEN_PROPIO:
+            return self.archivo.url
+
+    def audio_url(self):
+        if self.origen == Clip.ORIGEN_PROPIO:
+            return self.audio.url
+
+    def sprites_url(self):
+        if self.origen == Clip.ORIGEN_PROPIO:
+            if self.sprites and self.sprites > 0:
+                return '%ssprites/%d/s.vtt' % (settings.MEDIA_URL, self.pk)
+
+    def descarga_url(self):
+        if self.origen == Clip.ORIGEN_PROPIO:
+            return '%s?download' % self.archivo.url
+
+
     def get_archivo(self):
         return self.archivo
-    def archivo_url(self):
-        return self.archivo.url
     def get_archivo_url(self):
         return self.archivo.url
     def make_url(self):
         return ''
+    def navegador_url(self):
+        return ''
 
-    def hls_url(self):
-        if self.resolucion and self.resolucion > 0:
-            return '%shls/%d/playlist.m3u8' % (settings.MEDIA_URL, self.pk)
-
-    def sprites_url(self):
-        if self.sprites and self.sprites > 0:
-            return '%ssprites/%d/s.vtt' % (settings.MEDIA_URL, self.pk)
 
     def get_imagen_url(self, transf):
         return self.get_imagen_url
@@ -347,9 +371,6 @@ class Clip(models.Model):
             im = get_thumbnail(self.imagen, '300x300', crop='center', quality=99)
             return im.url
 
-    def get_descarga_url(self):
-        return self.archivo.url
-
     def get_duracion_segundos(self):
         return self.duracion.hour*60*60 + self.duracion.minute*60 + self.duracion.second
 
@@ -361,8 +382,8 @@ class Clip(models.Model):
 
 class Distribucion(models.Model):
     TEMPLATE_CHOICES = (
-        ('notificacion-ficha-tecnica', 'Notificación con ficha técnica'),
-        ('notificacion-sencilla', 'Notificación snecilla')
+        ('notificacion-ficha-tecnica', u'Notificación con ficha técnica'),
+        ('notificacion-sencilla', u'Notificación snecilla')
     )
     descripcion = models.CharField(u'nombre/descripción', max_length=255)
     activo = models.BooleanField(default=True)

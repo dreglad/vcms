@@ -45,6 +45,7 @@ INSTALLED_APPS = (
     'rest_framework_swagger',
     'django_rq',
     'sorl.thumbnail',
+    'crispy_forms',
 
     'clips',
 )
@@ -119,7 +120,11 @@ REST_FRAMEWORK = {
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
-    ]
+    ],
+    'DEFAULT_FILTER_BACKENDS': (
+        'rest_framework.filters.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+    ),
 }
 
 RQ_QUEUES = {
@@ -152,9 +157,7 @@ THUMBNAIL_REDIS_HOST = 'localhost'
 
 STATIC_ROOT = '/storage/static/'
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (
-    "/vagrant/src/omm-admin",
-)
+STATICFILES_DIRS = []
 
 
 # Apps settings

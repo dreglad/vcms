@@ -3,7 +3,6 @@ from piston.handler import BaseHandler
 from piston.utils import rc
 from clips.models import *
 from django.template.defaultfilters import slugify
-from django.core.urlresolvers import reverse
 from datetime import datetime, timedelta
 from django.conf import settings
 from util import validar_request, clip_to_dict, paginar, filtrar_con_programa_relacionado, filtrar_con_clip_relacionado, filtrar_con_campo, filtrar_con_busqueda_texto
@@ -38,38 +37,13 @@ class ClipHandler(BaseHandler):
         return {'id': obj.origen, 'descripcion': obj.get_origen_display()}
 
     @classmethod
-    def archivo_url(cls, obj):
-        if cls.medio == 'radiosur':
-            return obj.audio_url()
-        else:
-            return obj.archivo_url()
-
-    @classmethod
     def api_url(cls, obj):
         if obj.slug:
             return '%s/api/v1/clip/%s/' % (settings.HOST, obj.slug)
 
     @classmethod
-    def player_url(cls, obj):
-        if obj.origen == Clip.ORIGEN_PROPIO:
-            return '%s%s' % (settings.HOST, reverse('player',kwargs={'clip_id': obj.id}))
-        elif obj.origen == Clip.ORIGEN_YOUTUBE:
-            return 'http://www.youtube.com/embed/%s?' % obj.external_id
-
-    @classmethod
     def player_html_url(cls, obj):
         return ''#'http://widgets.openmultimedia.biz/player/widget.vtv.html?query_detalle=basico&query_slug=%s' % obj.slug
-
-    @classmethod
-    def descarga_url(cls, obj):
-        if obj.origen == Clip.ORIGEN_PROPIO:
-            return '%s?descarga' % obj.archivo.url
-        else:
-            return None
-
-    @classmethod
-    def navegador_url(cls, obj):
-        return getattr(obj, 'make_url')()
 
 
     def deprecated_create(self, request, slug=None):
