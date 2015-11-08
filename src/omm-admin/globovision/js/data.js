@@ -880,8 +880,12 @@
                     break;
 
                 case 'edit-view':
-                    top.window.location.hash = params.clip.id;
-                    $('.editar-label').html(params.clip ? params.clip.titulo + ' <em><small>(video ID: ' + params.clip.id + ')</small></em>' : __('Subir nuevo clip'));
+                    if (params.clip) {
+                        top.window.location.hash = params.clip.id;
+                        $('.editar-label').html(params.clip.titulo + ' <em><small>(video ID: ' + params.clip.id + ')</small></em>')
+                    } else {
+                        $('.editar-label').html(__('Subir nuevo clip'));
+                    }
                     
                     $('#edit-form').empty().mustache('clip-edit-form', {
                         clip: params.clip,
