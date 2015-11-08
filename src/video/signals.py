@@ -62,8 +62,8 @@ def procesar_clip(sender, **kwargs):
         clip.save()
 
         # Segments and sprites
-        segmentar_video_job.delay(clip.pk)
         sprites_job.delay(clip.pk)
+        segmentar_video_job.delay(clip.pk)
 
     except:
         clip.fps = -1.0
