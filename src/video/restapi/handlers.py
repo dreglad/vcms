@@ -3,10 +3,12 @@ from piston.handler import BaseHandler
 from piston.utils import rc
 from clips.models import *
 from django.template.defaultfilters import slugify
+from django.core.urlresolvers import reverse
 from datetime import datetime, timedelta
 from django.conf import settings
 from util import validar_request, clip_to_dict, paginar, filtrar_con_programa_relacionado, filtrar_con_clip_relacionado, filtrar_con_campo, filtrar_con_busqueda_texto
 import re
+from django.http import HttpRequest
 
 PAISES_CACHE = {}
 
@@ -48,21 +50,9 @@ class ClipHandler(BaseHandler):
             return '%s/api/v1/clip/%s/' % (settings.HOST, obj.slug)
 
     @classmethod
-    def embed_tag_inline(cls, obj):
-        return ''
-
-    @classmethod
-    def player_javascript_url(cls, obj):
-        return ''
-
-    @classmethod
-    def player_url_publicidad(cls, obj):
-        return ''
-
-    @classmethod
     def player_url(cls, obj):
         if obj.origen == Clip.ORIGEN_PROPIO:
-            return '%s/player/iframe/?slug=%s' % (settings.HOST, obj.slug)
+            return '%s%s' % (settings.HOST, reverse('player',kwargs={'clip_id': obj.id}))
         elif obj.origen == Clip.ORIGEN_YOUTUBE:
             return 'http://www.youtube.com/embed/%s?' % obj.external_id
 

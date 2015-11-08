@@ -32,6 +32,9 @@ urlpatterns = [
     url(r'^ops/despublicar/', 'video.views.despublicar_clip'),
     url(r'^ops/eliminar/', 'video.views.eliminar_clip'),
 
+    # frontend
+    url(r'^player/(?P<clip_id>.+)/', 'video.views.player', name='player'),
+
     # crossdomain.xml
     url(r'^crossdomain\.xml', 'video.views.crossdomain'),
 ]

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*- #
 from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import user_passes_test
 import json
@@ -26,7 +27,12 @@ from django.http import Http404
 is_staff = lambda user: user.is_staff
 
 def crossdomain(request, **kwargs):
-    return render(request, 'crossdomain.xml', {})
+    return render(request, 'crossdomain.xml', {}, content_type='application/xml')
+
+
+def player(request, clip_id):
+    clip = get_object_or_404(Clip, pk=clip_id)
+    return render(request, 'player.html', {'clip': clip})
 
 
 @user_passes_test(is_staff)
@@ -38,14 +44,6 @@ def user_info(request):
             'first_name': request.user.first_name,
             'last_name': request.user.last_name
         }), content_type="application/json")
-
-
-
-@csrf_exempt
-def crossdomain(request):
-    return HttpResponse('<?xml version="1.0"?><!DOCTYPE cross-domain-policy SYSTEM "http://www.macromedia.com/xml/dtds/cross-domain-policy.dtd"><cross-domain-policy><allow-access-from domain="*"/></cross-domain-policy>', content_type="application/xml")
-
-
 
 @csrf_exempt
 def cambiar_thumbnail(request):
