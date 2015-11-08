@@ -122,7 +122,7 @@ def filtrar_con_programa_relacionado(queryset):
 
 RE_EXCEPTO = re.compile(r'^excepto__(.+)$')
 def filtrar_con_campo(queryset, values, lookup):
-        if not values: return queryset
+        if not values or (len(values) == 1 and not values[0]): return queryset
         q = Q()
         for cat in values:
             if cat in ('null', 'es_nulo', 'notnull', 'no_es_nulo'):
