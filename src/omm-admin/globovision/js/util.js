@@ -274,7 +274,7 @@ var strings = {
     'Reemplazar imagen': {'en': 'Replace thumbnail', 'pt': 'Reemplazar imagen'},
     'Cancelar reemplazo de imagen': {'en': 'Canel thumbnail replacement', 'pt': 'Cancelar reemplazo de imagen'},
     'Elegir archivo...': {'en': 'Select file...', 'pt': 'Elegir archivo...'},
-    'Archivo de imagen (opcional)': {'en': 'Image file (optional)', 'pt': 'Archivo de imagen (opcional)'},
+    'Reemplazar imagen': {'en': 'Replace image', 'pt': 'Reemplazar imagen'},
     'Archivo subido correctamente': {'en': 'File was successfully uploaded', 'pt': 'Archivo subido correctamente'},
     'Genera una nueva imagen miniatura extraida de una posición aleatoria': {'en': 'Auto-generates a new thumbnail based on a random position', 'pt': 'Genera una nueva imagen miniatura extraida de una posición aleatoria'},
     'Confirme que desea auto-generar una nueva imagen/thumbnail para este clip extraida de una posición aleatoria': {'en': 'Confirm you really want to auto-generate a new thumbnail for this clip based on a random position', 'pt': 'Confirme que desea auto-generar una nueva imagen/thumbnail para este clip extraida de una posición aleatoria'},
