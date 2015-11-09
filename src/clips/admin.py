@@ -79,9 +79,8 @@ class ClipAdmin(admin.ModelAdmin):
             '//content.jwplatform.com/libraries/z1PvIY5j.js',
         )
 
-
-    def queryset(self, request):
-        return super(ClipAdmin, self).queryset(request)
+    def has_add_permission(self, request):
+        return False
 
     def save_model(self, request, obj, form, change):
         import datetime
