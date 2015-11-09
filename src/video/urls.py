@@ -8,6 +8,9 @@ urlpatterns = [
     # url(r'^$', 'vvv.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
+    # Home
+    url(r'^$', 'video.views.home'),
+
     # Admin
     url(r'^admin/', include(admin.site.urls)),
     url(r'^admin/django-rq/', include('django_rq.urls')),
@@ -22,20 +25,20 @@ urlpatterns = [
 
     # admin-videos
     url(r'^admin/', include(router.urls)),
-    url(r'admin/user_info/', 'video.views.user_info'),
+    url(r'admin/user_info/$', 'video.views.user_info'),
 
     # ops
-    url(r'^ops/crear/', 'video.views.crear_nuevo'),
-    url(r'^ops/query_nuevo/', 'video.views.query_nuevo'),
-    url(r'^ops/cambiar_thumbnail/', 'video.views.cambiar_thumbnail'),
-    url(r'^ops/editar/', 'video.views.editar_clip'),
-    url(r'^ops/publicar/', 'video.views.publicar_clip'),
-    url(r'^ops/despublicar/', 'video.views.despublicar_clip'),
-    url(r'^ops/eliminar/', 'video.views.eliminar_clip'),
+    url(r'^ops/crear/$', 'video.views.crear_nuevo'),
+    url(r'^ops/query_nuevo/$', 'video.views.query_nuevo'),
+    url(r'^ops/cambiar_thumbnail/$', 'video.views.cambiar_thumbnail'),
+    url(r'^ops/editar/$', 'video.views.editar_clip'),
+    url(r'^ops/publicar/$', 'video.views.publicar_clip'),
+    url(r'^ops/despublicar/$', 'video.views.despublicar_clip'),
+    url(r'^ops/eliminar/$', 'video.views.eliminar_clip'),
 
     # frontend
-    url(r'^player/(?P<clip_id>.+)/', 'video.views.player', name='player'),
+    url(r'^player/(?P<clip_id>.+)/$', 'video.views.player', name='player'),
 
     # crossdomain.xml
-    url(r'^crossdomain\.xml', 'video.views.crossdomain'),
+    url(r'^crossdomain\.xml$', 'video.views.crossdomain'),
 ]

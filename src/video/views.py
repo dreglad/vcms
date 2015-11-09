@@ -1,31 +1,25 @@
 # -*- coding: utf-8 -*- #
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import user_passes_test
-import json
-from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.core.exceptions import MultipleObjectsReturned
-from django.db import connection
-from clips.models import *
-import urllib2
-from datetime import datetime, time
-from time import mktime
-from subprocess import call, check_output, CalledProcessError
-import random
-from time import sleep
 from django.core.files.base import ContentFile
+from django.http import HttpResponse, Http404
+from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
-import os
-import uuid
-import random
-import redis
+from subprocess import call, check_output, CalledProcessError
+from datetime import datetime, time
 import json
-import hashlib
-from django.http import Http404
+import os
+import random
+import urllib2
+import uuid
+from clips.models import *
 
 
 is_staff = lambda user: user.is_staff
+
+
+def home(request):
+    return HttpResponse('')
+
 
 def crossdomain(request, **kwargs):
     return render(request, 'crossdomain.xml', {}, content_type='application/xml')

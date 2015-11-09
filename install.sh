@@ -31,7 +31,7 @@ source ./bin/activate
 # Install python dependencies
 pip install -r requirements.txt
 
-# Data and migrations
+# Migrate and load data
 ./manage.py migrate
 ./manage.py loaddata users tipo_clips tipo_programas categorias paises programas corresponsales servicios
 ./manage.py collectstatic --noinput
