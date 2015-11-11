@@ -907,6 +907,8 @@
                         var options = {
                             width: "100%",
                             aspectratio: params.clip.aspect || "4:3",
+                            title: params.clip.titulo,
+                            descripcion: params.clip.descripcion,
                             playlist: [{
                                 file: params.clip.hls_url || params.clip.archivo_url,
                                 image: params.clip.thumbnail_grande,

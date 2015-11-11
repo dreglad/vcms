@@ -29,6 +29,8 @@
             tracks: tracks,
             image: "{{ clip.thumbnail_grande }}",
             androidhls: false,
+            title: "{{ clip.titulo }}",
+            descripcion: "{{ clip.descripcion }}",
             width: "100%",
             aspectratio:"{{ clip.aspect|default:"4:3" }}"
         });
