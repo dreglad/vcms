@@ -70,7 +70,7 @@ def crear_nuevo_clip_job(request_dict):
             status_file.write('valid %s' % duration)
 
     # compress
-    ffmpeg_params = ' -c:a libfdk_aac -b:a 128k -ar 44100 -c:v libx264 -crf 22 -vf "scale=\'min(iw,1280)\':-2" -profile:v main -level:v 3.1 -pix_fmt yuv420p -threads 0'
+    ffmpeg_params = ' -c:a libfdk_aac -b:a 128k -ar 44100 -c:v libx264 -crf 22 -vf "scale=\'min(iw,2048)\':-2" -profile:v main -level:v 3.1 -pix_fmt yuv420p -threads 0'
     compress_cmd = 'ffmpeg -y -vstats_file %s -i %s %s -movflags +faststart %s' % (vstats_path, descarga_path, ffmpeg_params, comprimido_path)
     print u"Comprimiendo en: %s" % comprimido_path
     call(compress_cmd, shell=True)
@@ -183,7 +183,7 @@ def segmentar_video_job(clip_pk):
 
     MODES = (
         # larger modes first
-        {'height': 1080, 'cut_height': 900, 'bitrate': 3500, 'fps': 30, 'gop': 72, 'profile': 'main',     'level': 32, 'bandwidth': 3500000},
+        {'height': 1080, 'cut_height': 800, 'bitrate': 3500, 'fps': 30, 'gop': 72, 'profile': 'main',     'level': 32, 'bandwidth': 3500000},
         {'height': 720,  'cut_height': 600, 'bitrate': 1800, 'fps': 24, 'gop': 72, 'profile': 'main',     'level': 32, 'bandwidth': 2000000},
         {'height': 480,  'cut_height': 400, 'bitrate': 900,  'fps': 24, 'gop': 72, 'profile': 'baseline', 'level': 31, 'bandwidth': 1000000},
         {'height': 360,  'cut_height': 300, 'bitrate': 600,  'fps': 24, 'gop': 72, 'profile': 'baseline', 'level': 31, 'bandwidth': 700000},
@@ -219,7 +219,7 @@ def segmentar_video_job(clip_pk):
                    archivo.path,
                    mode['profile'], mode['level'],
                    mode['bitrate'], mode['fps'], mode['gop'],
-                   mode['height'], path)
+                   min(mode['height'], video_height), path)
         call(cmd, shell=True)
 
         # verify file + extract width info for playlist

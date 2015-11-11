@@ -6,7 +6,7 @@ import json
 
 def get_video_stream_info(path):
     """Get video stream info dictionary using ffprobe"""
-    cmd = 'ffprobe -show_streams -print_format json %s' % path
+    cmd = 'ffprobe -v error -show_streams -print_format json %s' % path
     info = json.loads(Popen(cmd, shell=True, stdout=PIPE).stdout.read())
     try:
         return filter(lambda x: x['codec_type'] == 'video', info['streams'])[0]

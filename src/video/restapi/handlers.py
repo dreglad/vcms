@@ -23,7 +23,7 @@ class ClipHandler(BaseHandler):
     # Juegos de campos
     fields_escenciales = ('id', 'slug', 'api_url', 'origen')
     fields_basicos = ('titulo', 'descripcion', 'fecha', 'duracion', 'seleccionado', 'hashtags')
-    fields_urls = ('sprites_url', 'hls_url', 'navegador_url', 'player_url',
+    fields_urls = ('sprites_url', 'hls_url', 'aspect', 'navegador_url', 'player_url',
                    'audio_url', 'archivo_url', 'descarga_url', 'thumbnail_grande',
                    'thumbnail_mediano', 'thumbnail_pequeno')
     #fields_detalles = ('vistas', 'id_youtube', 'id_vimeo')

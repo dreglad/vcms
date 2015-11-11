@@ -9,8 +9,9 @@ class ClipSerializer(serializers.ModelSerializer):
         model = Clip
         fields = ('id', 'slug', 'origen', 'fecha', 'tipo', 'titulo', 'descripcion',
                   'player_url', 'archivo_url', 'hls_url', 'sprites_url',
+                  'aspect', 'duracion', 'resolucion',
                   'descarga_url', 'audio_url', 'thumbnail_pequeno',
-                  'thumbnail_mediano', 'thumbnail_grande', 'vistas', 'resolucion',
+                  'thumbnail_mediano', 'thumbnail_grande', 'vistas',
                   'categoria', 'programa', 'tema', 'corresponsal', 'pais',
                   'serie', 'capitulo',)
 

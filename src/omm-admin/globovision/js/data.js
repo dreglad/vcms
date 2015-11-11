@@ -2,7 +2,7 @@
 
     idioma = 'es';
 
-    var SERVER_URL = 'http://127.0.0.1:8080/';
+    var SERVER_URL = '/';
     var CAPTURA_API = SERVER_URL + 'ops/',
         MULTIMEDIA_API = SERVER_URL + 'api/v1/',
         USER_INFO_URL = SERVER_URL + 'admin/user_info',
@@ -906,7 +906,7 @@
 
                         var options = {
                             width: "100%",
-                            aspectratio: "4:3",
+                            aspectratio: params.clip.aspect || "4:3",
                             playlist: [{
                                 file: params.clip.hls_url || params.clip.archivo_url,
                                 image: params.clip.thumbnail_grande,

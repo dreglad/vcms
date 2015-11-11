@@ -44,6 +44,7 @@ class Migration(migrations.Migration):
                 ('duracion', models.TimeField(default=b'00:00', verbose_name='duraci\xf3n', editable=False)),
                 ('resolucion', models.IntegerField(default=0, null=True, editable=False)),
                 ('sprites', models.IntegerField(default=0, null=True, editable=False)),
+                ('aspect', models.CharField(max_length=8, null=True, editable=False, blank=True)),
                 ('fps', models.FloatField(default=0, null=True, editable=False, blank=True)),
                 ('fecha_creacion', models.DateTimeField(auto_now_add=True)),
                 ('usuario_creacion', models.CharField(max_length=50, null=True, editable=False, blank=True)),
@@ -93,7 +94,7 @@ class Migration(migrations.Migration):
                 ('fecha_hasta', models.DateTimeField(help_text='Realizar distribuci\xf3n hasta la fecha seleccionada', null=True, blank=True)),
                 ('configuracion', models.TextField(null=True, verbose_name='configuraci\xf3n', blank=True)),
                 ('email', models.CharField(help_text='Uno o varios emails separados por comas con el formato:  Nombre Primer Destinatario &lt;usuario@dominio.com&gt;, Nombre Segundo Destinatario &lt;otro@dominio.com&gt;, ...', max_length=255, null=True, blank=True)),
-                ('email_template', models.CharField(choices=[(b'notificacion-ficha-tecnica', b'Notificaci\xc3\xb3n con ficha t\xc3\xa9cnica'), (b'notificacion-sencilla', b'Notificaci\xc3\xb3n snecilla')], max_length=255, blank=True, help_text='Plantilla a usar para dar formato a los mensajes', null=True, verbose_name='Plantilla e-mail')),
+                ('email_template', models.CharField(choices=[(b'notificacion-ficha-tecnica', 'Notificaci\xf3n con ficha t\xe9cnica'), (b'notificacion-sencilla', 'Notificaci\xf3n snecilla')], max_length=255, blank=True, help_text='Plantilla a usar para dar formato a los mensajes', null=True, verbose_name='Plantilla e-mail')),
                 ('ftp_host', models.CharField(max_length=255, null=True, verbose_name='Host FTP', blank=True)),
                 ('ftp_port', models.CharField(max_length=255, null=True, verbose_name='Puerto FTP', blank=True)),
                 ('ftp_dir', models.CharField(max_length=255, null=True, verbose_name='Directorio FTP', blank=True)),
@@ -253,12 +254,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='programa',
             name='excluir_servicios',
-            field=models.ManyToManyField(help_text='Servicios a excluir en caso de que haya servicios habilitados para todos los clips tipo programa pero que no se desean aplicar a este programa en particular', related_name='programas_excluidos', to='clips.Servicio'),
+            field=models.ManyToManyField(help_text='Servicios externos a excluir en caso de que haya servicios habilitados para todos los clips tipo programa pero que no se desean aplicar a este programa en particular', related_name='programas_excluidos', to='clips.Servicio'),
         ),
         migrations.AddField(
             model_name='programa',
             name='servicios',
-            field=models.ManyToManyField(help_text='Sericios a definir para este programa', to='clips.Servicio'),
+            field=models.ManyToManyField(help_text='Servicios externos a distribuir para clips de este programa', to='clips.Servicio'),
         ),
         migrations.AddField(
             model_name='programa',
