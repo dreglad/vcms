@@ -30,7 +30,7 @@
             image: "{{ clip.thumbnail_grande }}",
             androidhls: false,
             width: "100%",
-            aspectratio:"4:3"
+            aspectratio:"{{ clip.aspect|default:"4:3" }}"
         });
     };
 
