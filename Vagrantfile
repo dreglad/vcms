@@ -67,6 +67,11 @@ Vagrant.configure(2) do |config|
   # config.vm.provision "shell", inline: <<-SHELL
   #   sudo apt-get update
   #   sudo apt-get install -y apache2
-  # SHELL
-  config.vm.provision :shell, path: "install.sh"
+
+  # Ansible provisioning
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "provisioning/playbook.yml"
+    ansible.sudo = true
+  end
+
 end

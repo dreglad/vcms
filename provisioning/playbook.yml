@@ -1,0 +1,86 @@
+---
+- hosts: default
+  tasks:
+    - name: Update all packages to latest version
+      apt: update_cache=yes upgrade=dist
+
+    - name: Add PPA repository for FFmpeg and codec libraries
+      apt_repository: repo='ppa:mc3man/trusty-media' update_cache=yes
+
+    - name: Set MySQL root password in case of installing
+      debconf: name='mysql-server' question='mysql-server/root_password' value='pass' vtype='password'
+
+    - name: Confirm MySQL root password in case of installing
+      debconf: name='mysql-server' question='mysql-server/root_password_again' value='pass' vtype='password'
+
+    - name: Install required APT packages
+      apt: pkg={{ item }}
+      with_items:
+        - python-virtualenv
+        - redis-server
+        - libjpeg-dev
+        - python-dev
+        - libyaml-dev
+        - imagemagick
+        - mysql-server
+        - libmysqlclient-dev
+        - ffmpeg
+        - x264
+        - fdkaac-encoder
+        - apache2-mpm-prefork
+        - libapache2-mod-wsgi
+        - python-mysqldb
+
+    - name: Create storage directories
+      file: path={{ item }} state=directory mode=0777
+      with_items:
+        - /storage
+        - /storage/static
+        - /storage/clips
+        - /storage/images
+        - /storage/temp
+        - /storage/temp/status
+        - /storage/hls
+        - /var/log/video
+
+    - name: Create virtualenv
+      command: virtualenv /vagrant/src -p python2.7 --no-site-packages creates="/vagrant/src/bin"
+
+    - name: Install python requirements
+      pip: requirements=/vagrant/src/requirements.txt virtualenv=/vagrant/src
+
+    - name: Create database
+      mysql_db: name=video login_user=root login_password=pass state=present
+      register: database
+
+    - name: Migrate database
+      django_manage: command=migrate virtualenv=/vagrant/src app_path=/vagrant/src
+
+    - name: Load fixtures data
+      django_manage: command=loaddata app_path=/vagrant/src virtualenv=/vagrant/src fixtures='users tipo_clips tipo_programas categorias paises programas corresponsales servicios'
+      when: database.changed
+
+    - name: Collect static files
+      django_manage: command=collectstatic app_path=/vagrant/src virtualenv=/vagrant/src
+
+    - name: Add supervisord upstart script
+      command: cp /vagrant/etc/etc--init--django-supervisor.conf /etc/init/django-supervisor.conf creates=/etc/init/django-supervisor.conf
+      notify:
+        - reload upstart configuration
+
+    - name: Copy web server configuration file
+      command: cp /vagrant/etc/apache.video.conf /etc/apache2/sites-available/video.conf creates=/etc/apache2/sites-available/video.conf
+
+    - name: Enable web site
+      command: a2ensite video creates=/etc/apache2/sites-enabled/video.conf
+      notify:
+        - restart apache2
+
+  handlers:
+    - name: restart apache2
+      service: name=apache2 state=restarted
+
+    - name: reload upstart configuration
+      command: cp /vagrant/etc/etc--init--workaround-vagrant-bug-6074.conf /etc/init/workaround-vagrant-bug-6074.conf
+      command: initctl reload-configuration
+      command: start django-supervisor
