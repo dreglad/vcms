@@ -128,15 +128,15 @@ class Programa(models.Model):
 
     def thumbnail_pequeno(self):
         if self.imagen:
-            im = get_thumbnail(self.imagen, '150x150', quality=99)
+            im = get_thumbnail(self.imagen, 'x150', quality=70)
             return im.url
     def thumbnail_mediano(self):
         if self.imagen:
-            im = get_thumbnail(self.imagen, '300x300', quality=99)
+            im = get_thumbnail(self.imagen, 'x300', quality=80)
             return im.url
     def thumbnail_grande(self):
         if self.imagen:
-            im = get_thumbnail(self.imagen, '300x300', quality=99)
+            im = get_thumbnail(self.imagen, 'x600', quality=90)
             return im.url
 
     def __unicode__(self):
@@ -378,15 +378,15 @@ class Clip(models.Model):
 
     def thumbnail_pequeno(self):
         if self.imagen:
-            im = get_thumbnail(self.imagen, '150x150', crop='center', quality=99)
+            im = get_thumbnail(self.imagen, 'x150', quality=70)
             return im.url
     def thumbnail_mediano(self):
         if self.imagen:
-            im = get_thumbnail(self.imagen, '300x300', crop='center', quality=99)
+            im = get_thumbnail(self.imagen, 'x300', quality=80)
             return im.url
     def thumbnail_grande(self):
         if self.imagen:
-            im = get_thumbnail(self.imagen, '300x300', crop='center', quality=99)
+            im = get_thumbnail(self.imagen, 'x600', quality=90)
             return im.url
 
     def get_duracion_segundos(self):

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*- #
+from clips.models import *
 from django.contrib.auth.decorators import user_passes_test
 from django.core.files.base import ContentFile
 from django.http import HttpResponse, Http404
@@ -11,7 +12,6 @@ import os
 import random
 import urllib2
 import uuid
-from clips.models import *
 
 
 is_staff = lambda user: user.is_staff
