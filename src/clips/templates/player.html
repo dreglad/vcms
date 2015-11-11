@@ -16,6 +16,7 @@
 
         {% if clip.hls_url %}
             sources.push({ file: "{{ clip.hls_url }}" });
+            sources.push({ file: "{{ clip.archivo_url }}" });
         {% endif %}
 
         sources.push({ file: "{{ clip.archivo_url }}" });
@@ -30,7 +31,7 @@
             image: "{{ clip.thumbnail_grande }}",
             androidhls: false,
             title: "{{ clip.titulo }}",
-            descripcion: "{{ clip.descripcion }}",
+            description: "{{ clip.descripcion }}",
             width: "100%",
             aspectratio:"{{ clip.aspect|default:"4:3" }}"
         });
