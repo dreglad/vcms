@@ -85,6 +85,7 @@ def crear_nuevo_clip_job(request_dict):
 
     clip = Clip(
         duracion=datetime.time(0,0),
+        aspect=get_video_aspect_ratio(stream_info),
         tipo=tipo,
         fecha=datetime.datetime.now(),
         usuario_creacion = request_dict.get('usuario_remoto'),

@@ -293,7 +293,7 @@ class Clip(models.Model):
     duracion = models.TimeField(u'duración', default='00:00', editable=False)
     resolucion = models.IntegerField(null=True, default=0, editable=False)
     sprites = models.IntegerField(null=True, default=0, editable=False)
-    aspect = models.CharField(max_length=8, blank=True, null=True, editable=False)
+    aspect = models.CharField(max_length=16, blank=True, null=True, editable=False)
     fps = models.FloatField(blank=True, null=True, default=0, editable=False)
 
     # Flujo, acicones y fechas

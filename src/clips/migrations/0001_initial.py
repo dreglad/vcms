@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
                 ('duracion', models.TimeField(default=b'00:00', verbose_name='duraci\xf3n', editable=False)),
                 ('resolucion', models.IntegerField(default=0, null=True, editable=False)),
                 ('sprites', models.IntegerField(default=0, null=True, editable=False)),
-                ('aspect', models.CharField(max_length=8, null=True, editable=False, blank=True)),
+                ('aspect', models.CharField(max_length=16, null=True, editable=False, blank=True)),
                 ('fps', models.FloatField(default=0, null=True, editable=False, blank=True)),
                 ('fecha_creacion', models.DateTimeField(auto_now_add=True)),
                 ('usuario_creacion', models.CharField(max_length=50, null=True, editable=False, blank=True)),
