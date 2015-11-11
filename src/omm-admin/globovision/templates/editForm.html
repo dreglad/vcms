@@ -3,7 +3,6 @@
     <div class="col-lg-12">
         <div class="panel panel-default">
             <div class="panel-body">
-
                 <form>
 
                     {{^clip.thumbnail_grande}}
@@ -16,14 +15,20 @@
                     {{/clip.thumbnail_grande}}
 
                     {{#clip.thumbnail_grande}}
-                    <legend class="i18n">Reproductor de video</legend>
                     <div class="row">
                         <div class="pull-right boton-acciones">
                           <!--BOTÓN ACCIONES -->
                         </div>
 
                         <div class="col-sm-12 col-md-12">
-                            <div style="padding:1em; max-width: 640px; margin: 0 auto;"><div id="video-player"></div></div>
+                            <div style="padding:1em; max-width: 80%; margin: 0 auto;"><div id="video-player"></div></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12">
+                            <div style="padding:1em; max-width: 80%; margin: 0 auto;">
+                                <pre>Player responsivo:  <a target="_blank" href="{{clip.player_url}}">{{clip.player_url}}</a></pre>
+                            </div>
                         </div>
                     </div>
                     {{/clip.thumbnail_grande}}
