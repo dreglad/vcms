@@ -69,9 +69,18 @@ Vagrant.configure(2) do |config|
   #   sudo apt-get install -y apache2
 
   # Ansible provisioning
-  config.vm.provision "ansible" do |ansible|
+  config.vm.provision "ansible", run: "once" do |ansible|
     ansible.playbook = "provisioning/playbook.yml"
     ansible.sudo = true
   end
 
+  # Startup (dependant on /vagrant share)
+  config.vm.provision "shell", run: "always", inline: <<-SHELL
+    if [[ $(status supervisor) != *running* ]]; then
+        start supervisor
+    fi
+    if [[ $(/etc/init.d/uwsgi status video) == *not\\ running* ]]; then
+        /etc/init.d/uwsgi start
+    fi
+  SHELL
 end

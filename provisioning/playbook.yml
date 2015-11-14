@@ -27,9 +27,27 @@
         - ffmpeg
         - x264
         - fdkaac-encoder
-        - apache2-mpm-prefork
-        - libapache2-mod-wsgi
         - python-mysqldb
+        - uwsgi
+        - uwsgi-plugin-python
+
+    - name: NGINX | Adding NGINX signing key
+      apt_key: url=http://nginx.org/keys/nginx_signing.key state=present
+
+    - name: NGINX | Adding sources.list deb url for NGINX
+      lineinfile: dest=/etc/apt/sources.list line="deb http://nginx.org/packages/mainline/ubuntu/ trusty nginx"
+      register: nginx_deburl
+
+    - name: NGINX | Adding sources.list deb-src url for NGINX
+      lineinfile: dest=/etc/apt/sources.list line="deb-src http://nginx.org/packages/mainline/ubuntu/ trusty nginx"
+      register: nginx_debsrcurl
+
+    - name: NGINX | Updating apt cache
+      apt: update_cache=yes
+      when: nginx_deburl.changed or nginx_debsrcurl.changed
+
+    - name: NGINX | Installing NGINX
+      apt: pkg=nginx state=latest
 
     - name: Create storage directories
       file: path={{ item }} state=directory mode=0777
@@ -63,24 +81,41 @@
     - name: Collect static files
       django_manage: command=collectstatic app_path=/vagrant/src virtualenv=/vagrant/src
 
-    - name: Add supervisord upstart script
-      command: cp /vagrant/etc/etc--init--django-supervisor.conf /etc/init/django-supervisor.conf creates=/etc/init/django-supervisor.conf
+    - name: Add supervisor upstart script
+      copy: src=etc/upstart-supervisor.conf dest=/etc/init/supervisor.conf
       notify:
         - reload upstart configuration
 
-    - name: Copy web server configuration file
-      command: cp /vagrant/etc/apache.video.conf /etc/apache2/sites-available/video.conf creates=/etc/apache2/sites-available/video.conf
-
-    - name: Enable web site
-      command: a2ensite video creates=/etc/apache2/sites-enabled/video.conf
+    - name: Copy uWSGI applicaiton configuration file
+      copy: src=etc/uwsgi-video.ini dest=/etc/uwsgi/apps-enabled/video.ini
       notify:
-        - restart apache2
+        - restart uwsgi
+
+    - name: Copy web server main configuration file
+      copy: src=etc/nginx.conf dest=/etc/nginx/nginx.conf
+      notify:
+        - restart nginx
+
+    - name: Copy web server site configuration file
+      copy: src=etc/nginx-site.conf dest=/etc/nginx/conf.d/default.conf
+      notify:
+        - restart nginx
+
+    - name: Ensure uWSGI is running
+      service: name=uwsgi state=started
+
+    - name: Ensure NGINX is running
+      service: name=nginx state=started
+
+    - name: Ensure supervisor is running
+      service: name=supervisor state=started
 
   handlers:
-    - name: restart apache2
-      service: name=apache2 state=restarted
+    - name: restart nginx
+      service: name=nginx state=restarted
+
+    - name: restart uwsgi
+      service: name=uwsgi state=restarted
 
     - name: reload upstart configuration
-      command: cp /vagrant/etc/etc--init--workaround-vagrant-bug-6074.conf /etc/init/workaround-vagrant-bug-6074.conf
       command: initctl reload-configuration
-      command: start django-supervisor
