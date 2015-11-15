@@ -50,7 +50,7 @@
       apt: pkg=nginx state=latest
 
     - name: Create storage directories
-      file: path={{ item }} state=directory mode=0777
+      file: path={{ item }} state=directory mode=0777 follow=True
       with_items:
         - /storage
         - /storage/static
