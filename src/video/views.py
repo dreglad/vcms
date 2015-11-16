@@ -7,6 +7,8 @@ from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from subprocess import call, check_output, CalledProcessError
 from datetime import datetime, time
+from video.jobs.ops import crear_nuevo_clip_job
+import uuid
 import json
 import os
 import random
@@ -67,26 +69,27 @@ def cambiar_thumbnail(request):
 
 @csrf_exempt
 def crear_nuevo(request):
-    from video.jobs.ops import crear_nuevo_clip_job
+    if request.method != 'POST':
+        return HttpResponseBadRequest('Invalid request')
 
-    if request.POST.get('archivo_id'):
-        status_path = settings.STORAGE_DIR + 'temp/status/%s.txt' % request.POST.get('archivo_id')
-        with open(status_path, 'w') as status_file:
-            status_file.write('queue')
-            crear_nuevo_clip_job.delay(request.POST)
-        success = True
-    else:
-        success = False
+    uid = str(uuid.uuid4())
+    status_path = '%stemp/status/%s.txt' % (settings.STORAGE_DIR, uid)
+    with open(status_path, 'w') as status_file:
+        status_file.write('queue')
+    crear_nuevo_clip_job.delay(request.POST, uid)
 
-    return HttpResponse(json.dumps({"success": success}), content_type="application/json")
+    return HttpResponse(json.dumps({'success': True, 'uid': uid}), content_type="application/json")
 
 
 @csrf_exempt
 def query_nuevo(request):
-    archivo_id = request.GET.get('archivo_id')
+    if not request.GET.get('uid'):
+        return HttpResponseBadRequest('Invalid request')
+
+    uid = request.GET.get('uid')
     temp_path = settings.STORAGE_DIR + 'temp'
-    status_path = '%s/status/%s.txt' % (temp_path, archivo_id)
-    vstats_path = '%s/vstats_%s.txt' % (temp_path, archivo_id)
+    status_path = '%s/status/%s.txt' % (temp_path, uid)
+    vstats_path = '%s/vstats_%s.txt' % (temp_path, uid)
 
     result = {}
 
@@ -123,7 +126,7 @@ def query_nuevo(request):
 @csrf_exempt
 def editar_clip(request):
     if request.method != 'POST':
-        raise Http404('Only POST allowed')
+        return HttpResponseBadRequest('Invalid request')
 
     if request.POST.get('id'):
         clip = Clip.objects.get(pk=request.POST.get('id'))
@@ -176,6 +179,9 @@ def editar_clip(request):
 
 @csrf_exempt
 def eliminar_clip(request):
+    if request.method != 'POST':
+        return HttpResponseBadRequest('Invalid request')
+
     try:
         if request.POST.get('id'):
             obj = Clip.objects.get(pk=request.POST.get('id'))
@@ -192,6 +198,9 @@ def eliminar_clip(request):
 
 @csrf_exempt
 def despublicar_clip(request):
+    if request.method != 'POST':
+        return HttpResponseBadRequest('Invalid request')
+
     if request.POST.get('id'):
         clip = Clip.objects.get(pk=request.POST.get('id'))
     else:
@@ -207,6 +216,9 @@ def despublicar_clip(request):
 
 @csrf_exempt
 def publicar_clip(request):
+    if request.method != 'POST':
+        return HttpResponseBadRequest('Invalid request')
+
     if request.POST.get('id'):
         clip = Clip.objects.get(pk=request.POST.get('id'))
     else:

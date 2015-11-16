@@ -9,52 +9,64 @@ import time
 import os
 import re
 import urllib2
-import json
-import uuid
 import shutil
 from django_rq import job
 from rq import get_current_job
 from django.contrib.auth.models import User
 from time import sleep
 from django.core.mail import send_mail
-import redis
 from video.video_ops import *
 from clips.models import Clip, TipoClip
+from pytube import YouTube
 
 
 @job('high', timeout=3600)
-def crear_nuevo_clip_job(request_dict):
+def crear_nuevo_clip_job(request_dict, uid):
+    def yt_on_progress(bytes_received, file_size, start):
+        with open(status_path, 'w') as status_file:
+            status_file.write('download %g %g' % (bytes_received, file_size))
+
     print u"Peticion de nuevo clip con request: %s" % request_dict
 
-    tmp_base = settings.STORAGE_DIR + 'temp'
-    archivo_id = request_dict.get('archivo_id', request_dict.get('archivo'))
-    descarga_path = '%s/descargado_%s' % (tmp_base, archivo_id)
-    status_path = '%s/status/%s.txt' % (tmp_base, archivo_id)
-    vstats_path = '%s/vstats_%s.txt' % (tmp_base, archivo_id)
-    comprimido_path = '%s/comprimido_%s.mp4' % (tmp_base, archivo_id)
+    url = request_dict.get('archivo_id', request_dict.get('url'))
+    origen = request_dict.get('origen')
+    tmp_base = '%stemp' % settings.STORAGE_DIR
+    descarga_path = '%s/descargado_%s' % (tmp_base, uid)
+    status_path = '%s/status/%s.txt' % (tmp_base, uid)
+    vstats_path = '%s/vstats_%s.txt' % (tmp_base, uid)
+    comprimido_path = '%s/comprimido_%s.mp4' % (tmp_base, uid)
 
-    if archivo_id.startswith('http'):
-        url = archivo_id
+    if origen == 'youtube':
+        print u"Descargando archivo de YouTube: %s (%s)" % (url, uid)
+        with open(status_path, 'w') as status_file:
+            status_file.write('download 1')
+        yt = YouTube(url)
+        yt.set_filename(os.path.basename(descarga_path))
+        video = yt.filter('mp4')[-1]
+        video.download(os.path.dirname(descarga_path), on_progress=yt_on_progress, force_overwrite=True)
+        descarga_path += '.mp4'
+
     else:
-        url = 'http://upload.openmultimedia.biz/files/%s' % archivo_id
-
-    tries = 0
-    while tries < 8:
-        try:
-            tries += 1
-            # update status
-            print u"Descargando archivo (intento %d): %s" % (tries, url)
-            with open(status_path, 'w') as status_file:
-                status_file.write('download %d' % tries)
-            webfile = urllib2.urlopen(url)
-            descargafile = open(descarga_path, 'w')
-            descargafile.write(webfile.read())
-            webfile.close()
-            descargafile.close()
-            break
-        except Exception as e:
-            print e
-            continue
+        if origen == 'upload':
+            url = 'http://upload.openmultimedia.biz/files/%s' % url
+        # Download file
+        tries = 0
+        while tries < 5:
+            try:
+                tries += 1
+                # update status
+                print u"Descargando archivo (intento %d): %s" % (tries, url)
+                with open(status_path, 'w') as status_file:
+                    status_file.write('download %d' % tries)
+                webfile = urllib2.urlopen(url)
+                descargafile = open(descarga_path, 'w')
+                descargafile.write(webfile.read())
+                webfile.close()
+                descargafile.close()
+                break
+            except Exception as e:
+                sleep(1)
+                continue
 
     # Archivo descargado, checar validez
     stream_info = get_video_stream_info(descarga_path)
@@ -92,15 +104,13 @@ def crear_nuevo_clip_job(request_dict):
         usuario_redaccion = request_dict.get('usuario_remoto'),
         titulo = request_dict.get('titulo'),
         descripcion = request_dict.get('descripcion'),
-        observaciones = u"\nCreado desde Admin por %s con archivo_id: %s" % (request_dict.get('usuario_remoto'), archivo_id),
+        observaciones = u"\nCreado desde Admin por %s con origen: %s, URL: %s" % (request_dict.get('usuario_remoto'), origen, url),
     )
 
     if request_dict.get('categoria'):
         clip.categoria = Categoria.objects.get(slug=request_dict.get('categoria'))
     if request_dict.get('programa'):
         clip.programa = Programa.objects.get(slug=request_dict.get('programa'))
-    # if request_dict.get('tags'):
-    #     clip.tags = request_dict.get('tags')
     if request_dict.get('hashtags'):
         clip.hashtags = request_dict.get('hashtags')
     if request_dict.get('corresponsal'):

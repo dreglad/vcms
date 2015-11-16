@@ -682,6 +682,7 @@
                 data: {
                     usuario_remoto: user.email,
                     key: user.password,
+                    origen: 'upload',
                     archivo_id: archivo_id,
                     titulo: $('#titulo').val().trim(),
                     programa: $('#programa').val(),
@@ -697,7 +698,7 @@
                     // idioma: idioma,
                     publicado: $('#publicado').attr('checked') ? 1 : 0
                 }
-            }).done(function() {
+            }).done(function(data) {
                 bootbox.alert('<p style="min-height: 100px;" id="status_label"></p>');
                 $('#status_label').empty().mustache('status-progress', { progress: 0, status: __("Iniciando...")});
 
@@ -707,7 +708,7 @@
                     if ($("#status_label").length == 0) return; // modal still opened?
                     $.ajax({
                         url: CAPTURA_API + 'query_nuevo/',
-                        data: { archivo_id: archivo_id },
+                        data: { uid: data.uid },
                         dataType: 'json'
                     }).done(function(result) {
                         switch (result.status) {
@@ -746,15 +747,15 @@
                                         bootbox.hideAll();
                                     }).fail(function() {
                                         // clip not ready
-                                        setTimeout(wait_for_clip, 200);
+                                        setTimeout(wait_for_clip, 300);
                                     });
                                 }
                                 wait_for_clip();
                                 return;
                         }
-                        setTimeout(check_status, 200);
+                        setTimeout(check_status, 300);
                     }).fail(function() {
-                        setTimeout(check_status, 200);
+                        setTimeout(check_status, 300);
                     });
                 }
                 check_status();
