@@ -1,34 +1,21 @@
 # -*- coding: utf-8 -*-
-from django.db import connection
-from django.core.files.base import ContentFile
-from clips.models import *
 from django.conf import settings
-from subprocess import Popen, PIPE, call
-import datetime
-import time
-import os
-import re
-import urllib2
-import shutil
+from django.core.files.base import ContentFile
+from django.db import connection
 from django_rq import job
-from rq import get_current_job
-from django.contrib.auth.models import User
-from time import sleep
-from django.core.mail import send_mail
+from subprocess import Popen, PIPE, call
+from clips.models import *
 from video.video_ops import *
-from clips.models import Clip, TipoClip
-from pytube import YouTube
+import datetime
+import os
+import shutil
 
 
 @job('high', timeout=3600)
 def crear_nuevo_clip_job(request_dict, uid):
-    def yt_on_progress(bytes_received, file_size, start):
-        with open(status_path, 'w') as status_file:
-            status_file.write('download %g %g' % (bytes_received, file_size))
+    print(u"Peticion de nuevo clip con uid '%s' y request: '%s'" % (uid, request_dict))
 
-    print u"Peticion de nuevo clip con request: %s" % request_dict
-
-    url = request_dict.get('archivo_id', request_dict.get('url'))
+    url = request_dict.get('url')
     origen = request_dict.get('origen')
     tmp_base = '%stemp' % settings.STORAGE_DIR
     descarga_path = '%s/descargado_%s' % (tmp_base, uid)
@@ -36,98 +23,64 @@ def crear_nuevo_clip_job(request_dict, uid):
     vstats_path = '%s/vstats_%s.txt' % (tmp_base, uid)
     comprimido_path = '%s/comprimido_%s.mp4' % (tmp_base, uid)
 
-    if origen == 'youtube':
-        print u"Descargando archivo de YouTube: %s (%s)" % (url, uid)
+    if origen == 'upload':
+        url = 'http://upload.openmultimedia.biz/files/%s' % url
+
+    def progress(url, path, progress):
         with open(status_path, 'w') as status_file:
-            status_file.write('download 1')
-        yt = YouTube(url)
-        yt.set_filename(os.path.basename(descarga_path))
-        video = yt.filter('mp4')[-1]
-        video.download(os.path.dirname(descarga_path), on_progress=yt_on_progress, force_overwrite=True)
-        descarga_path += '.mp4'
+            status_file.write('download %g' % progress)
 
-    else:
-        if origen == 'upload':
-            url = 'http://upload.openmultimedia.biz/files/%s' % url
-        # Download file
-        tries = 0
-        while tries < 5:
-            try:
-                tries += 1
-                # update status
-                print u"Descargando archivo (intento %d): %s" % (tries, url)
-                with open(status_path, 'w') as status_file:
-                    status_file.write('download %d' % tries)
-                webfile = urllib2.urlopen(url)
-                descargafile = open(descarga_path, 'w')
-                descargafile.write(webfile.read())
-                webfile.close()
-                descargafile.close()
-                break
-            except Exception as e:
-                sleep(1)
-                continue
-
-    # Archivo descargado, checar validez
-    stream_info = get_video_stream_info(descarga_path)
-    duration = stream_info.get('duration')
-
-    with open(status_path, 'w') as status_file:
-        if not stream_info or not duration:
-            print u"Archivo invalido, temrinando"
-            status_file.write('invalid')
-            return
+    print("About to download '%s' to '%s'" % (url, descarga_path))
+    if download_video(url, descarga_path, progress_fn=progress):
+        stream_info = get_video_stream_info(descarga_path)
+        if stream_info.get('duration'):
+            print("Donwnloaded valid file")
+            with open(status_path, 'w') as status_file:
+                status_file.write('valid %s' % stream_info.get('duration'))
         else:
-            print u"Archivo valido, video de duracion: %s" % duration
-            status_file.write('valid %s' % duration)
+            print('Downloaded but invalid file')
+            with open(status_path, 'w') as status_file:
+                status_file.write('invalid')
+            os.unlink(descarga_path)
+            return
+    else:
+        print('Download failed')
+        with open(status_path, 'w') as status_file:
+            status_file.write('invalid')
+        return
 
     # compress
     ffmpeg_params = ' -c:a libfdk_aac -b:a 128k -ar 44100 -c:v libx264 -crf 22 -vf "scale=\'min(iw,2048)\':-2" -profile:v main -level:v 3.1 -pix_fmt yuv420p -threads 0'
     compress_cmd = 'ffmpeg -y -vstats_file %s -i %s %s -movflags +faststart %s' % (vstats_path, descarga_path, ffmpeg_params, comprimido_path)
-    print u"Comprimiendo en: %s" % comprimido_path
+    print(u"Comprimiendo en: %s" % comprimido_path)
     call(compress_cmd, shell=True)
 
     connection.close() # refresh connection
 
-    tipo = request_dict.get('tipo')
-    if tipo.isdigit():
-        tipo = TipoClip.objects.get(pk=tipo)
-    else:
-        tipo = TipoClip.objects.get(slug=tipo)
-
     clip = Clip(
+        tipo=TipoClip.objects.get(slug=request_dict.get('tipo', 'noticia')),
         duracion=datetime.time(0,0),
         aspect=get_video_aspect_ratio(stream_info),
-        tipo=tipo,
         fecha=datetime.datetime.now(),
         usuario_creacion = request_dict.get('usuario_remoto'),
         usuario_redaccion = request_dict.get('usuario_remoto'),
         titulo = request_dict.get('titulo'),
         descripcion = request_dict.get('descripcion'),
         observaciones = u"\nCreado desde Admin por %s con origen: %s, URL: %s" % (request_dict.get('usuario_remoto'), origen, url),
+        hashtags = request_dict.get('hashtags'),
+        seleccionado = request_dict.get('seleccionado') in ['1', 'true'],
+        publicado = request_dict.get('publicado') in ['1', 'true']
     )
-
     if request_dict.get('categoria'):
         clip.categoria = Categoria.objects.get(slug=request_dict.get('categoria'))
     if request_dict.get('programa'):
         clip.programa = Programa.objects.get(slug=request_dict.get('programa'))
-    if request_dict.get('hashtags'):
-        clip.hashtags = request_dict.get('hashtags')
     if request_dict.get('corresponsal'):
         clip.corresponsal = Corresponsal.objects.filter(slug=request_dict.get('corresponsal'))[0]
     if request_dict.get('pais'):
-        try:
-            if request_dict.get('pais').isdigit():
-                clip.pais = Pais.objects.get(pk=request_dict.get('pais'))
-            else:
-                clip.pais = Pais.objects.get(codigo=request_dict.get('pais'))
-        except Pais.DoesNotExist:
-            pass
-    if request_dict.get('publicado') in ['1', 'true']:
-        clip.publicado = True
-    clip.seleccionado = request_dict.get('seleccionado') in ['1', 'true']
+        clip.pais = Pais.objects.get(pk=request_dict.get('pais'))
 
-    print u"Guardando nuevo clip en base de datos"
+    print(u"Guardando nuevo clip en base de datos")
     clip.archivo.save(u"video-%s.mp4" % datetime.datetime.now(), ContentFile(open(comprimido_path).read()), save=False)
     clip.save()
 
@@ -138,7 +91,7 @@ def crear_nuevo_clip_job(request_dict, uid):
     os.unlink(comprimido_path)
     os.unlink(vstats_path)
 
-    print u"FIN"
+    print(u"FIN")
 
 
 @job('low', timeout=3600)
@@ -245,71 +198,3 @@ def segmentar_video_job(clip_pk):
     # Finish
     connection.close()
     Clip.objects.filter(pk=clip_pk).update(resolucion=modes[0]['height'])
-
-# @job('subtitulaje', timeout=2*3600)
-# def generar_archivo_subtitulado_job(clip_pk, archivo_path, srt_path, user_pk):
-#     connection.close()
-
-#     job = get_current_job()
-#     try:
-#         user = User.objects.get(pk=user_pk)
-#     except:
-#         user = User()
-
-#     if 'retrasado' in job.meta and user:
-#         del job.meta['retrasado']
-#         job.save()
-#         message = u'%s, el SUBTITULAJE del clip %d que solicitaste y estaba en cola acaba de comenzar.' % (user.first_name, clip_pk)
-#         do_send_mail(u'SUBTITULAJE de clip %d comenzado' % clip_pk, message,
-#            'captura@correo.tlsur.net', [user.email],
-#            fail_silently=True)
-
-#     # Sólo para clips ya procesados y si tienen subtitulos pero aún no archivo_subtitulado
-#     temp_avi = '/mnt/captura-media/temp/subtitulado-mencoder-%s.avi' % clip_pk
-#     temp_mp4 = '/mnt/captura-media/temp/subtitulado-%s.mp4' % clip_pk
-
-#     insertar_subtitulos = 'mencoder -oac pcm -ovc lavc -lavcopts vbitrate=5000:threads=4 -ofps 30 -subfont-text-scale 2 -sub-bg-color 0 -sub-bg-alpha 255 -spuaa 4 -ass -ass-color FFFF0000 -ass-font-scale 2 -subpos 80 '
-#     insertar_subtitulos+= '-utf8 -sub "%s" -o "%s" "%s"' % (srt_path, temp_avi, archivo_path)
-#     print 'Ejecutando comando: %s' % insertar_subtitulos
-#     call(insertar_subtitulos, shell=True)
-
-#     recomprimir_video = 'ffmpeg -y -i %s -c:a libfdk_aac ' % temp_avi
-#     recomprimir_video += '-c:v libx264 -strict -2 -profile:v main -level:v 3.1 -threads 0 -movflags faststart %s' % temp_mp4
-#     # recomprimir_video += '-vcodec libx264 -vpre baseline -b 512k -flags +loop+mv4 -cmp 256 '
-#     #recomprimir_video += '-vcodec libx264 -profile:v baseline -flags +loop+mv4 -cmp 256 '
-#     #recomprimir_video += '-partitions +parti4x4+parti8x8+partp4x4+partp8x8+partb8x8 -me_method hex -subq 7 '
-#     #recomprimir_video += '-trellis 1 -refs 5 -bf 0 -coder 0 -me_range 16 -g 250 -keyint_min 25 '
-#     #recomprimir_video += '-sc_threshold 40 -i_qfactor 0.71 -qmin 10 -qmax 51 -qdiff 4 -strict -2 -threads 0 -movflags faststart %s' % temp_mp4
-#     call(recomprimir_video, shell=True)
-#     #call('/usr/bin/mp4file --optimize %s' % temp_mp4, shell=True)
-
-#     subtitulado_content = ContentFile(open(temp_mp4, 'r').read())
-
-#     try:
-#         clip = Clip.objects.get(pk=clip_pk)
-#         clip.archivo_subtitulado.save(u'subtitulado-%s.mp4' % clip.pk, subtitulado_content, save=False)
-#         clip.transferido = False
-#         clip.observaciones = ''
-#         clip.resolucion = 0
-#         clip.save()
-
-#         try:
-#             os.remove(temp_avi)
-#             os.remove(temp_mp4)
-#         except OSError:
-#             pass
-
-#         if user:
-#             message = u'%s generó clip subtitulado:\n http://captura-telesur.openmultimedia.biz/admin/clips/clip/%s/\n\nArchivo subtitulado:\nhttp://captura-telesur.openmultimedia.biz%s' % (user.username, clip_pk, clip.archivo_subtitulado.url)
-#             do_send_mail(u'Clip SUBTITULADO %s por %s' % (clip_pk, user.username), message,
-#                 'captura@correo.tlsur.net', ['multimedia_edicion@correo.tlsur.net'],
-#                 fail_silently=False)
-
-#             message = u'%s, el SUBTITULAJE del clip que solicitaste está listo.\n\nEl clip es:\nhttp://captura-telesur.openmultimedia.biz/admin/clips/clip/%s/\n\nArchivo subtitulado:\nhttp://captura-telesur.openmultimedia.biz%s' % (user.first_name, clip_pk, clip.archivo_subtitulado.url)
-#             do_send_mail(u'SUBTITULAJE de clip %d listo.' % clip_pk, message,
-#                 'captura@correo.tlsur.net', [user.email],
-#                 fail_silently=True)
-
-#     except Clip.DoesNotExist:
-#         raise Clip.DoesNotExist
-

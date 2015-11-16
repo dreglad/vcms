@@ -17,6 +17,7 @@
       apt: pkg={{ item }}
       with_items:
         - python-virtualenv
+        - python3-pip
         - redis-server
         - libjpeg-dev
         - python-dev
@@ -30,6 +31,9 @@
         - python-mysqldb
         - uwsgi
         - uwsgi-plugin-python
+
+    - name: Install you-get
+      command: pip3 install you-get creates="/usr/local/bin/you-get"
 
     - name: NGINX | Adding NGINX signing key
       apt_key: url=http://nginx.org/keys/nginx_signing.key state=present

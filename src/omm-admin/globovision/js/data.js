@@ -674,7 +674,7 @@
             });
         } else {
             // NEW CLIP, creating...
-            var archivo_id = $('#upload_clip_id').val();
+            var upload_id = $('#upload_clip_id').val();
             $.ajax({
                 url: CAPTURA_API + 'crear/',
                 dataType: 'json',
@@ -683,7 +683,7 @@
                     usuario_remoto: user.email,
                     key: user.password,
                     origen: 'upload',
-                    archivo_id: archivo_id,
+                    url: upload_id,
                     titulo: $('#titulo').val().trim(),
                     programa: $('#programa').val(),
                     categoria: $('#categoria').val(),
@@ -693,9 +693,7 @@
                     corresponsal: $('#corresponsal').val(),
                     tema: $('#tema').val(),
                     seleccionado: $('#seleccionado').is(':checked') ? $('#seleccionado').val() : '',
-                    // ciudad: $('#ciudad').val(),
                     pais: $('#pais').val(),
-                    // idioma: idioma,
                     publicado: $('#publicado').attr('checked') ? 1 : 0
                 }
             }).done(function(data) {
@@ -717,13 +715,16 @@
                                 break;
                             case 'download':
                                 // downloading file
-                                $('#status_label').empty().mustache('status-progress', { progress: 0, status: __("Preparando archivo...")});
+                                $('#status_label').empty().mustache('status-progress', {
+                                    progress: Math.round(Math.min(99, Math.max(1, result.progress))/2),
+                                    status: __("Obteniendo video...")
+                                });
                                 break;
                             case 'valid':
                                 // download done, compressing
                                 var status = result.progress < 98 ? __('Procesando video...') : __("Finalizando...");
                                 $('#status_label').empty().mustache('status-progress', {
-                                    progress: Math.min(99, Math.max(1, Math.round(result.progress))),
+                                    progress: 50 + Math.round((Math.min(99, Math.max(1, result.progress))/2)),
                                     status: status
                                 });
                                 break;
@@ -903,7 +904,7 @@
                         if (params.clip.programa) $('#programa').val(params.clip.programa.slug);
                         if (params.clip.corresponsal) $('#corresponsal').val(params.clip.corresponsal.slug);
                         if (params.clip.tema) $('#tema').val(params.clip.tema.slug);
-                        if (params.clip.pais) $('#pais').val(params.clip.pais.codigo);
+                        if (params.clip.pais) $('#pais').val(params.clip.pais.id);
 
                         var options = {
                             width: "100%",

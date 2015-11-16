@@ -101,7 +101,7 @@ def query_nuevo(request):
 
         if status_list[0] == 'download':
             # download has begun
-            result['tries'] = status_list[1]
+            result['progress'] = float(status_list[1])
         elif status_list[0] == 'valid':
             # download has finished and compreession started
             result['total'] = float(status_list[1])

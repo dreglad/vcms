@@ -12,4 +12,4 @@ django-supervisor
 python-dateutil
 django-rest-swagger
 mandrill
-pytube
+wget
