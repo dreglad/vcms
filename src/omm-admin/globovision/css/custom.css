@@ -244,4 +244,11 @@ ul.home-list li{list-style: none;}
         column-count: 1;
         column-gap: 0;
     }
+
+
+
+}
+
+#url_wrapper, #upload_wrapper {
+  display: none;
 }

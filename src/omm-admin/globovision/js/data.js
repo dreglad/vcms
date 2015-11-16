@@ -674,7 +674,12 @@
             });
         } else {
             // NEW CLIP, creating...
-            var upload_id = $('#upload_clip_id').val();
+            var origen = $('#origen').val(), origen_url;
+            if (origen == 'upload') {
+                origen_url = $('#upload_clip_id').val();
+            } else if (origen == 'url') {
+                origen_url = $('#origen_url').val();
+            }
             $.ajax({
                 url: CAPTURA_API + 'crear/',
                 dataType: 'json',
@@ -682,8 +687,8 @@
                 data: {
                     usuario_remoto: user.email,
                     key: user.password,
-                    origen: 'upload',
-                    url: upload_id,
+                    origen: origen,
+                    url: origen_url,
                     titulo: $('#titulo').val().trim(),
                     programa: $('#programa').val(),
                     categoria: $('#categoria').val(),
@@ -844,12 +849,11 @@
                         programa: params.programa,
                         resources_data: resources_data
                     });
-
                     var uploader = OMUpload.setup({
                         element: document.getElementById('uploader_banner'),
                         autoUpload: true,
                         multiple: false,
-                        text: { uploadButton: __('Subir archivo...') },
+                        text: { uploadButton: __('Elegir archivo...') },
                         callbacks: {
                             onUpload: function() {
                                 $('#programa-form button.save').attr('disabled', 'disabled');
@@ -957,6 +961,21 @@
                         });
                     } else {
                         // creating new clip
+                        $('select#origen').on('change', function() {
+                            switch ($(this).val()) {
+                                case 'url':
+                                    $('#url_wrapper').show();
+                                    $('#upload_wrapper').hide();
+                                    $('#edit-form button.save').removeAttr('disabled');
+                                    break;
+                                case 'upload':
+                                    $('#url_wrapper').hide();
+                                    $('#upload_wrapper').show();
+                                    if (!$('#upload_clip_id').val()) {
+                                        $('#edit-form button.save').attr('disabled', 'disabled');
+                                    }
+                            }
+                        }).trigger('change');
                         var uploader = OMUpload.setup({
                             element: document.getElementById('uploader_clip'),
                             autoUpload: true,

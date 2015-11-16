@@ -6,11 +6,25 @@
                 <form>
 
                     {{^clip.thumbnail_grande}}
+                        
+
                     <fieldset style="min-height: 225px;" class="fieldset styleform i18n-title" title="Archivo de video">
-                        <legend class="i18n">Archivo de video</legend>
-                        <div id="uploader_clip"></div>
-                        <div id="upload_clip_status"></div>
-                        <input type="hidden" id="upload_clip_id" name="upload_clip_id" value="">
+                        <legend class="i18n">Achivo de video
+                            <select name="origen" id="origen">
+                                <option value="upload">Subir archivo desde navegador</option>
+                                <option value="url">URL externa</option>
+                            </select>
+                        </legend>
+
+                        <div id="url_wrapper">
+                            <label for="origen_url">URL: </label>
+                            <input type="text" name="origen_url" id="origen_url" />
+                        </div>
+                        <div id="upload_wrapper">
+                            <div id="uploader_clip"></div>
+                            <div id="upload_clip_status"></div>
+                            <input type="hidden" id="upload_clip_id" name="upload_clip_id" value="">
+                        </div>
                     </fieldset>
                     {{/clip.thumbnail_grande}}
 

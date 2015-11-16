@@ -24,8 +24,8 @@ def get_video_aspect_ratio(video_stream_info):
 
 
 def download_video(url, path, progress_fn=None):
-    if any(url.find('openmultimedia.biz') != '-1',
-           url.endswith(('.mp4', '.flv', '.mpg', '.webm', '.avi', '.mov'))):
+    if (url.find('openmultimedia.biz') != -1
+      or url.endswith(('.mp4', '.flv', '.mpg', '.webm', '.avi', '.mov'))):
         # direct download
         def wget_progress(current, total, width=80):
             if progress_fn: progress_fn(url, path, (current/float(total))*100)
