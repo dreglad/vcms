@@ -1142,6 +1142,7 @@
         $('.user-block-role').html(user.email || SITE_NAME);
         $('.user-block-info').show();
         $('.user-block-upper').show();
+        $('body').show();
     }
 
 
@@ -1295,9 +1296,9 @@
 
     $(document).ready(function() {
         translateNodes();
+        $('body').hide();  // Until login
 
         loadResources(function() {
-            //login();
             checkLogin();
 
             buildMenus();
