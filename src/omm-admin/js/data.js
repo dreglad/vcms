@@ -886,17 +886,19 @@
                     break;
 
                 case 'edit-view':
-                    if (params.clip) {
-                        top.window.location.hash = params.clip.id;
-                        $('.editar-label').html(params.clip.titulo + ' <em><small>(video ID: ' + params.clip.id + ')</small></em>')
-                    } else {
-                        $('.editar-label').html(__('Subir nuevo clip'));
-                    }
-                    
                     $('#edit-form').empty().mustache('clip-edit-form', {
                         clip: params.clip,
                         resources_data: resources_data
                     })
+
+                    if (params.clip) {
+                        top.window.location.hash = params.clip.id;
+                        $('.editar-label').html(params.clip.titulo + ' <em><small>(video ID: ' + params.clip.id + ')</small></em>')
+                    } else {
+                        top.window.location.hash = 'nuevo';
+                        $('.editar-label').html(__('Cargar nuevo video'));
+                    }
+
                     // boton acciones en edit-form
                     //.data('clip', params.clip).find('.boton-acciones').empty()
                     //.mustache('boton-acciones', { clip: params.clip });
@@ -936,7 +938,7 @@
                             element: document.getElementById('uploader_img'),
                             autoUpload: true,
                             multiple: false,
-                            text: { uploadButton: __('Subir archivo...') },
+                            text: { uploadButton: __('Elegir archivo...') },
                             callbacks: {
                                 onUpload: function() {
                                     //$('#edit-form button.save').attr('disabled', 'disabled');
@@ -980,7 +982,7 @@
                             element: document.getElementById('uploader_clip'),
                             autoUpload: true,
                             multiple: false,
-                            text: { uploadButton: __('Subir archivo...') },
+                            text: { uploadButton: __('Elegir archivo...') },
                             callbacks: {
                                 onUpload: function() {
                                     $('.qq-upload-button').empty();
@@ -1036,7 +1038,7 @@
                 });
             } else {
                 $('ul.media-list').css('min-height','300px');
-                $('div.content-heading h2').html('');
+                $('div.content-heading h2').html(tipo_nombre_plural + current_label);
                 $('ul.media-list').mustache("empty-query", {});
             }
         });
@@ -1302,10 +1304,6 @@
 
             var hash = top.location.hash.replace('#', '');
 
-            // Simulate click over the first menu item
-            $('#list-view').show();
-            $('#menu_tipos a:first').trigger('click');
-
             // if clip requested
             if (hash && !isNaN(hash)) {
                 $.ajax({
@@ -1316,6 +1314,12 @@
                     // clip ready
                     go('edit-view', {clip: clip});
                 });
+            } else if (hash == 'nuevo') {
+                go('edit-view', { clip: null });
+            } else {
+                // Simulate click over the first menu item
+                $('#list-view').show();
+                $('#menu_tipos a:first').trigger('click');
             }
         });
     });
