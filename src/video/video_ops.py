@@ -14,7 +14,7 @@ def get_video_stream_info(path):
     info = json.loads(Popen(cmd, shell=True, stdout=PIPE).stdout.read())
     try:
         return filter(lambda x: x['codec_type'] == 'video', info['streams'])[0]
-    except KeyError:
+    except KeyError, IndexError:
         return {}
 
 

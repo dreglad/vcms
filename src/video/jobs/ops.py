@@ -31,23 +31,27 @@ def crear_nuevo_clip_job(request_dict, uid):
             status_file.write('download %g' % progress)
 
     print("About to download '%s' to '%s'" % (url, descarga_path))
-    if download_video(url, descarga_path, progress_fn=progress):
+    download = download_video(url, descarga_path, progress_fn=progress)
+
+    try:
+        if not download or not os.path.exists(descarga_path):
+            raise AssertionError('1 No se pudo obtener archivo de video')
+
         stream_info = get_video_stream_info(descarga_path)
-        if stream_info.get('codec_type') == 'video':
-            print("Donwnloaded valid file")
-            with open(status_path, 'w') as status_file:
-                duration = get_video_info(descarga_path)['format']['duration']
-                status_file.write('valid %s' % duration)
-        else:
-            print('Downloaded but invalid file')
-            with open(status_path, 'w') as status_file:
-                status_file.write('invalid')
-            os.unlink(descarga_path)
-            return
-    else:
-        print('Download failed')
+        if not stream_info.get('codec_type') == 'video':
+            raise AssertionError('2 El archivo obtenido no es un video válido')
+
+        video_format_info = get_video_info(descarga_path)['format']
+        if not 'duration' in video_format_info:
+            raise AssertionError('3 El archivo obtenido parece ser una imgaen, no un video')
+
         with open(status_path, 'w') as status_file:
-            status_file.write('invalid')
+            status_file.write('valid %s' % video_format_info['duration'])
+
+    except AssertionError as e:
+        print('Failed: %s' % e)
+        with open(status_path, 'w') as status_file:
+            status_file.write('error %s' % e)
         return
 
     # compress

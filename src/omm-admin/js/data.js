@@ -733,9 +733,15 @@
                                     status: status
                                 });
                                 break;
-                            case 'invalid':
+                            case 'error':
                                 // download done but invalid video file
-                                $('#status_label').empty().mustache('status-progress', { status: __("Archivo de video inválido.")});
+                                $('#status_label').empty().mustache('status-progress', {
+                                    status: 'Error: ' + __(result.msg),
+                                    info: __('Verifique y vuelva a enviar el fomrulario'),
+                                });
+                                $('section#list-view').hide();
+                                $('section#edit-view').show();
+                                $('select#origen').trigger('change');
                                 return;
                             case 'done':
                                 // done
@@ -753,15 +759,15 @@
                                         bootbox.hideAll();
                                     }).fail(function() {
                                         // clip not ready
-                                        setTimeout(wait_for_clip, 300);
+                                        setTimeout(wait_for_clip, 100);
                                     });
                                 }
                                 wait_for_clip();
                                 return;
                         }
-                        setTimeout(check_status, 300);
+                        setTimeout(check_status, 350);
                     }).fail(function() {
-                        setTimeout(check_status, 300);
+                        setTimeout(check_status, 500);
                     });
                 }
                 check_status();
@@ -976,32 +982,34 @@
                                     if (!$('#upload_clip_id').val()) {
                                         $('#edit-form button.save').attr('disabled', 'disabled');
                                     }
+                                    $('#uploader_clip').empty().show();
+                                    $('#upload_clip_status').empty();
+                                    var uploader = OMUpload.setup({
+                                        element: document.getElementById('uploader_clip'),
+                                        autoUpload: true,
+                                        multiple: false,
+                                        text: { uploadButton: __('Elegir archivo...') },
+                                        callbacks: {
+                                            onUpload: function() {
+                                                $('.qq-upload-button').empty();
+                                            },
+                                            onCancel: function() {},
+                                            onComplete: function(id, fileName, responseJSON){
+                                                if (responseJSON.error) {
+                                                    bootbox.alert(__("Error al subir archivo, por favor intente de nuevo"));
+                                                    $('.qq-upload-fail').empty();
+                                                }
+                                                if (responseJSON.id) {
+                                                    $('#upload_clip_id').val(responseJSON.id);
+                                                    $('#upload_clip_status').html('<h4><em class="icon-check"></em> ' + __('Archivo subido correctamente.') + '</h4>').addClass('success').removeClass('error');
+                                                    $('#uploader_clip').hide();
+                                                    $('#edit-form button.save').removeAttr('disabled');
+                                                }
+                                            }
+                                        }
+                                    });
                             }
                         }).trigger('change');
-                        var uploader = OMUpload.setup({
-                            element: document.getElementById('uploader_clip'),
-                            autoUpload: true,
-                            multiple: false,
-                            text: { uploadButton: __('Elegir archivo...') },
-                            callbacks: {
-                                onUpload: function() {
-                                    $('.qq-upload-button').empty();
-                                },
-                                onCancel: function() {},
-                                onComplete: function(id, fileName, responseJSON){
-                                    if (responseJSON.error) {
-                                        bootbox.alert(__("Error al subir archivo, por favor intente de nuevo"));
-                                        $('.qq-upload-fail').empty();
-                                    }
-                                    if (responseJSON.id) {
-                                        $('#upload_clip_id').val(responseJSON.id);
-                                        $('#upload_clip_status').html('<h4><em class="icon-check"></em> ' + __('Archivo subido correctamente.') + '</h4>').addClass('success').removeClass('error');
-                                        $('#uploader_clip').hide();
-                                        $('#edit-form button.save').removeAttr('disabled');
-                                    }
-                                }
-                            }
-                        });
                     }
                     break;
             }

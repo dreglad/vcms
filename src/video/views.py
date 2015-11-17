@@ -100,11 +100,9 @@ def query_nuevo(request):
         if status_list:
             result['status'] = status_list[0]
 
-            if status_list[0] == 'download':
-                # download has begun
+            if status_list[0] == 'download':  # download has begun
                 result['progress'] = float(status_list[1])
-            elif status_list[0] == 'valid':
-                # download has finished and compreession started
+            elif status_list[0] == 'valid':  # download has finished and compreession started
                 result['total'] = float(status_list[1])
                 try:
                     vstats_line = check_output(['tail', '-2', vstats_path]).split("\n")[0]
@@ -116,6 +114,9 @@ def query_nuevo(request):
                     result['progress'] = 0
             elif status_list[0] == 'done':
                 result['id'] = int(status_list[1])
+            elif status_list[0] == 'error':
+                result['code'] = int(status_list[1])
+                result['msg'] = ' '.join(status_list[2:])
 
     return HttpResponse(json.dumps(result), content_type="application/json")
 
