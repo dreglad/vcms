@@ -33,10 +33,11 @@ def crear_nuevo_clip_job(request_dict, uid):
     print("About to download '%s' to '%s'" % (url, descarga_path))
     if download_video(url, descarga_path, progress_fn=progress):
         stream_info = get_video_stream_info(descarga_path)
-        if stream_info.get('duration'):
+        if stream_info.get('codec_type') == 'video':
             print("Donwnloaded valid file")
             with open(status_path, 'w') as status_file:
-                status_file.write('valid %s' % stream_info.get('duration'))
+                duration = get_video_info(descarga_path)['format']['duration']
+                status_file.write('valid %s' % duration)
         else:
             print('Downloaded but invalid file')
             with open(status_path, 'w') as status_file:

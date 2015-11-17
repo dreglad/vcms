@@ -91,33 +91,31 @@ def query_nuevo(request):
     status_path = '%s/status/%s.txt' % (temp_path, uid)
     vstats_path = '%s/vstats_%s.txt' % (temp_path, uid)
 
-    result = {}
+    result = { "status": None }
 
     if os.path.exists(status_path):
         with open(status_path, 'r') as status_file:
             status_list = status_file.read().split()
 
-        result['status'] = status_list[0]
+        if status_list:
+            result['status'] = status_list[0]
 
-        if status_list[0] == 'download':
-            # download has begun
-            result['progress'] = float(status_list[1])
-        elif status_list[0] == 'valid':
-            # download has finished and compreession started
-            result['total'] = float(status_list[1])
-            try:
-                vstats_line = check_output(['tail', '-2', vstats_path]).split("\n")[0]
-                result['seconds'] = float(vstats_line.split()[9])
-                result['progress'] = 100 * round(result['seconds'] / result['total'], 2)
-            except (CalledProcessError, IndexError):
-                # No vstats file or invalid
-                result['seconds'] = 0
-                result['progress'] = 0
-        elif status_list[0] == 'done':
-            result['id'] = int(status_list[1])
-    else:
-        # status file no existe
-        result['status'] = None
+            if status_list[0] == 'download':
+                # download has begun
+                result['progress'] = float(status_list[1])
+            elif status_list[0] == 'valid':
+                # download has finished and compreession started
+                result['total'] = float(status_list[1])
+                try:
+                    vstats_line = check_output(['tail', '-2', vstats_path]).split("\n")[0]
+                    result['seconds'] = float(vstats_line.split()[9])
+                    result['progress'] = 100 * round(result['seconds'] / result['total'], 2)
+                except (CalledProcessError, IndexError):
+                    # No vstats file or invalid
+                    result['seconds'] = 0
+                    result['progress'] = 0
+            elif status_list[0] == 'done':
+                result['id'] = int(status_list[1])
 
     return HttpResponse(json.dumps(result), content_type="application/json")
 

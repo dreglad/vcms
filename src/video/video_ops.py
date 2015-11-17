@@ -22,6 +22,11 @@ def get_video_aspect_ratio(video_stream_info):
     fraction = Fraction(video_stream_info.get('width'), video_stream_info.get('height'))
     return u'%d:%d' % (fraction.numerator, fraction.denominator)
 
+def get_video_info(path):
+    """Get video info dictionary using ffprobe"""
+    cmd = 'ffprobe -v error -show_entries format=duration,size:stream=codec_name,width,height -print_format json %s' % path
+    return json.loads(Popen(cmd, shell=True, stdout=PIPE).stdout.read())
+
 
 def download_video(url, path, progress_fn=None):
     if (url.find('openmultimedia.biz') != -1
