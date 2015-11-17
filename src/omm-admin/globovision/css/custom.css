@@ -252,3 +252,7 @@ ul.home-list li{list-style: none;}
 #url_wrapper, #upload_wrapper {
   display: none;
 }
+
+#origen_url {
+    width: 60%;
+}
