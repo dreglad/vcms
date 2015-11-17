@@ -721,7 +721,7 @@
                             case 'download':
                                 // downloading file
                                 $('#status_label').empty().mustache('status-progress', {
-                                    progress: Math.round(Math.min(99, Math.max(1, result.progress))/2),
+                                    progress: Math.round(Math.min(99, Math.max(1, result.progress))/5),
                                     status: __("Obteniendo video...")
                                 });
                                 break;
@@ -729,7 +729,7 @@
                                 // download done, compressing
                                 var status = result.progress < 98 ? __('Procesando video...') : __("Finalizando...");
                                 $('#status_label').empty().mustache('status-progress', {
-                                    progress: 50 + Math.round((Math.min(99, Math.max(1, result.progress))/2)),
+                                    progress: 20 + Math.round((Math.min(99, Math.max(1, result.progress))/2)),
                                     status: status
                                 });
                                 break;
