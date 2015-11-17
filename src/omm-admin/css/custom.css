@@ -254,6 +254,14 @@ ul.home-list li{list-style: none;}
   display: none;
 }
 
+#url_wtapper pre {
+    font-size: 10px;
+}
+select#origen {
+    padding: 3px 15px 3px 3px;
+    margin: 4px;
+}
+
 #origen_url {
     width: 60%;
 }
