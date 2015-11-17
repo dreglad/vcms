@@ -20,6 +20,7 @@ button[data-action=mostrar-mas] {
 
 .dropdown-menu > li > a {
     overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #uploader {

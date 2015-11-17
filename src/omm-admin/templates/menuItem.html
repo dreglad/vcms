@@ -23,7 +23,7 @@
 
 <script id="menu-programas-item" type="text/html">
 {{#programas}}
-<li><a href="#" data-modo="programas" data-valor="{{slug}}" title="{{nombre}}"><img src="{{imagen_url}}" width="25" style="margin-bottom:2px;" /> {{nombre}}</a></li>
+<li><a href="#" data-modo="programas" data-valor="{{slug}}" title="{{nombre}}">{{#imagen_url}}<img src="{{imagen_url}}" width="25" style="margin-bottom:2px;" /> {{/imagen_url}} {{nombre}}</a></li>
 {{/programas}}
 </script>
 
