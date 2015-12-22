@@ -412,17 +412,17 @@ class TipoClipAdmin(admin.ModelAdmin):
 
 
 class ProgramaAdmin(admin.ModelAdmin):
-    list_display = ('id', 'nombre', 'miniatura', 'activo', 'servicios_', 'orden')
+    list_display = ('id', 'nombre', 'imagen_', 'activo', 'tipo', 'servicios_', 'orden')
     list_editable = ('orden',)
     filter_horizontal = ['servicios', 'excluir_servicios']
     list_filter = ('activo', 'tipo', 'servicios',)
 
-    def miniatura(self, obj):
+    def imagen_(self, obj):
         if not obj.imagen:
             return 'SIN IMAGEN'
         else:
-            return '<img src="%s" height="50"  />' % obj.imagen.url
-    miniatura.allow_tags=True
+            return '<img src="%s" height="75" />' % obj.imagen.url
+    imagen_.allow_tags=True
 
     def servicios_(self, obj):
         servicios = ', '.join(unicode(x.slug) for x in obj.servicios.all())
