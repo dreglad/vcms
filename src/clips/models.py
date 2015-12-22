@@ -111,7 +111,7 @@ def upload_programa_imagen_to(instance, filename):
     nombre, ext = os.path.splitext(filename)
     if instance.pk:
         ext = "-%s%s" % (instance.pk, ext)
-    return 'images/programa-%s' % (uuid.uuid4(), ext)
+    return 'images/programa-%s%s' % (uuid.uuid4(), ext)
 
 class Programa(models.Model):
     slug = models.SlugField(max_length=100, blank=True, null=True, editable=False)
@@ -123,8 +123,8 @@ class Programa(models.Model):
     playlist = models.CharField(max_length=100, blank=True, null=True)
     horario = models.CharField(max_length=255, blank=True, null=True)
     tipo = models.ForeignKey(TipoPrograma)
-    servicios = models.ManyToManyField('Servicio', help_text=u'Servicios externos a distribuir para clips de este programa')
-    excluir_servicios = models.ManyToManyField('Servicio', related_name='programas_excluidos', help_text=u'Servicios externos a excluir en caso de que haya servicios habilitados para todos los clips tipo programa pero que no se desean aplicar a este programa en particular')
+    servicios = models.ManyToManyField('Servicio', blank=True, null=True, help_text=u'Servicios externos a distribuir para clips de este programa')
+    excluir_servicios = models.ManyToManyField('Servicio', blank=True, null=True, related_name='programas_excluidos', help_text=u'Servicios externos a excluir en caso de que haya servicios habilitados para todos los clips tipo programa pero que no se desean aplicar a este programa en particular')
 
     def thumbnail_pequeno(self):
         if self.imagen:
