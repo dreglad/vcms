@@ -1,0 +1,50 @@
+article.video {
+    font-size: 1em;
+    a {
+        -webkit-box-shadow: rgba(0,0,0,0.4) 0 0 8px;
+        box-shadow: rgba(0,0,0,0.4) 0 0 8px;
+        color: white;
+        display: block;
+        height: auto;
+        position: relative;
+        margin: 0;
+        figure {
+            margin: 0 0 1.1rem;
+            background: linear-gradient(to bottom,
+                                        rgba(0, 0, 0, 0) 50%,
+                                        rgba(0, 0, 0, 1));
+            &:hover {
+                background: linear-gradient(to bottom,
+                                        rgba(0, 0, 0, 0) 50%,
+                                        rgba(0, 0, 0, 0.8) 75%,
+                                        rgba(0, 0, 0, 1) 90%);
+            }
+            img { 
+                display: inline-block;
+                position: relative;
+                z-index: -1;
+                width: 100%;
+            }
+
+            figcaption {
+                padding: 0.3em 0.6em;
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+
+                .detalle {
+                    padding-top: 0.1em;
+                    font-size: 85%;
+                    display: block;
+                    display: none;
+
+                    span {
+                        display: block;
+                        &.fecha { float: left; }
+                        &.duracion { float: right; }
+                    }
+                }
+            }
+        }
+    } 
+}

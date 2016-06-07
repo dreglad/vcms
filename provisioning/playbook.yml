@@ -65,54 +65,68 @@
         - /storage/hls
         - /var/log/video
 
-    - name: Create virtualenv
-      command: virtualenv /vagrant/src -p python2.7 --no-site-packages creates="/vagrant/src/bin"
-
-    - name: Install python requirements
-      pip: requirements=/vagrant/src/requirements.txt virtualenv=/vagrant/src
+#    - name: Install video python requirements
+#      pip: requirements=/vagrant/video_site/requirements.txt state=latest
 
     - name: Create database
-      mysql_db: name=video login_user=root login_password=pass state=present
+      mysql_db: name=vcms login_user=root login_password=pass state=present
       register: database
 
     - name: Migrate database
-      django_manage: command=migrate virtualenv=/vagrant/src app_path=/vagrant/src
+      django_manage: command=migrate app_path=/vagrant/vcms
 
-    - name: Load fixtures data
-      django_manage: command=loaddata app_path=/vagrant/src virtualenv=/vagrant/src fixtures='users tipo_clips tipo_programas categorias paises programas corresponsales servicios'
-      when: database.changed
+#    - name: Load video fixtures data
+#      django_manage: command=loaddata app_path=/vagrant/video_site fixtures='lajornada/users lajornada/tipo_clips lajornada/tipo_programas lajornada/categorias paises lajornada/programas lajornada/corresponsales lajornada/servicios'
+#      when: database.changed
 
-    - name: Collect static files
-      django_manage: command=collectstatic app_path=/vagrant/src virtualenv=/vagrant/src
+    - name: Collect video static files
+      django_manage: command=collectstatic app_path=/vagrant/vcms
 
     - name: Add supervisor upstart script
       copy: src=etc/upstart-supervisor.conf dest=/etc/init/supervisor.conf
       notify:
         - reload upstart configuration
 
-    - name: Copy uWSGI applicaiton configuration file
-      copy: src=etc/uwsgi-video.ini dest=/etc/uwsgi/apps-enabled/video.ini
-      notify:
-        - restart uwsgi
+    # - name: Copy uWSGI video applicaiton configuration file
+    #   copy: src=etc/uwsgi-video.ini dest=/etc/uwsgi/apps-enabled/vcms.ini
+    #   notify:
+    #     - restart uwsgi
 
-    - name: Copy web server main configuration file
-      copy: src=etc/nginx.conf dest=/etc/nginx/nginx.conf
-      notify:
-        - restart nginx
+    # - name: Copy web server main configuration file
+    #   copy: src=etc/nginx.conf dest=/etc/nginx/video.conf
+    #   notify:
+    #     - restart nginx
 
-    - name: Copy web server site configuration file
-      copy: src=etc/nginx-site.conf dest=/etc/nginx/conf.d/default.conf
-      notify:
-        - restart nginx
+    # - name: Copy web server video site configuration file
+    #   copy: src=etc/nginx-video.conf dest=/etc/nginx/conf.d/video.conf
+    #   notify:
+    #     - restart nginx
 
-    - name: Ensure uWSGI is running
-      service: name=uwsgi state=started
+    # LaJornada
+    # - name: Install lajornada python requirements
+    #   pip: requirements=/vagrant/lajornada_site/requirements.txt state=latest
 
-    - name: Ensure NGINX is running
-      service: name=nginx state=started
+    # - name: Collect lajornada static files
+    #   django_manage: command=collectstatic app_path=/vagrant/video_site
 
-    - name: Ensure supervisor is running
-      service: name=supervisor state=started
+    # - name: Copy uWSGI lajornada applicaiton configuration file
+    #   copy: src=etc/uwsgi-lajornada.ini dest=/etc/uwsgi/apps-enabled/lajornada.ini
+    #   notify:
+    #     - restart uwsgi
+
+    # - name: Copy web server lajornada site configuration file
+    #   copy: src=etc/nginx-lajornada.conf dest=/etc/nginx/conf.d/lajornada.conf
+    #   notify:
+    #     - restart nginx
+
+    # - name: Ensure uWSGI is running
+    #   service: name=uwsgi state=started
+
+    # - name: Ensure NGINX is running
+    #   service: name=nginx state=started
+
+    # - name: Ensure supervisor is running
+    #   service: name=supervisor state=started
 
   handlers:
     - name: restart nginx

@@ -1,0 +1,68 @@
+[
+    {
+        "pk": 5,
+        "model": "clips.tipoclip",
+        "fields": {
+            "orden": -1,
+            "servicios": [],
+            "nombre_plural": "Soy Reportero",
+            "descripcion": "",
+            "nombre": "Soy Reportero",
+            "slug": "soy-reportero"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "clips.tipoclip",
+        "fields": {
+            "orden": 1,
+            "servicios": [
+                1
+            ],
+            "nombre_plural": "Noticias",
+            "descripcion": "Noticias",
+            "nombre": "Noticia",
+            "slug": "noticia"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "clips.tipoclip",
+        "fields": {
+            "orden": 2,
+            "servicios": [
+                1
+            ],
+            "nombre_plural": "Entrevistas",
+            "descripcion": "",
+            "nombre": "Entrevista",
+            "slug": "entrevista"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "clips.tipoclip",
+        "fields": {
+            "orden": 3,
+            "servicios": [
+                1
+            ],
+            "nombre_plural": "Reportajes",
+            "descripcion": "",
+            "nombre": "Reportaje",
+            "slug": "reportaje"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "clips.tipoclip",
+        "fields": {
+            "orden": 4,
+            "servicios": [],
+            "nombre_plural": "Videos de AP",
+            "descripcion": "",
+            "nombre": "Video de AP",
+            "slug": "video-de-ap"
+        }
+    }
+]

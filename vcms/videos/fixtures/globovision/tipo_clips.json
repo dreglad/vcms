@@ -1,0 +1,52 @@
+[
+  {
+    "model": "clips.tipoclip",
+    "pk": 1,
+    "fields": {
+      "slug": "noticia",
+      "orden": 1,
+      "nombre": "Noticia",
+      "nombre_plural": "Noticias"
+    }
+  },
+  {
+    "model": "clips.tipoclip",
+    "pk": 2,
+    "fields": {
+      "slug": "entrevista",
+      "orden": 2,
+      "nombre": "Entrevista",
+      "nombre_plural": "Entrevistas"
+    }
+  },
+  {
+    "model": "clips.tipoclip",
+    "pk": 3,
+    "fields": {
+      "slug": "programa",
+      "orden": 3,
+      "nombre": "Programa",
+      "nombre_plural": "Programas"
+    }
+  },
+  {
+    "model": "clips.tipoclip",
+    "pk": 4,
+    "fields": {
+      "slug": "reportaje",
+      "orden": 4,
+      "nombre": "Reportaje",
+      "nombre_plural": "Reportajes"
+    }
+  },
+  {
+    "model": "clips.tipoclip",
+    "pk": 5,
+    "fields": {
+      "slug": "documental",
+      "orden": 5,
+      "nombre": "Documental",
+      "nombre_plural": "Documentales"
+    }
+  }
+]

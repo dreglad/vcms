@@ -1,0 +1,10 @@
+{{ object.titulo }}
+{{ object.descripcion }}
+{{ object.resumen }}
+{% if object.categoria %}{{ object.categoria.nombre }}{% endif %}
+{% if object.tipo %}{{ object.tipo.nombre }}{% endif %}
+{{ object.ciudad }}
+{{ object.pais }}
+{{ object.transcripcion }}
+{% for tag in object.tags.all %} {{ tag.name }} {% endfor %}
+{% for lista in object.listas.all %} {{ lista.nombre }} {% endfor %}

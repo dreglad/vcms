@@ -1,0 +1,49 @@
+{% load thumbnail %}
+{% load staticfiles %}
+
+{% if lista.enlistado.exists %}
+    <div id="lista-{{ lista.pk }}"></div>
+    <script>
+        var playlist = [], sources, tracks;
+
+        {% for listado in lista.enlistado.all %}
+            sources = [];
+            tracks = [];
+
+            {% if listado.video.resolucion > 0 %}
+                sources.push({ file: "{{ listado.video.hls_url }}"});
+            {% endif %}
+            sources.push({ file: "{{ listado.video.archivo_url }}" });
+
+            {% if listado.video.sprites %}
+                tracks.push({ file: "{{ video.sprites_url }}", kind: 'thumbnails'});
+            {% endif %}
+
+            playlist.push({
+                {% thumbnail listado.video.imagen "360" quality=45 as thumb %}
+                    image: '{{ thumb.url }}',
+                {% endthumbnail %}
+                {% if listado.video.titulo %}
+                    title: "{{ listado.video.titulo }}",
+                {% else %}
+                    title: "{{ lista.nombre }}",
+                {% endif %}
+                {% if lista.descripcion %}
+                    description: "{{ lista.descripcion_plain }}",
+                {% endif %}
+                sources: sources,
+                tracks: tracks
+            })
+        {% endfor %}
+        jwplayer('lista-{{ lista.pk }}').setup({
+            playlist: playlist,
+            visualplaylist: true,
+            preload: 'none',
+            sharing: null,
+            width: 500,
+            height: 282
+        });
+    </script>
+{% else %}
+    <h2>[Lista vacía]</h2>
+{% endif %}

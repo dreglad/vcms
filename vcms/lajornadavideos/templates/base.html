@@ -1,0 +1,74 @@
+{% load compress %}
+{% load static from staticfiles %}
+
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage">
+
+<head>
+<meta NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+<meta charset="utf-8">
+<meta content="width=device-width, maximum-scale=1, shrink-to-fit=no, user-scalable=no" name="viewport">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+
+<link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
+<title>{% block title %}Videos La Jornada B2{% endblock %}</title>
+
+
+{% block style %}
+  {% compress css %}{% block compressed_style %}
+  <link href="{% static 'css/main.scss' %}" rel="stylesheet" type="text/x-scss">
+  {% endblock %}{% endcompress %}
+{% endblock %}
+
+
+{% block script %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <script src="{% static 'js/modernizr.custom.js' %}"></script>
+{% endblock %}
+
+
+{% block ldjson %}
+  <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "WebSite",
+      "url": "http://videos.jornada.com.mx",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://videos.jornada.com.mx/busqueda?q={search_string}",
+        "query-input": "required name=search_string"
+      }
+    }
+  </script>
+{% endblock %}
+
+{% include "includes/analytics.html" %}
+</head>
+
+<body>
+
+<div class="container-fluid" id="top-container">  
+  {% block header %}{% include "includes/header.html" %}{% endblock %}
+  {% block nav %}{% include "includes/nav.html" %}{% endblock %}
+  {% block busqueda %}{% include "includes/busqueda_form.html" %}{% endblock %}
+</div>
+<div class="container" id="middle-container">
+  {% block content %}{% endblock %}
+</div>
+<div class="container-fluid" id="bottom-container">
+  {% block footer %}{% include "includes/footer.html" %}{% endblock %}
+</div>
+
+{% block publicidad %}{% include "includes/publicidad.html" %}{% endblock %}
+
+{% block bottom_script %}
+<script src="{% static 'js/tether.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+{% compress js %}{% block compressed_bottom_script %}
+  <script src="{% static 'js/busqueda.js' %}"></script>
+  <script src="{% static 'js/site.js' %}"></script>
+{% endblock %}{% endcompress %}
+{% endblock %}
+
+</body>
+</html>

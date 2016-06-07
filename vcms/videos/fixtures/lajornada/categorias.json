@@ -1,0 +1,102 @@
+[
+    {
+        "pk": 1,
+        "model": "clips.categoria",
+        "fields": {
+            "descripcion": "",
+            "nombre": "Política",
+            "slug": "politica",
+            "orden": 1
+        }
+    },
+    {
+        "pk": 2,
+        "model": "clips.categoria",
+        "fields": {
+            "descripcion": "",
+            "nombre": "Opinión",
+            "slug": "opinion",
+            "orden": 2
+        }
+    },
+    {
+        "pk": 3,
+        "model": "clips.categoria",
+        "fields": {
+            "descripcion": "",
+            "nombre": "Economía",
+            "slug": "economia",
+            "orden": 3
+        }
+    },
+    {
+        "pk": 4,
+        "model": "clips.categoria",
+        "fields": {
+            "descripcion": "",
+            "nombre": "Mundo",
+            "slug": "mundo",
+            "orden": 4
+        }
+    },
+    {
+        "pk": 5,
+        "model": "clips.categoria",
+        "fields": {
+            "descripcion": "",
+            "nombre": "Capital",
+            "slug": "capital",
+            "orden": 5
+        }
+    },
+    {
+        "pk": 6,
+        "model": "clips.categoria",
+        "fields": {
+            "descripcion": "",
+            "nombre": "Sociedad y Justicia",
+            "slug": "sociedad-y-justicia",
+            "orden": 6
+        }
+    },
+    {
+        "pk": 7,
+        "model": "clips.categoria",
+        "fields": {
+            "descripcion": "",
+            "nombre": "Estados",
+            "slug": "estados",
+            "orden": 7
+        }
+    },
+    {
+        "pk": 8,
+        "model": "clips.categoria",
+        "fields": {
+            "descripcion": "",
+            "nombre": "Ciencias",
+            "slug": "ciencias",
+            "orden": 8
+        }
+    },
+    {
+        "pk": 9,
+        "model": "clips.categoria",
+        "fields": {
+            "descripcion": "",
+            "nombre": "Cultura",
+            "slug": "cultura",
+            "orden": 9
+        }
+    },
+    {
+        "pk": 10,
+        "model": "clips.categoria",
+        "fields": {
+            "descripcion": "",
+            "nombre": "Espectáculos",
+            "slug": "espectaculos",
+            "orden": 10
+        }
+    }
+]

@@ -1,0 +1,35 @@
+{% load thumbnail %}
+{% load videos %}
+
+<article class="video video-{{ video.uuid }}">
+  <a href="{{ video.url }}">
+    <figure>
+      {% thumbnail video.imagen size|default:"640x360" crop="center" upscale=True as im %}
+      <img class="img-fluid" src="{{ im.url }}" alt="{{ video.titulo }}"
+            title="{{ video.titulo }}">
+      {% endthumbnail %}
+      <figcaption>
+        <span class="titulo">{{ video.titulo }}</span>
+        <div class="detalle">
+          <span class="fecha">{{ video.fecha|date:"N j, Y" }}</span>
+          <span class="duracion">{{ video.duracion|duration }}</span>
+        </div>
+      </figcaption>
+    </figure>
+  </a>
+</article>
+
+
+<!--
+<article class="video container-fluid video-{{ video.uuid }}">
+  <a href="{{ video.url }}">
+    <figure>
+      {% thumbnail video.imagen "480x270" crop="center" upscale=True as im %}
+      <img class="img-fluid" src="{{ im.url }}" alt="{{ video.titulo }}"
+            title="{{ video.titulo }}">
+      {% endthumbnail %}
+      <figcaption>{{ video.titulo }}</figcaption>
+    </figure>
+  </a>
+</article>
+-->

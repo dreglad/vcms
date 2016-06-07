@@ -1,0 +1,16 @@
+{% load static from staticfiles %}
+
+<nav class="menu navbar container-fluid">
+  <div class="collapse navbar-toggleable-md" id="menuOptions">
+    <ul itemscope itemtype="http://schema.org/SiteNavigationElement"
+        class="nav navbar-nav">
+      {% for categoria in categorias %}
+      <li class="nav-item">
+        <a {% if categoria_actual == categoria %}class="active"{% endif %} href="{% url 'categoria' categoria.slug %}" title="{{ categoria.nombre }}">
+          {{ categoria.nombre }}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</nav>

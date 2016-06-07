@@ -1,0 +1,39 @@
+section.videos { /* grupo de videos */
+    font-family: "PT Serif";
+    ol {
+        margin: 0; padding: 0;
+        li {
+            list-style-type: none;
+                
+            &.c25  { width: 25%;     font-size: 85%;  }
+            &.c33  { width: 33.333%; font-size: 110%; }
+            &.c50  { width: 50%;     font-size: 130%; }
+            &.c66  { width: 66.666%; font-size: 150%; }
+            &.c100 { width: 100%;    font-size: 170%; }
+
+            @include media-breakpoint-down(md) {
+                &.c25  { width: 25%;     font-size: 75%; }
+                &.c33  { width: 33.333%; font-size: 85%; }
+                &.c50  { width: 50%;     font-size: 100%; }
+                &.c66  { width: 66.666%; font-size: 120%; }
+                &.c100 { width: 100%;    font-size: 140%; }
+            }
+
+            @include media-breakpoint-down(sm) {
+                &.c25  { width:  50%; font-size: 100%;}
+                &.c33  { width: 100%; font-size: 120%;}
+                &.c50  { width: 100%; font-size: 120%;}
+                &.c66  { width: 100%; font-size: 120%;}
+                &.c100 { width: 100%; font-size: 130%;}
+            }
+
+            @include media-breakpoint-down(xs) {
+                &.c25  { width: 100%; font-size: 100%; }
+                &.c33  { width: 100%; font-size: 100%; }
+                &.c50  { width: 100%; font-size: 100%; }
+                &.c66  { width: 100%; font-size: 100%; }
+                &.c100 { width: 100%; font-size: 100%; }
+            }
+        }
+    }
+}

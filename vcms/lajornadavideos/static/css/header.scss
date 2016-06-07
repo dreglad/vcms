@@ -1,0 +1,71 @@
+header#page-header {
+    background: $headerBackground;
+    text-align: center;
+
+    a {
+        display: inline-block;
+        text-transform: uppercase;
+
+        &.home-lajornada {
+            font-family: "Roboto Condensed", sans-serif;
+            font-weight: 700;
+            position: absolute;
+            top: 0; left:0;
+            $iconWidth: 25px;
+            $iconHeight: 25px;
+            background: url(../images/icon.jpg) no-repeat left top;
+            padding-left: $iconWidth+5;
+            height: $iconHeight;
+            line-height: $iconHeight;
+            margin: 20px 0 0 30px;
+            @include media-breakpoint-down(md) {
+                margin: 16px 0 0 20px;
+            }
+            @include media-breakpoint-down(xs) {
+                margin: 14px 0 0 11px;
+            }
+        }
+
+        &.home-videos {
+            width: 260px; height: 40px;
+            line-height: 30px;
+            margin-top: 16px;
+            background: url(../images/logo.jpg) no-repeat;
+            @include media-breakpoint-down(md) {
+                margin-top: 16px;
+                width: 208px; height: 28px;
+                background-size: 208px 28px;
+            }
+            @include media-breakpoint-down(xs) {
+                margin-top: 16px;
+                width: 156px; height: 21px;
+                background-size: 156px 21px;
+                span { display: none; }
+                position: relative;
+                top: 3px;
+            }
+        }
+    }
+
+    form { /* búsqueda */
+        display: none;
+        width: 30px; height: 30px;
+        overflow: hidden;
+        background: url(../images/lupa.jpg) no-repeat;
+    }
+
+    .navbar-toggler {
+        font-family: sans-serif;
+        font-size: 20px;
+        line-height: 50px;
+        padding: 0;
+        position: absolute;
+        right: 15px;
+        @include media-breakpoint-down(sm) {
+             line-height: 50px;   
+        }
+        @include media-breakpoint-down(xs) {
+            line-height: 50px;
+        }
+    }
+}

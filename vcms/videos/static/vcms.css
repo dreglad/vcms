@@ -1,0 +1,224 @@
+th.column-padded_pk {
+    width: 50px;
+}
+
+th.column-video {
+    width: 360px;
+    display: block;
+}
+
+th.column-info {
+    width: 100%;
+}
+
+div.progress .bar {
+    min-width: 20%;
+}
+
+td.field-video {
+    padding: 4px !important;
+}
+
+td.field-video img {
+  /* placeholder img */
+  opacity: 0.8;
+}
+
+
+@media only screen and (max-width: 990px) {
+    #suit-left {
+      display: none;
+    }
+    #container .two-columns {
+      padding: 0 30px 0 0 !important;
+    }
+    #wrap {
+      background: none;
+    }
+}
+
+
+.box-video {
+  padding: 15px 40px;
+}
+
+
+.compact-fieldset .control-group:first-of-type .control-label {
+  padding-top: 10px !important;
+}
+
+.compact-fieldset .controls {
+  padding: 0 !important;
+}
+
+.compact-fieldset .multi-field-controls {
+  padding: 0 0 0 1em !important;
+  word-break: break-all;
+}
+.compact-fieldset .multi-field-controls span {
+  padding-top: 0.5em;
+}
+
+
+.compact-fieldset .multi-field-box { /* segundo input */
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  margin-right: 0 !important;
+  padding-right: 0.5em;
+  width: 57%;
+  /*min-width: 64% !important;
+  max-width: 64% !important; */
+
+}
+
+.compact-fieldset .multi-field-box:first-of-type { /* primer input */
+  width: 40%;
+  padding-right: 0.5em !important;
+  margin-right: 0;
+}
+
+.compact-fieldset .multi-field-box label { /* segundo input */
+  min-width: 8em;
+  text-align: right;
+  background: white;
+  margin: 0 1em 0 0 !important;
+  padding: 10px;
+  border-bottom: 1px solid #ededed;
+  display: table-cell !important;
+  float: none !important;
+  vertical-align: top;
+}
+
+
+.compact-fieldset .multi-field-box .multi-field-controls {
+  float: none !important;
+  display: table-cell !important;
+
+}
+.compact-fieldset .help-block {
+  display: none !important;
+}
+
+
+.box-video .jwplayer  {
+  margin: 1em auto !important;
+}
+
+.jwplayer {
+  -webkit-box-shadow: rgba(0,0,0,0.4) 0 0 16px;
+  box-shadow: rgba(0,0,0,0.4) 0 0 16px;
+}
+
+
+.pip-on{
+    z-index: 10;
+    top: 340px;
+    right: 21px;
+    width: 177px !important;
+    position: fixed !important;
+
+}
+
+.save-box .btn {
+  padding-left: 2px;
+  padding-right: 2px;
+}
+
+
+table.info {
+    margin: 0;
+}
+
+table.info code {
+  max-width: 100%;
+  display: block;
+  white-space: normal;
+}
+
+table.info th {
+    width: 75px;
+    font-weight: bold !important;
+}
+
+table.info tr.info-descripcion .info-value {
+    width: 100%;
+}
+
+
+#suit-left {
+    right: 190px;
+    width: 150px;
+}
+
+
+.field-info .alert {
+    padding: 5px 15px 5px 10px;
+    margin-bottom: 0.3em;
+}
+
+#wrap {
+  background-position: -50px top;
+}
+
+#enlistado-group strong {
+  display: block;
+  font-size: 1.2em;
+  margin-top: 0.5em;
+  font-weight: normal;
+}
+
+#container .two-columns {
+    padding-left: 150px;
+}
+
+#enlistado-group .vForeignKeyRawIdAdminField {
+  width: 30px;
+}
+
+#enlistado-group .dynamic-enlistado {
+
+}
+
+#enlistado-group .field-video {
+    padding: 1em !important;
+}
+
+.upload_button {
+ /* background: blue; */
+ z-index: auto;
+}
+
+
+.table tbody > tr.selected th, .table tbody > tr.selected td {
+    background-color: #83b3c3;
+    border-top: 1px solid #72a8bb;
+    box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.2) inset;
+    color: white;
+    text-shadow: none;
+}
+
+
+.table tbody > tr.selected .jwplayer {
+    opacity: 0.5;
+}
+
+
+.ellip {
+  display: block;
+  height: 100%;
+}
+
+.ellip-line {
+  display: inline-block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-wrap: normal;
+  max-width: 100%;
+}
+
+.ellip,
+.ellip-line {
+  position: relative;
+  overflow: hidden;
+}
+

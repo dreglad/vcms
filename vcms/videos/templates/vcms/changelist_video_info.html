@@ -1,0 +1,69 @@
+{% if video.procesamiento != "listo" %}
+  <div class="msg"></div>
+  <div class="progress progress-striped active hide">
+    <div class="bar" style="width: 0"></div>
+  </div>
+  <script>
+    {% if video.procesamiento != "error" %}
+      setInterval(function() {{
+        update_status('{{ video.pk }}',
+                      '{% url "query_procesamiento" video.pk %}');
+      }}, 2000);
+    {% endif %}
+    update_status('{{ video.pk }}',
+                  '{% url "query_procesamiento" video.pk %}');
+  </script>
+{% endif %}
+
+<table class="info table table-striped">
+  {% for info in info_fields %}
+    {% if info.value %}
+      <tr class="info-row info-{{ info.field }}">
+        {% if info.field.verbose_name %}
+          {% if info.field.name == 'fecha_creacion' %}
+            <th>Creado en</th>
+          {% else %}{% if info.field.name == 'usuario_creacion' %}
+            <th>Creado por</th>
+          {% else %}
+            <th>{{ info.field.verbose_name|capfirst }}</th> 
+          {% endif %}
+          {% if "fecha" in info.field.name %}
+            <td title="{{ info.value }}">
+              {{ info.value|date:"DATETIME_FORMAT" }}
+            </td>
+          {% else %}{% if info.field.name == "sitios" %}
+            <td title="{{ info.value }}">
+              {{ info.value.all|safeseq|join:", " }}
+            </td>
+          {% else %}{% if info.field.name == "titulo" %}
+            {% if video.estado == 'publicado' %}
+              <td title="{{ info.value }}">
+                <a target="_blank" href="{{ video.get_absolute_url }}">
+                  {{ info.value|truncatewords:15 }}
+                </a>
+              </td>
+            {% else %}
+              <td title="{{ info.value }}">
+                {{ info.value|truncatewords:15 }}
+              </td>
+            {% endif %}
+          {% else %}
+            <td title="{{ info.value|striptags }}">
+              <div class="info-value">
+                {{ info.value|truncatewords_html:15|safe|striptags }}
+              </div>
+            </td>
+          {% endif %}{% endif %}{% endif %}{% endif %}
+        {% else %}
+          {% if info.field == 'duracion_iso' %}
+            <th>Duración</th>
+            <td>{{ info.value }}</td>
+          {% else %}
+            <th>{{ info.field }}</th>
+            <td><code>{{ info.value|safe }}</code></td>
+          {% endif %}
+        {% endif %}
+      </tr>
+    {% endif %}
+  {% endfor %}
+</table>

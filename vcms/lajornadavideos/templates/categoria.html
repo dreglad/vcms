@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Videos de {{ categoria.nombre }} - La Jornada Videos{% endblock %}
+
+{% block content %}
+<main>
+  <h1>{{ categoria_actual.nombre }}</h1>
+
+
+
+  <section class="videos">
+    <ol class="container-fluid">
+      <li class="grid-sizer c25"></li>
+      {% for video in videos|slice:":1" %}
+          <li class="c50">{% include "includes/video_article.html" with prioridad=1 %}</li>
+      {% endfor %}
+      {% for video in videos|slice:"1:5" %}
+          <li class="c25">{% include "includes/video_article.html" %}</li>
+      {% endfor %}
+    </ol>
+  </section>
+  <section class="videos">
+    <ol class="container-fluid">
+      <li class="grid-sizer c33"></li>
+      {% for video in videos|slice:"5:" %}
+          <li class="c33">{% include "includes/video_article.html" with prioridad=1 %}</li>
+      {% endfor %}
+    </ol>
+  </section>
+</main>
+
+<button type="button" class="btn btn-primary">MOSTRAR MÁS VIDEOS</button>
+
+{% endblock %}
+
+

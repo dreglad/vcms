@@ -1,0 +1,23 @@
+nav.menu {
+    font-family: $menuFontFamily;
+    font-weight: $menuFontWeight;
+    background: $headerBackground;
+    box-shadow: 0 6px 5px rgba(0,0,0,0.15);
+    margin-bottom: 20px;
+    text-align: center;
+    padding: 5px;
+
+    .nav-item {
+        float: none;
+        display: inline-block;
+        text-transform: uppercase;
+        margin-top: 15px;
+        @include media-breakpoint-down(md) {
+            font-size: 90%;
+            margin-top: 0;
+        }
+        @include media-breakpoint-down(xs) {
+            font-size: 80%;
+        }
+    }
+}

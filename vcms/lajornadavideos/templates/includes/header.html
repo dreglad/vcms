@@ -1,0 +1,18 @@
+{% load static from staticfiles %}
+
+<header itemscope itemtype="https://schema.org/WPHeader" id="page-header" class="container-fluid">
+    <a href="http://www.jornada.unam.mx/" title="La Jornada" class="home-lajornada">
+      <span class="hidden-xs-down">La Jornada</span>
+    </a>
+    <a href="{% url 'home' %}" title="La Jornada Videos" class="home-videos">
+      <span class="text-hide">La Jornada Videos</span>
+    </a>
+    <form class="busqueda" method="GET" action="{% url 'busqueda' %}">
+      <label for="busqueda">Búsqueda</label>
+      <input id="busqueda" type="text" name="q">
+      <input type="submit" name="buscar" value="Buscar">
+    </form>
+    <button class="navbar-toggler hidden-lg-up" type="button" data-toggle="collapse" data-target="#menuOptions">
+      &#9776;
+    </button>
+</header>

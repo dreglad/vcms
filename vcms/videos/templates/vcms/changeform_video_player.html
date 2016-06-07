@@ -1,0 +1,44 @@
+{% load thumbnail %}
+{% load staticfiles %}
+<style>
+#player {
+    position: absolute;
+    right: 240px;
+    top: 130px;
+    z-index: 1000;
+}
+</style>
+<div id="player">
+    {% if original.archivo %}
+        <div id="original-{{ original.pk }}"></div>
+        <script>
+            var sources = [], tracks = [];
+            {% if original.resolucion > 0 %}
+                sources.push({ file: "{{ original.hls_url }}"});
+            {% endif %}
+
+            sources.push({ file: "{{ original.archivo_url }}" });
+
+            {% if original.sprites %}
+                tracks.push({ file: "{{ original.sprites_url }}", kind: 'thumbnails'});
+            {% endif %}
+
+            jwplayer('original-{{ original.pk }}').setup({
+                //tiatle: "{original.titulo}",
+                //description: "{original.descripcion}",
+                sources: sources, tracks: tracks,
+                width: 360,
+                height: 202,
+                {% thumbnail original.imagen "360" as thumb %}
+                    image: '{{ thumb.url }}'
+                {% endthumbnail %}
+            });
+        </script>
+    {% else %}{% if original.imagen %}
+        {% thumbnail original.imagen "360" as thumb %}
+            <img src="{{ thumb.url }}" />
+        {% endthumbnail %}
+    {% else %}
+        <img src="/static/vcms/img/generic-original.png" width="360" height="200" />
+    {% endif %}{% endif %}
+</div>

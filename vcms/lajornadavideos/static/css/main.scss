@@ -1,0 +1,94 @@
+@import "bootstrap/bootstrap.scss";
+@import "mixins.scss";
+
+@import url(https://fonts.googleapis.com/css?family=Roboto+Condensed:700,400);
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,300);
+@import url(https://fonts.googleapis.com/css?family=PT+Serif);
+
+@font-face {
+    font-family: 'icomoon';
+    src:url('../fonts/icomoon/icomoon.eot');
+    src:url('../fonts/icomoon/icomoon.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/icomoon/icomoon.woff') format('woff'),
+        url('../fonts/icomoon/icomoon.ttf') format('truetype'),
+        url('../fonts/icomoon/icomoon.svg#icomoon') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+/* variables */
+$mainFont           :"Roboto", sans-serif;
+$headingsFontFamily :"Roboto Condensed", sans-serif;
+$menuFontFamily     :"Roboto", sans-serif;
+$headingsFontWeight :400;
+$menuFontWeight     :400;
+
+$bodyBackground   :#ffffff;
+$headerBackground :#f1f1f1;
+$fontColor        :#666666;
+$rojoColor        :#DE1800;
+
+
+body { 
+    background: $bodyBackground;
+    color: $fontColor;
+    font-family: $mainFont, sans-serif;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+
+    ol, ul { margin: 0; padding: 0; }
+
+    a {
+        color: $fontColor;
+        &:hover, &:active, &.active {
+            color: $rojoColor;
+            text-decoration: none;
+        }
+    }
+
+    #top-container {
+        @import "header.scss";
+        @import "nav.scss";
+        @import "busqueda.scss";
+
+        padding: 0;
+    }
+
+    #middle-container {
+        @import "video_article.scss";
+        @import "playlist.scss";
+        max-width: 1308px;
+        margin: 1em auto;
+        padding: 0 1em;
+
+        h1,h2 {
+            font-size: 25px;
+            font-family: $headingsFontFamily;
+            font-weight: $headingsFontWeight;
+            text-transform: uppercase;
+            color: $rojoColor; 
+            padding: 1em 0 0.25em 0;
+        }
+
+        h2 {
+            font-size: 22px;
+        }
+
+        main#video {
+            h1 { 
+                padding-left: 0;
+            }
+        }
+    }
+
+    #bottom-container {
+        padding: 0;
+        @import "footer.scss";
+    }
+}
+
+
+
+
+

@@ -1,0 +1,73 @@
+<fieldset class="module aligned suit-tab suit-tab-general suit-tab-editorial suit-tab-listas suit-tab-seo" style="margin-top:-9px">
+
+  <div class="box box-video">
+    {% load thumbnail %}
+{% load staticfiles %}
+
+{% with original as video %}
+{% if video.archivo %}
+    <div class="fieldset-player" id="fieldset-video"></div>
+    <script>
+        var sources = [], tracks = [];
+
+        {% if video.hls %}
+        sources.push({ file: "{{ video.hls.url }}"});
+        {% endif %}
+
+        {% if video.archivo %}
+        sources.push({ file: "{{ video.archivo.url }}" });
+        {% endif %}
+
+        {% if video.sprites %}
+        tracks.push({ file: "{{ video.sprites.url }}", kind: 'thumbnails'});
+        {% endif %}
+
+        jwplayer('fieldset-video').setup({
+            //tiatle: "{video.titulo}",
+            //description: "{video.descripcion}",
+            sources: sources, tracks: tracks,
+            preload: 'auto',
+            sharing: {
+               code: '<iframe src="xxx"  width="480"  height="270"  frameborder="0"  scrolling="auto" />',
+               heading: "Compartir video"
+            },
+            width: '100%',
+            hlshtml: true,
+            primary: 'html5',
+            //height: 202,
+            aspectratio: '{{video.original_width}}:{{video.original_height}}',
+            
+            {% thumbnail video.imagen "360" quality=45 as thumb %}
+            image: '{{ thumb.url }}'
+            {% endthumbnail %}
+        });
+
+        jwplayer().on('displayClick', function() {
+          var player = jwplayer();
+          if (!player.getControls()) {
+            player.play();  // toggle
+          }
+        });
+
+        jwplayer().on('resize', function(size) {
+          $('.box-video').css('height', size.height + 30);
+        })
+
+        jwplayer().on('ready', function(event){
+          //$('.box-video').css('height', $('#fieldset-video').height() + 30);
+        });
+        
+    </script>
+{% else %}{% if video.imagen %}
+    {% thumbnail video.imagen "360" as thumb %}
+        <img src="{{ thumb.url }}" />
+    {% endthumbnail %}
+{% else %}
+    <img src="/static/vcms/img/generic-video.png" width="360" />
+{% endif %}{% endif %}
+{% endwith %}
+
+  </div>
+
+</fieldset>
+<a id="videobottom"></a>

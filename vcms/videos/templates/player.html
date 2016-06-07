@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="//content.jwplatform.com/libraries/zERL6BCK.js"></script>
+    <title>Video: {{ clip.titulo }}</title>
+    <style type="text/css">
+        body { padding:0; margin:0; }
+    </style>
+</head>
+<body>
+    <div id="video"></div>
+    <script type="text/javascript">
+    function init_player(clip) {
+        var sources = [], tracks = [];
+
+        {% if clip.hls_url %}
+            sources.push({ file: "{{ clip.hls_url }}" });
+            sources.push({ file: "{{ clip.archivo_url }}" });
+        {% endif %}
+
+        sources.push({ file: "{{ clip.archivo_url }}" });
+
+        {% if clip.sprites_url %}
+            tracks.push({ file: "{{ clip.sprites_url }}", kind: 'thumbnails'});
+        {% endif %}
+
+        jwplayer("video").setup({
+            sources: sources,
+            tracks: tracks,
+            image: "{{ clip.thumbnail_grande }}",
+            androidhls: false,
+            title: "{{ clip.titulo }}",
+            description: "{{ clip.descripcion }}",
+            width: "100%",
+            aspectratio:"{{ clip.aspect|default:"4:3" }}"
+        });
+    };
+
+    init_player();
+
+    </script>
+</body>
+</html>
