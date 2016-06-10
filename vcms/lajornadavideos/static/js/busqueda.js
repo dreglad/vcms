@@ -162,7 +162,7 @@ if ( typeof define === 'function' && define.amd ) {
 
   function UISearch( el, options ) {  
     this.el = el;
-    this.inputEl = el.querySelector( 'form > input.busqueda-input' );
+    this.inputEl = el.querySelector( 'input#search' );
     this._initEvents();
   }
 
@@ -191,7 +191,8 @@ if ( typeof define === 'function' && define.amd ) {
     },
     open : function() {
       var self = this;
-      classie.add( this.el, 'busqueda-open' );
+      $(this.el).addClass('busqueda-open');
+      $('header#page-header a').addClass('busqueda-open');
       // focus the input
       if( !mobilecheck() ) {
         this.inputEl.focus();
@@ -207,7 +208,8 @@ if ( typeof define === 'function' && define.amd ) {
     },
     close : function() {
       this.inputEl.blur();
-      classie.remove( this.el, 'busqueda-open' );
+      $(this.el).removeClass('busqueda-open')
+      $('header#page-header a').removeClass('busqueda-open');
     }
   }
 

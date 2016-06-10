@@ -1,8 +1,9 @@
-<aside class="busqueda" id="busqueda-form">
-  <form action="{% url 'busqueda' %}">
-    <input class="busqueda-input" placeholder="Búsqueda..."
-           type="search" value="" name="search" id="search">
+<div class="busqueda {% if request.GET.q %}busqueda-open{% endif %}"
+     id="busqueda-form">
+  <form action="{% url 'haystack_search' %}">
+    <input type="search" id="search" placeholder="Búsqueda..." 
+           value="{{ request.GET.q }}" name="q">
     <input class="busqueda-submit" type="submit" value="">
     <span class="busqueda-icon-search"></span>
   </form>
-</aside>
+</div>

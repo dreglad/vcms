@@ -1,0 +1,44 @@
+<section class="lista videos">
+  {% if lista.usar_nombre %}
+    <h2>{{ lista.nombre }}</h2>
+  {% endif %}
+  {% if lista.usar_descripcion and lista.descripcion_plain %}
+    <div class="descripcion">{{ lista.descripcion|safe }}</div>
+  {% endif %}
+  <ol class="container-fluid">
+    {% with videos=lista.videos.all %}
+
+    {% if videos|length_is:"1" or lista.layout == "c100" %}
+
+      <li class="grid-sizer c100"></li>
+      {% for video in videos %}
+        <li class="c100">{% include "includes/video_article.html" %}</li>
+      {% endfor %}
+
+    {% else %}{% if videos|length_is:"2" or layout == 'c50' %}
+
+      <li class="grid-sizer c25"></li>
+      {% for video in videos %}
+        <li class="c50">{% include "includes/video_article.html" %}</li>
+      {% endfor %}
+
+    {% else %}{% if videos|length_is:"3" or videos|length_is:"6" or layout == 'c33' %}
+
+      <li class="grid-sizer c33"></li>
+      {% for video in videos %}
+        <li class="c33">{% include "includes/video_article.html" %}</li>
+      {% endfor %}
+
+    {% else %}
+
+      <li class="grid-sizer c25"></li>
+      {% for video in videos %}
+        <li class="c25">{% include "includes/video_article.html" %}</li>
+      {% endfor %}
+
+    {% endif %}{% endif %}{% endif %}
+
+
+    {% endwith %}
+  </ol>
+</section>

@@ -52,43 +52,58 @@ class HyperlinkedSorlImageField(serializers.ImageField):
 
 
 class VideoSerializer(serializers.HyperlinkedModelSerializer):
-    thumbnail_100 = HyperlinkedSorlImageField('100', source='imagen')
-    thumbnail_250 = HyperlinkedSorlImageField('250', source='imagen')
-    thumbnail_500 = HyperlinkedSorlImageField('500', source='imagen')
-    thumbnail_1000 = HyperlinkedSorlImageField('1000', source='imagen')
+    thumbnail_100 = HyperlinkedSorlImageField('100',
+        source='imagen', read_only=True
+        )
+    thumbnail_250 = HyperlinkedSorlImageField('250',
+        source='imagen', read_only=True
+        )
+    thumbnail_500 = HyperlinkedSorlImageField('500',
+        source='imagen', read_only=True
+        )
+    thumbnail_1000 = HyperlinkedSorlImageField('1000',
+        source='imagen', read_only=True
+        )
 
     url = URLField(source='get_absolute_url')
     class Meta:
         model = Video
-        fields = ('id', 'titulo', 'resumen', 'descripcion', 'fecha',
-                  'duracion', 'original_width', 'original_height',
-                  'url', 'hls', 'archivo', 'sprites',
-                  'tipo', 'categoria', 'autor', 'transcripcion',
-                  'listas', 'thumbnail_100', 'thumbnail_250',
-                  'thumbnail_500', 'thumbnail_1000', 'imagen')
+        fields = ('id', 'estado', 'procesamiento', 'slug', 'fecha', 'url',
+            'origen', 'origen_url', 'youtube_id', 'duracion', 'original_width',
+            'original_height', 'resolucion', 'hls', 'archivo', 'sprites',
+            'captions', 'imagen', 'thumbnail_100', 'thumbnail_250',
+            'thumbnail_500', 'thumbnail_1000', 'titulo', 'resumen',
+            'descripcion', 'descripcion_plain', 'transcripcion',  'tipo',
+            'categoria', 'autor', 'fecha_creacion', 'fecha_modificacion',
+            'listas', 'tags')
 
 
 class CategoriaSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Categoria
-        fields = ('slug', 'nombre')
+        fields = ('id', 'slug', 'nombre')
 
 class ListaSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Lista
-        fields = ('slug', 'nombre', 'descripcion', 'videos')
+        fields = ('id', 'slug', 'tipo', 'nombre', 'descripcion',
+            'descripcion_plain', 'usar_nombre', 'usar_descripcion', 'layout',
+            'categoria', 'usar_web', 'usar_movil', 'usar_tv', 'ads_web',
+            'ads_movil', 'ads_tv', 'fecha_creacion', 'fecha_modificacion',
+            'tags', 'videos',
+            )
 
 class TipoSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Tipo
-        fields = ('slug', 'nombre', 'nombre_plural', 'descripcion')
+        fields = ('id', 'slug', 'nombre', 'nombre_plural', 'descripcion')
 
 class AutorSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Autor
-        fields = ('slug', 'nombre')
+        fields = ('id', 'slug', 'nombre')
 
 class SitioSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Sitio
-        fields = ('slug', 'nombre')
+        fields = ('id', 'slug', 'nombre')

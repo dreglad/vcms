@@ -5,7 +5,7 @@ import os
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from django.views.generic.base import RedirectView
 
 from videos.models import *
@@ -23,7 +23,7 @@ class VideoRedirectView(RedirectView):
 '''
 API
 '''
-class VideoViewSet(viewsets.ModelViewSet):
+class VideoViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
 

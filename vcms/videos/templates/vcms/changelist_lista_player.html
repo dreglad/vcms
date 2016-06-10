@@ -2,21 +2,28 @@
 {% load staticfiles %}
 
 {% if lista.enlistado.exists %}
-    <div id="lista-{{ lista.pk }}"></div>
+    <div class="playlist-player-wrap">
+      <div id="lista-{{ lista.pk }}"></div>
+    </div>
     <script>
-        var playlist = [], sources, tracks;
+        var playlist = [], sources, tracks, aspcetratio = '';
 
         {% for listado in lista.enlistado.all %}
+            {% if forloop.first %}
+            aspectratio = "{{ listado.video.original_width }}:{{ listado.video.original_height }}";
+            {% endif %}
             sources = [];
             tracks = [];
 
-            {% if listado.video.resolucion > 0 %}
-                sources.push({ file: "{{ listado.video.hls_url }}"});
+            {% if listado.video.hls %}
+                sources.push({ file: "{{ listado.video.hls.url }}"});
             {% endif %}
-            sources.push({ file: "{{ listado.video.archivo_url }}" });
+            {% if listado.video.archivo %}
+                sources.push({ file: "{{ listado.video.archivo.url }}" });
+            {% endif %}
 
             {% if listado.video.sprites %}
-                tracks.push({ file: "{{ video.sprites_url }}", kind: 'thumbnails'});
+                tracks.push({ file: "{{ video.sprites.url }}", kind: 'thumbnails'});
             {% endif %}
 
             playlist.push({
@@ -39,11 +46,21 @@
             playlist: playlist,
             visualplaylist: true,
             preload: 'none',
+            hlshtml: true,
+            primary: 'html5',
             sharing: null,
-            width: 500,
-            height: 282
+            width: '100%',
+            aspectratio: aspectratio
+        });
+
+        jwplayer().on('displayClick', function() {
+          var player = jwplayer();
+          if (!player.getControls()) {
+            player.play();  // toggle
+          }
         });
     </script>
+
 {% else %}
     <h2>[Lista vacía]</h2>
 {% endif %}

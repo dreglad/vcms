@@ -13,10 +13,10 @@ import signals
 
 router = routers.DefaultRouter()
 router.register(r'videos', views.VideoViewSet)
-router.register(r'autores', views.AutorViewSet)
+router.register(r'listas', views.ListaViewSet)
 router.register(r'categorias', views.CategoriaViewSet)
 router.register(r'tipos', views.TipoViewSet)
-router.register(r'listas', views.ListaViewSet)
+router.register(r'autores', views.AutorViewSet)
 router.register(r'sitios', views.SitioViewSet)
 
 urlpatterns = [

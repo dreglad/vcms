@@ -24,6 +24,17 @@ header#page-header {
             @include media-breakpoint-down(xs) {
                 margin: 14px 0 0 11px;
             }
+            &:hover {
+                color: black;
+            }
+            &.busqueda-open {
+                display: none;
+            }
+            span {
+                @include media-breakpoint-down(md) {
+                    display: none;
+                }
+            }
         }
 
         &.home-videos {
@@ -59,8 +70,9 @@ header#page-header {
         font-size: 20px;
         line-height: 50px;
         padding: 0;
-        position: absolute;
-        right: 15px;
+        float: right;
+        position: relative;
+        margin-right: 16px;
         @include media-breakpoint-down(sm) {
              line-height: 50px;   
         }

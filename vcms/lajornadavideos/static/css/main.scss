@@ -58,9 +58,9 @@ body {
     #middle-container {
         @import "video_article.scss";
         @import "playlist.scss";
+        @import "video.scss";
         max-width: 1308px;
-        margin: 1em auto;
-        padding: 0 1em;
+        padding: 0 2rem;
 
         h1,h2 {
             font-size: 25px;
@@ -68,17 +68,11 @@ body {
             font-weight: $headingsFontWeight;
             text-transform: uppercase;
             color: $rojoColor; 
-            padding: 1em 0 0.25em 0;
+            padding: 1rem 0 0.25em 0;
         }
 
         h2 {
             font-size: 22px;
-        }
-
-        main#video {
-            h1 { 
-                padding-left: 0;
-            }
         }
     }
 

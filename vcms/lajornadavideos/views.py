@@ -25,7 +25,8 @@ class HomeView(BaseView):
     def get_context_data(self, **kwargs):
         context = super(HomeView, self).get_context_data(**kwargs)
         context.update({
-            'videos_principales': list(Video.objects.publicos()[:30]),
+            'videos': Video.objects.publicos()[:20],
+            'listas': Lista.objects.destacados(),
         })
         return context
 
@@ -42,7 +43,8 @@ class CategoriaView(BaseView):
     def get_context_data(self, **kwargs):
         context = super(CategoriaView, self).get_context_data(**kwargs)
         context.update({
-            'videos': list(Video.objects.publicos().filter(categoria=self.categoria)[:32])
+            'listas': Lista.objects.destacados(self.categoria),
+            'videos': list(Video.objects.publicos().filter(categoria=self.categoria)[:32]),
         })
         return context
 
@@ -70,11 +72,6 @@ class VideoView(BaseView):
         context = super(VideoView, self).get_context_data(**kwargs)
         context.update({ 'video': self.video })
         return context
-
-
-class BusquedaView(TemplateView):
-
-    template_name = "busqueda.html"
 
 
 def crossdomain(request, **kwargs):

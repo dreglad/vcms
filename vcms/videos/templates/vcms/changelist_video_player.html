@@ -18,7 +18,7 @@
         tracks.push({ file: "{{ video.sprites.url }}", kind: 'thumbnails'});
         {% endif %}
 
-        jwplayer('video-{{ video.pk }}').setup({
+        var player = jwplayer('video-{{ video.pk }}').setup({
             //tiatle: "{video.titulo}",
             //description: "{video.descripcion}",
             sources: sources, tracks: tracks,
@@ -35,6 +35,19 @@
             {% thumbnail video.imagen "360" quality=45 as thumb %}
             image: '{{ thumb.url }}'
             {% endthumbnail %}
+        }).on('displayClick', function() {
+            var player = jwplayer('video-{{ video.pk }}');
+          if (!player.getControls()) {
+            player.play();  // toggle
+          }
+        }).on('resize', function() {
+            var player = jwplayer('video-{{ video.pk }}');
+            console.log(player);
+            console.log(player.getWidth());
+            if (player.getWidth() < 250) {
+                player.setControls(false);
+            }
+            return true;
         });
     </script>
 {% else %}{% if video.imagen %}

@@ -40,6 +40,15 @@ DESCRIPCION_REDACTOR_OPTIONS = {
     'pasteInline': ['strong', 'b', 'i', 'em'],
     'minHeight': 200,
 }
+DESCRIPCIONCORTA_REDACTOR_OPTIONS = {
+    'buttons': ['bold', 'italic', 'deleted', 'horizontalrule', 'lists',],
+    'lang': 'es',
+    'pasteLinks': False,
+    'pasteImages': False,
+    'pasteBlock': [],
+    'pasteInline': ['strong', 'b', 'i', 'em'],
+    'minHeight': 100,
+}
 
 User = settings.AUTH_USER_MODEL
 
@@ -108,8 +117,12 @@ class VideoInline(SortableTabularInline):
 
     def player(self, obj):
         if obj.video:
-            t = loader.get_template('vcms/changelist_video_player.html')
-            return mark_safe(t.render(Context({'video': obj.video})))
+            if obj.lista.videos.count() < 10:
+                t = loader.get_template('vcms/changelist_video_player.html')
+                return mark_safe(t.render(Context({'video': obj.video})))
+            else:
+                t = loader.get_template('vcms/changelist_video_thumbnail.html')
+                return mark_safe(t.render(Context({'video': obj.video})))
 
 
 
@@ -158,7 +171,7 @@ class VideoAdmin(VersionAdmin, vModelAdmin, AdminImageMixin):
     inlines = [ListaInline]
 
     list_display = ('padded_pk', 'video', 'info')
-    list_filter = ('tipo', 'categoria', 'autor', 'listas', 'sitios', 'estado', 'usuario_creacion',)
+    list_filter = ('tipo', 'categoria', 'autor', 'listas', 'estado', 'usuario_creacion',)
     date_hierarchy = 'fecha'
     search_fields = ('titulo', 'descripcion', 'transcripcion', 'observaciones')
     list_select_related = ('autor', 'categoria', 'tipo',)
@@ -169,9 +182,9 @@ class VideoAdmin(VersionAdmin, vModelAdmin, AdminImageMixin):
                        'archivo']
     readonly_fields_new = []
 
-    info_fields = ('sitios', 'titulo', 'fecha', 'autor', 'descripcion', 'tipo',
+    info_fields = ('titulo', 'fecha', 'autor', 'descripcion', 'tipo',
                    'categoria', 'duracion_iso', 'usuario_creacion')
-    info_fields_procesando = ('sitios', 'origen_url', 'autor', 'duracion_iso',
+    info_fields_procesando = ('origen_url', 'autor', 'duracion_iso',
                               'usuario_creacion', 'fecha_creacion')
     info_fields_error = ('fecha_creacion', 'origen', 'query_procesamiento',
                          'archivo_original', 'observaciones')
@@ -428,47 +441,68 @@ class ListaChangeForm(ModelForm, vModelAdmin):
         exclude = ['pk']
         widgets = {
             'descripcion': RedactorWidget(
-                editor_options=DESCRIPCION_REDACTOR_OPTIONS),
+                editor_options=DESCRIPCIONCORTA_REDACTOR_OPTIONS),
         }
 
 class ListaAdmin(VersionAdmin, vModelAdmin, SortableModelAdmin):
     form = ListaChangeForm
     inlines = (VideoInline,)
-    list_display = ('nombre', 'videos_', 'player')
+    list_display = ('nombre', 'tipo', 'categoria_', 'videos_', 'player')
+    list_filter = ('tipo', 'categoria')
     sortable = 'orden'
     readonly_fields = ('fecha_creacion', 'fecha_modificacion')
+
     suit_form_tabs = [
-        ('videos', u'Videos de la lista'),
-        ('general', u'Datos y configuración de la lista'),
-        
+        ('general', u'Configuración de la lista'),
+        ('videos', u'Videos en la lista'),
     ]
     fieldsets = [
-        (None, {
-            'classes': ('suit-tab', 'suit-tab-general',),
-            'fields': ['fecha_creacion', 'fecha_modificacion']
+        # (None, {
+        #     'classes': ('suit-tab', 'suit-tab-general',),
+        #     'fields': ['fecha_creacion', 'fecha_modificacion']
+        # }),
+        (None, {'classes': ('suit-tab', 'suit-tab-general',),
+                'fields': ['tipo',]
         }),
         ('Datos generales', {'classes': ('suit-tab', 'suit-tab-general',),
-                'fields': ['nombre', 'descripcion']
+                'fields': [('nombre', 'usar_nombre', 'usar_descripcion'),
+                           'descripcion', 'tags']
         }),
-    ]
+        (u'Categoría', {'classes': ('suit-tab', 'suit-tab-general'),
+                'fields': [('categoria')]
+        }),
+        ('Layout', {'classes': ('suit-tab', 'suit-tab-general'),
+                'fields': [('layout')]
+        }),
+        ('Plataformas', {'classes': ('suit-tab', 'suit-tab-general',
+                                     'checkboxes'),
+                'fields': [('usar_web', 'usar_movil', 'usar_tv'),
+                           ('ads_web', 'ads_movil', 'ads_tv')]
+        }),
+    ]   
 
     def get_video_tabs(self, obj=None):
         return self.suit_form_tabs
 
     def get_readonly_fields(self, request, obj=None):
-        if obj and getattr(obj, 'nombre', '').startswith('['):
-            return self.readonly_fields + ('nombre', )
         return self.readonly_fields
 
     def has_delete_permission(self, request, obj=None):
-        if obj and getattr(obj, 'nombre', '').startswith('['):
-            return False
+        # if obj and getattr(obj, 'nombre', '').startswith('['):
+        #     return False
         return True
             
 
-    @classmethod
+    def categoria_(self, obj):
+        if obj.tipo == Lista.TIPO.destacado:
+            return obj.categoria or u'Home'
+        else:
+            return 'N/A'
+    categoria_.admin_order_field = 'categoria'
+
     def videos_(self, obj):
         return obj.enlistado.count()
+    videos_.admin_order_field = 'enlistado__count'
 
     def player(self, obj):
         t = loader.get_template('vcms/changelist_lista_player.html')

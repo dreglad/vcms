@@ -82,8 +82,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'videos', 'templates'),
             os.path.join(BASE_DIR, 'lajornadavideos', 'templates'),
+            os.path.join(BASE_DIR, 'videos', 'templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -116,13 +116,76 @@ DATABASES = {
     }
 }
 
+# HAYSTACK_CONNECTIONS = {
+#     'default': {
+#         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+#         'URL': 'http://127.0.0.1:9200/',
+#         'INDEX_NAME': 'haystack',
+#     },
+# }
+
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'http://127.0.0.1:9200/',
+        'ENGINE': 'elasticstack.backends.ConfigurableElasticSearchEngine',
+        'URL': os.environ.get('HAYSTACK_URL', 'http://127.0.0.1:9200/'),
         'INDEX_NAME': 'haystack',
     },
 }
+
+ELASTICSEARCH_INDEX_SETTINGS = {
+    'settings': {
+        "analysis": {
+            "analyzer": {
+                "synonym_analyzer" : {
+                    "type": "custom",
+                    "tokenizer" : "standard",
+                    "filter" : ["synonym"]
+                },
+                "ngram_analyzer": {
+                    "type": "custom",
+                    "tokenizer": "lowercase",
+                    "filter": ["haystack_ngram", "synonym"]
+                },
+                "edgengram_analyzer": {
+                    "type": "custom",
+                    "tokenizer": "lowercase",
+                    "filter": ["haystack_edgengram"]
+                }
+            },
+            "tokenizer": {
+                "haystack_ngram_tokenizer": {
+                    "type": "nGram",
+                    "min_gram": 3,
+                    "max_gram": 15,
+                },
+                "haystack_edgengram_tokenizer": {
+                    "type": "edgeNGram",
+                    "min_gram": 2,
+                    "max_gram": 15,
+                    "side": "front"
+                }
+            },
+            "filter": {
+                "haystack_ngram": {
+                    "type": "nGram",
+                    "min_gram": 3,
+                    "max_gram": 15
+                },
+                "haystack_edgengram": {
+                    "type": "edgeNGram",
+                    "min_gram": 2,
+                    "max_gram": 15
+                },
+                "synonym" : {
+                    "type" : "synonym",
+                    "ignore_case": "true",
+                    "synonyms_path" : "synonyms.txt"
+                }
+            }
+        }
+    }
+}
+
 
 DEBUG_TOOLBAR_PATCH_SETTINGS = False
 INTERNAL_IPS = ['187.207.220.232', '127.0.0.1',]
@@ -189,7 +252,7 @@ COMPRESS_PRECOMPILERS = (
     ('text/less', 'lessc {infile} {outfile}'),
     ('text/x-scss', 'django_libsass.SassCompiler'),
 )
-COMPRESS_ENABLED = True
+#COMPRESS_ENABLED = True
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,

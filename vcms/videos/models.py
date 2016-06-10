@@ -293,18 +293,84 @@ class Video(models.Model):
 
 
 
+LISTA_TIPO_CHOICES = Choices(
+    ('tematico', u'Lista temática'),
+    ('destacado', u'Lista de destacados'),
+    ('serie', u'Serie'),
+)
+
+LISTA_LAYOUT_CHOICES = Choices(
+    ('auto', u'Automático'),
+    ('c100', u'1 columna'),
+    ('c50', u'1 o 2 columnas'),
+    ('c33', u'Hasta 3 columnas'),
+    ('c25', u'Hasta 4 columnas'),
+)
+
+class ListaQuerySet(models.query.QuerySet):
+    """
+    Lógica de consulta de Listas
+    """
+    def destacados(self, categoria=None):
+        qs = self.filter(tipo=Lista.TIPO.destacado, usar_web=True)
+        if categoria:
+            return qs.filter(categoria=categoria)
+        else:
+            return qs.filter(categoria__isnull=True)
+        
+
 class Lista(models.Model):
-    slug = AutoSlugField(populate_from='nombre', unique=True,
+    TIPO = LISTA_TIPO_CHOICES
+    tipo = StatusField(u'tipo de lista', choices_name='TIPO',
+                       default=TIPO.tematico)
+    LAYOUT = LISTA_LAYOUT_CHOICES
+    layout = StatusField(choices_name='LAYOUT', default=LAYOUT.auto,
+        help_text=u'<em>Automático</em> ajusta el layout dependiendo del ' \
+                  u'número de videos que contenga la lista'
+        )
+    slug = AutoSlugField(populate_from='nombre', unique_with=['tipo'],
                          always_update=True)
-    nombre = models.CharField(max_length=64, blank=True)
+    nombre = models.CharField(max_length=128)
     descripcion = models.TextField(u'descripción', blank=True)
+
+    usar_nombre = models.BooleanField(default=True)
+    usar_descripcion = models.BooleanField(default=True)
+    # plataformas
+    usar_web = models.BooleanField(u'usar en sitio web',
+        default=True, db_index=True
+        )
+    usar_movil = models.BooleanField(u'usar en móviles',
+        default=True, db_index=True
+        )
+    usar_tv = models.BooleanField(u'usar en smart TV',
+        default=True, db_index=True
+        )
+    # publicidad
+    ads_web = models.BooleanField(u'publicidad en sitio web',
+        default=True, db_index=True
+        )
+    ads_movil = models.BooleanField(u'publicidad en móviles',
+        default=True, db_index=True
+        )
+    ads_tv = models.BooleanField(u'publicidad en smart TV',
+        default=True, db_index=True
+        )
+    categoria = models.ForeignKey('Categoria', models.CASCADE,
+        blank=True, null=True, verbose_name=u'Categoría',
+        help_text=u'Dejar vacío para asignar al home/portada'
+        )
     fecha_creacion = models.DateTimeField(u'fecha de creación',
         db_index=True, editable=False, auto_now_add=True
         )
     fecha_modificacion = models.DateTimeField(u'última modificación',
         null=True, blank=True, auto_now=True, editable=False
         )
+    tags = TaggableManager(u'tags', blank=True,
+        help_text=u'Estos tags se aplican a todos los videos de la lista',
+        )
     orden = models.PositiveIntegerField()
+
+    objects = ListaQuerySet.as_manager()
 
     @property
     def descripcion_plain(self):

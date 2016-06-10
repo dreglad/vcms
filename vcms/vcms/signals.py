@@ -2,13 +2,16 @@
 import os
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
+from django.core.cache import cache
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.http import HttpRequest
+from django.utils.cache import get_cache_key
 
 from .jobs.ops import crear_nuevo_video_job
 from .video_ops import *
 from videos.models import Video
-
 
 @receiver(post_save, sender=Video)
 def procesar_video(sender, **kwargs):
@@ -22,6 +25,8 @@ def procesar_video(sender, **kwargs):
         video.procesamiento = Video.PROCESAMIENTO.procesando
         video.save()
         crear_nuevo_video_job.delay(video.pk)
+
+
 
 
 # @receiver(post_save, sender=Video)

@@ -1,0 +1,7 @@
+{% load thumbnail %}
+
+{% if video.imagen %}
+  {% thumbnail video.imagen "160" as im %}
+    <img src="{{ im.url }}" width="160">
+  {% endthumbnail %}
+{% endif %}

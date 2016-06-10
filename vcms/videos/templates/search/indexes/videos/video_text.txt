@@ -1,5 +1,5 @@
 {{ object.titulo }}
-{{ object.descripcion }}
+{{ object.descripcion_plain }}
 {{ object.resumen }}
 {% if object.categoria %}{{ object.categoria.nombre }}{% endif %}
 {% if object.tipo %}{{ object.tipo.nombre }}{% endif %}
