@@ -14,8 +14,8 @@ Clonar repositorio
 ```
 #!bash
 
-$ git clone https://bitbucket.org/news-hub/video.git
-$ cd video
+$ git clone https://github.com/dreglad/vcms
+$ cd vcms
 ```
 
 Crear, correr y aprovisionar máquina virtual
@@ -27,6 +27,15 @@ $ vagrant up
 
 
 ## Deployment en producción ##
+
+La Jornada
+```
+#!bash
+
+$ ansible-playbook -i provisioning/lj_inventory.ini provisioning/playbook.yml
+
+```
+
 
 Globovisión
 ```
