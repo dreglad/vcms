@@ -285,6 +285,18 @@ class Video(models.Model):
             settings.MEDIA_URL, self.pk
             )
 
+    '''
+    Listas
+    '''
+    @property
+    def serie(self):
+        try:
+            return Lista.objects.filter(tipo=Lista.TIPO.serie,
+                                        enlistado__video=self)[0]
+        except IndexError:
+            pass
+    
+
     class Meta:
         '''
         Video Meta class
@@ -339,17 +351,17 @@ class Lista(models.Model):
     usar_web = models.BooleanField(u'usar en sitio web',
         default=True, db_index=True
         )
-    usar_movil = models.BooleanField(u'usar en móviles',
+    usar_movil = models.BooleanField(u'usar en apps móviles',
         default=True, db_index=True
         )
-    usar_tv = models.BooleanField(u'usar en smart TV',
+    usar_tv = models.BooleanField(u'usar en apps de TV',
         default=True, db_index=True
         )
     # publicidad
     ads_web = models.BooleanField(u'publicidad en sitio web',
         default=True, db_index=True
         )
-    ads_movil = models.BooleanField(u'publicidad en móviles',
+    ads_movil = models.BooleanField(u'publicidad en apps móviles',
         default=True, db_index=True
         )
     ads_tv = models.BooleanField(u'publicidad en smart TV',

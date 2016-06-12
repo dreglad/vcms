@@ -1,21 +1,108 @@
 {% extends 'base.html' %}
+
+{% load static from staticfiles %}
 {% load thumbnail %}
 {% load more_like_this %}
+{% load videos %}
+
+{% block title %}{{ video.titulo }} - La Jornada Videos{% endblock %}
+
+{% block style %}{{ block.super }}{% if player == "videojs" %}
+<link href="//vjs.zencdn.net/5.8.8/video-js.css" rel="stylesheet">
+<!-- <script src="http://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script> -->
+{% endif %}{% endblock %}
+
+{% block compressed_style %}{{ block.super }}
+<link href="{% static 'css/video.scss' %}" rel="stylesheet" type="text/x-scss">
+{% if player == "videojs" %}
+  <link href="{% static 'css/player/videojs.scss' %}" rel="stylesheet"
+        type="text/x-scss">
+{% endif %}
+{% endblock %}
+
+{% block script %}{{ block.super }}{% if player == "jwplayer" %}
+<script src="//content.jwplatform.com/libraries/Heo8FOlf.js"></script>
+{% else %}{% if player == "clappr" %}
+<script src="https://cdn.jsdelivr.net/clappr/latest/clappr.min.js"></script>
+{% endif %}{% endif %}{% endblock %}
+
+{% block compressed_script %}{{ block.super }}{% if player == "jwplayer" %}
+<script src="//content.jwplatform.com/libraries/Heo8FOlf.js"></script>
+{% endif %}{% endblock %}
+
+{% block bottom_script %}{% if player == "videojs" %}
+<script src="//vjs.zencdn.net/5.8.8/video.js"></script>
+{% endif %}{{ block.super }}{% endblock %}
+
+{% block compressed_bottom_script %}{{block.super}}{% if player == "videojs" %}
+<script src="{% static 'js/player/videojs.thumbnails.js' %}"></script>
+{% endif %}{% endblock %}
+
 
 {% block content %}
-
 <main id="video" class="fluid-container">
   <article class="row">
-    <div class="col-lg-7">{% include "includes/player.html" %}</div>
+
+    <div class="col-lg-7">
+      {% if player == "jwplayer" %}
+        {% include "includes/player/jwplayer.html" %}
+      {% else %}{% if player == "videojs" %}
+        {% include "includes/player/videojs.html" %}
+      {% endif %}{% endif %}
+    </div>
+
     <div class="col-lg-5">
+      <div class="labels">
+        <span class="label categoria">{{ video.categoria.nombre }}</span>
+        {% if video.serie %}
+        <span class="label serie" title="{{ video.serie.nombre }}">
+          {{ video.serie.nombre }}
+        </span>
+        {% endif %}
+        {% if video.tipo %}
+        <span class="label tipo" title="{{ video.tipo.nombre }}">
+          {{ video.tipo.nombre }}
+        </span>
+        {% endif %}
+      </div>
+
       <h1>{{ video.titulo }}</h1>
-      <div class="descripcion">{{ video.descripcion }}</div>
+
+      <div class="compartir">
+        <a class="" href="{{ video.url }}">
+          <span class="fa fa-twitter" aria-hidden="true"></span>
+        </a>
+        <a class="" href="{{ video.url }}">
+          <span class="fa fa-facebook" aria-hidden="true"></span>
+        </a>
+        <a class="" href="{{ video.url }}">
+          <span class="fa fa-google" aria-hidden="true"></span>
+        </a>
+        <a class="" href="{{ video.url }}">
+          <span class="fa fa-whatsapp" aria-hidden="true"></span>
+        </a>
+      </div>
+
+      <div class="sub-titulo">
+        <span class="fecha">
+          <i class="fa fa-calendar" aria-hidden="true"></i>
+          {{ video.fecha|date:"j \d\e N, Y" }}
+        </span>
+        <span class="duracion">
+          <i class="fa fa-clock-o" aria-hidden="true"></i> 
+          {{ video.duracion|duration }}
+        </span>
+      </div>
+
+
+      <div class="descripcion">{{ video.descripcion|safe }}</div>
+
     </div>
   </article>
 </main>
 
 <section class="relacionados">
-  <h2>Videos relacionados</h2>
+  <h2>Videos similares</h2>
   <ol class="row">
     {% more_like_this video as relacionados limit 12 %}
     {% for result in relacionados %}
@@ -26,14 +113,34 @@
   </ol>
 </section>
 
+{% if relacionados_categoria %}
+<section class="relacionados">
+  <h2>Más videos de {{ video.categoria }}</h2>
+  <ol class="row">
+    {% for video in relacionados_categoria %}
+      <li class="col-xl-3 col-lg-4 col-sm-6">
+        {% include "includes/video_article.html" %}
+      </li>
+    {% endfor %}
+  </ol>
+</section>
+{% endif %}
+
+{% if video.serie %}
+<section class="relacionados">
+  <h2>Más videos de {{ video.serie.nombre }}</h2>
+  <ol class="row">
+    {% for video in video.serie.videos.all|slice:":12" %}
+      <li class="col-xl-3 col-lg-4 col-sm-6">
+        {% include "includes/video_article.html" %}
+      </li>
+    {% endfor %}
+  </ol>
+</section>
+{% endif %}
+
 {% endblock %}
 
-
-{% block title %}{{ video.titulo }} - La Jornada Videos{% endblock %}
-
-{% block script %}{{ block.super }}
-<script type="text/javascript" src="http://content.jwplatform.com/libraries/Heo8FOlf.js"></script>
-{% endblock %}
 
 {% block ljjson %}{{ block.super }}
 {% thumbnail video.imagen "640" as im %}

@@ -1,0 +1,46 @@
+{% load thumbnail %}
+
+<div class="player-wrap player-wrap-clappr">
+  <div id="video-{{ video.uuid }}"></div>
+</div>
+<script>
+  var player = new Clappr.Player({
+    source: "http://your.video/here.mp4",
+    parentId: "#player"
+  });
+
+/*
+  var sources = [], tracks = [];
+
+  {% if video.hls %}
+  sources.push({ file: "{{ video.hls.url }}", default: true});
+  {% endif %}
+
+  {% if video.archivo %}
+  sources.push({ file: "{{ video.archivo.url }}", default: false });
+  {% endif %}
+
+  {% if video.sprites %}
+  tracks.push({ file: "{{ video.sprites.url }}", kind: 'thumbnails'});
+  {% endif %}
+
+  jwplayer('video-{{ video.uuid }}').setup({
+    title: "{{ video.titulo }}",
+    //description: "{{ video.resumen }}",
+    {% thumbnail video.imagen "360" quality=45 as thumb %}
+    image: '{{ thumb.url }}',
+    {% endthumbnail %}
+    sources: sources, tracks: tracks,
+    preload: 'auto',
+    primary: 'html5',
+    hlshtml: true,
+    sharing: {
+       code: '<iframe src="http://google.com" width="480"  height="270"  frameborder="0"  scrolling="auto" />',
+       heading: "Compartir video"
+    },
+    width: '100%',
+    aspectratio: '{{ video.original_width }}:{{ video.original_height }}'
+  });
+
+  */
+</script>

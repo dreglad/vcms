@@ -24,7 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
-    
+
     'compressor',
     'crispy_forms',
     'debug_toolbar',

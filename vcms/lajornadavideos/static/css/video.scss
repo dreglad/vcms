@@ -1,5 +1,62 @@
-.player-wrap {
+@import "bootstrap/bootstrap.scss";
+@import "font-awesome/font-awesome.scss";
+
+@import "_variables.scss";
+@import "bootstrap-social.scss";
+
+
+main#video {
     margin-top: 1rem;
+
+    .player-wrap {
+        -webkit-box-shadow: rgba(0,0,0,0.4) 0 0 16px;
+        box-shadow: rgba(0,0,0,0.4) 0 0 16px;
+        margin-bottom: 20px;
+    }
+
+    h1 {
+        color: $azulColor;
+        font-family: 'PT Serif Caption', serif;
+        font-weight: 400;
+        text-transform: none;
+        font-size: 26px;
+        line-height: 125%;
+    }
+
+    div.compartir {
+        margin: 0.5rem 0;
+        span {
+            font-size: 20px;
+            padding: 0.3rem 0.5rem;
+        }
+    }
+
+    .label {
+        padding: 0.3rem 0.6rem;
+        margin: 0 0.20rem;
+        background-color: $verdeColor;
+        text-transform: uppercase;
+        &.categoria { background-color: $verdeColor; }
+    }
+
+    .sub-titulo {
+        padding-bottom: 0.5rem;
+        padding-right: 1em;
+        span {
+            display: inline-block;
+            margin-right: 2rem;
+            i {
+                opacity: 0.5;
+                margin-right: 2px;
+                // font-size: 80%;
+            }
+            &.duracion {
+            }
+            &.fecha {
+            }
+        }
+    }
+
 }
 
 section.relacionados {

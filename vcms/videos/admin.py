@@ -434,6 +434,42 @@ class VideoAdmin(VersionAdmin, vModelAdmin, AdminImageMixin):
 
 admin.site.register(Video, VideoAdmin)
 
+class ListaPlataformaFilter(admin.SimpleListFilter):
+    title = 'Plataforma'
+    # Parameter for the filter that will be used in the URL query.
+    parameter_name = 'plataforma'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('wev', 'Sitio web'),
+            ('movil', 'Apps móviles'),
+            ('tv', 'Apps de TV'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'web':
+            return queryset.filter(usar_web=True)
+        if self.value() == 'movil':
+            return queryset.filter(usar_movil=True)
+        if self.value() == 'tv':
+            return queryset.filter(usar_tv=True)
+
+class ListaCategoriaFilter(admin.SimpleListFilter):
+    title = 'Sección'
+    # Parameter for the filter that will be used in the URL query.
+    parameter_name = 'seccion'
+
+    def lookups(self, request, model_admin):
+        return [
+            ('home', 'Home/Principal')
+        ] + [(cat.id, cat.nombre) for cat in Categoria.objects.all()]
+
+    def queryset(self, request, queryset):
+        if self.value() == 'home':
+            return queryset.filter(categoria__isnull=self.value())
+        else:
+            return queryset.filter(categoria__pk=self.value())
+
 
 class ListaChangeForm(ModelForm, vModelAdmin):
     class Meta:
@@ -448,7 +484,7 @@ class ListaAdmin(VersionAdmin, vModelAdmin, SortableModelAdmin):
     form = ListaChangeForm
     inlines = (VideoInline,)
     list_display = ('nombre', 'tipo', 'categoria_', 'videos_', 'player')
-    list_filter = ('tipo', 'categoria')
+    list_filter = ('tipo', ListaCategoriaFilter, ListaPlataformaFilter)
     sortable = 'orden'
     readonly_fields = ('fecha_creacion', 'fecha_modificacion')
 

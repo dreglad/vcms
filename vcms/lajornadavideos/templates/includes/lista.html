@@ -29,6 +29,25 @@
         <li class="c33">{% include "includes/video_article.html" %}</li>
       {% endfor %}
 
+    {% else %}{% if videos|length_is:"6" or layout == "6" %}
+
+      <li class="grid-sizer c25"></li>
+      {% for video in videos|slice:":1" %}
+        <li class="c50">{% include "includes/video_article.html" %}</li>
+      {% endfor %}
+      {% for video in videos|slice:"1:3" %}
+        <li class="c25">{% include "includes/video_article.html" %}</li>
+      {% endfor %}
+      {% for video in videos|slice:"3:4" %}
+        <li class="c50">{% include "includes/video_article.html" %}</li>
+      {% endfor %}
+      {% for video in videos|slice:"4:6" %}
+        <li class="c25">{% include "includes/video_article.html" %}</li>
+      {% endfor %}
+      {% for video in videos|slice:"6:" %}
+        <li class="c25">{% include "includes/video_article.html" %}</li>
+      {% endfor %}
+
     {% else %}
 
       <li class="grid-sizer c25"></li>
@@ -36,7 +55,7 @@
         <li class="c25">{% include "includes/video_article.html" %}</li>
       {% endfor %}
 
-    {% endif %}{% endif %}{% endif %}
+    {% endif %}{% endif %}{% endif %}{% endif %}
 
 
     {% endwith %}

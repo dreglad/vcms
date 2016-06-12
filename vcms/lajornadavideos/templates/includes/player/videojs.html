@@ -1,0 +1,39 @@
+{% load thumbnail %}
+
+{% thumbnail video.imagen "360" quality=45 as im %}
+<div class="player-wrap">
+  <video id="video-{{ video.uuid }}" class="video-js vjs-default-skin"
+         preload="auto" width="640" height="264" controls poster="{{ im.url }}"
+         data-setup="{}">
+    {% if video.hls %}
+    <source src="{{ video.hls.url }}" type='application/x-mpegURL'>
+    {% endif %}
+
+    {% if video.archivo %}
+    <source src="{{ video.archivo.url }}" type='video/mp4'>
+    {% endif %}
+
+    {% if video.webm %}
+    <source src="{{ video.webm.url }}" type='video/webm'>
+    {% endif %}
+
+    {% if video.sprites %}
+    <track kind="metadata" src="{{ video.sprites.url }}"></track>
+    {% endif %}
+
+    <p class="vjs-no-js"> Para poder reproducr este video es necesario
+    habilitar Javascript en tu nvageador o bien usar un naveagdor
+    <a href="http://videojs.com/html5-video-support/" target="_blank">compatible con video HTML5</a></p>
+  </video>
+</div>
+{% endthumbnail %}
+
+{% if video.sprites %}
+<script>
+  $(function() {
+    videojs('video-{{ video.uuid }}').ready(function() {
+      this.thumbnails({width:120,height:90});
+    });
+  })
+</script>
+{% endif %}

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*- #
+from django.core.cache import cache
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -65,12 +66,19 @@ class VideoView(BaseView):
             raise Http404("Video inexistente")
         if self.video.slug != kwargs['video_slug']:
             return redirect(video, permanent=True)
+
+        self.player = request.GET.get('player', 'jwplayer')
         
         return super(VideoView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(VideoView, self).get_context_data(**kwargs)
-        context.update({ 'video': self.video })
+        context.update({
+            'player': self.player,
+            'video': self.video,
+            'relacionados_categoria': Video.objects.publicos().filter(
+                    categoria=self.video.categoria)[:12],
+        })
         return context
 
 

@@ -1,8 +1,10 @@
 @import "bootstrap/bootstrap.scss";
-@import "mixins.scss";
+@import "_variables.scss";
+@import "_mixins.scss";
 
 @import url(https://fonts.googleapis.com/css?family=Roboto+Condensed:700,400);
 @import url(https://fonts.googleapis.com/css?family=Roboto:400,300);
+@import url(https://fonts.googleapis.com/css?family=PT+Serif+Caption);
 @import url(https://fonts.googleapis.com/css?family=PT+Serif);
 
 @font-face {
@@ -15,19 +17,6 @@
     font-weight: normal;
     font-style: normal;
 }
-
-
-/* variables */
-$mainFont           :"Roboto", sans-serif;
-$headingsFontFamily :"Roboto Condensed", sans-serif;
-$menuFontFamily     :"Roboto", sans-serif;
-$headingsFontWeight :400;
-$menuFontWeight     :400;
-
-$bodyBackground   :#ffffff;
-$headerBackground :#f1f1f1;
-$fontColor        :#666666;
-$rojoColor        :#DE1800;
 
 
 body { 
@@ -58,12 +47,11 @@ body {
     #middle-container {
         @import "video_article.scss";
         @import "playlist.scss";
-        @import "video.scss";
         max-width: 1308px;
         padding: 0 2rem;
 
         h1,h2 {
-            font-size: 25px;
+            font-size: 27px;
             font-family: $headingsFontFamily;
             font-weight: $headingsFontWeight;
             text-transform: uppercase;
@@ -72,7 +60,7 @@ body {
         }
 
         h2 {
-            font-size: 22px;
+            font-size: 24px;
         }
     }
 

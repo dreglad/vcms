@@ -51,7 +51,15 @@ class HyperlinkedSorlImageField(serializers.ImageField):
     to_native = to_representation
 
 
+
+class TagsField(serializers.CharField):
+    def to_representation(self, value):
+        tags = [tag.name for tag in value.all()]
+        return ','.join(tags)
+
+
 class VideoSerializer(serializers.HyperlinkedModelSerializer):
+    tags = TagsField(read_only=True)
     thumbnail_100 = HyperlinkedSorlImageField('100',
         source='imagen', read_only=True
         )
@@ -64,6 +72,7 @@ class VideoSerializer(serializers.HyperlinkedModelSerializer):
     thumbnail_1000 = HyperlinkedSorlImageField('1000',
         source='imagen', read_only=True
         )
+    tags 
 
     url = URLField(source='get_absolute_url')
     class Meta:
@@ -84,6 +93,7 @@ class CategoriaSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id', 'slug', 'nombre')
 
 class ListaSerializer(serializers.HyperlinkedModelSerializer):
+    tags = TagsField(read_only=True)
     class Meta:
         model = Lista
         fields = ('id', 'slug', 'tipo', 'nombre', 'descripcion',

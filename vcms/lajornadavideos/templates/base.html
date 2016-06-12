@@ -16,7 +16,8 @@
 
 {% block style %}
   {% compress css %}{% block compressed_style %}
-  <link href="{% static 'css/main.scss' %}" rel="stylesheet" type="text/x-scss">
+  <link href="{% static 'css/main.scss' %}"
+        rel="stylesheet" type="text/x-scss">
   {% endblock %}{% endcompress %}
 {% endblock %}
 
@@ -41,6 +42,22 @@
         "query-input": "required name=search_string"
       }
     }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Organization",
+    "url": "http://www.jornada.unam.mx",
+    "contactPoint": [{
+      "@type": "ContactPoint",
+      "telephone": "+52 (55) 9183 0300",
+      "contactType": "Contacto"
+    }.{
+      "@type": "ContactPoint",
+      "url": "https://libreria.jornada.com.mx/suscripciones.php",
+      "contactType": "Suscripciones"
+    }.]
+  }
   </script>
 {% endblock %}
 
