@@ -273,7 +273,7 @@ class VideoAdmin(VersionAdmin, vModelAdmin, AdminImageMixin):
 
         (u'Archivos', {
             'classes': ('suit-tab', 'suit-tab-general', 'compact-fieldset'),
-            'fields': [('imagen', 'sprites')],
+            'fields': [('imagen', 'sprites'), 'archivo'],
         }),
         
         (u'Básico', {
@@ -595,96 +595,3 @@ class SitioAdmin(VersionAdmin, vModelAdmin, SortableModelAdmin):
     radio_fields = { 'reproduccion': admin.HORIZONTAL, }
     save_as = True
 admin.site.register(Sitio, SitioAdmin)
-
-
-# class DistribucionAdmin(vModelAdmin):
-#     list_display = ('descripcion', 'activo', 'canales', 'criterios',
-#                     'videos_elegibles', 'videos_distribuidos', 'ultimo_dia')
-#     list_filter = ('activo', 'email', 'tipos', 'corresponsales')
-#     filter_horizontal = ['tipos', 'categorias', 'programas', 'tipos_programa',
-#                          'temas', 'paises', 'corresponsales', 'series']
-#     fieldsets = (
-#         (None, {
-#             'fields': ('descripcion', 'activo')
-#         }),
-#         (u'Notificación por e-mail', {
-#             'classes': ('collapse',),
-#             'fields': ('email', 'email_template')
-#         }),
-#         (u'Cargas de archivo a FTP remoto', {
-#             'classes': ('collapse',),
-#             'fields': ('ftp_host', 'ftp_port', 'ftp_dir', 'ftp_user', 'ftp_pass')
-#         }),
-#         (u'Reglas de selección', {
-#             'classes': ('collapse',),
-#             'fields': ('fecha_desde', 'fecha_hasta', 'con_corresponsal',
-#                        'texto', 'tipos', 'categorias', 'programas', 'tipos_programa',
-#                        'temas', 'paises', 'corresponsales', 'series')
-#         }),
-#     )
-
-#     def formfield_for_dbfield(self, db_field, **kwargs):
-#         formfield = super(DistribucionAdmin, self).formfield_for_dbfield(db_field, **kwargs)
-#         if db_field.name == 'email':
-#             formfield.widget = forms.Textarea(attrs=formfield.widget.attrs)
-#         return formfield
-
-#     def videos_elegibles(self, obj):
-#         return obj.get_videos_distribuibles().count()
-
-#     def videos_distribuidos(self, obj):
-#         return obj.distribuidos.count()
-
-#     def ultimo_dia(self, obj):
-#         return obj.distribuidos.filter(fecha__gt=datetime.now() - timedelta(hours=24)).count()
-
-#     def criterios(self, obj):
-#         result = []
-#         if obj.texto:
-#             result.append(u'<strong>Búsqueda de texto</strong>: %s' % obj.texto)
-#         if obj.con_corresponsal:
-#             result.append(u'<strong>Con corresponsal</strong>: Sí')
-
-#         relations = ('tipos', 'categorias', 'programas', 'tipos_programa',
-#                      'corresponsales', 'temas', 'paises', 'series',)
-#         for r in relations:
-#             objs = getattr(obj, r)
-#             if objs.exists():
-#                 result.append(u'<strong>%s</strong>: %s' % (r.capitalize(), ', '.join(map(lambda x: unicode(x), objs.all()))))
-
-#         if obj.fecha_desde:
-#             result.append(u'<strong>Fecha de inicio:</strong> %s' % obj.fecha_desde)
-#         if obj.fecha_hasta:
-#             result.append(u'<strong>Fecha final:</strong> %s' % obj.fecha_hasta)
-
-#         return '<br />'.join(result)
-#     criterios.allow_tags=True
-
-#     def canales(self, obj):
-#         html = ''
-#         if obj.email:
-#             html += u'<p><strong>Email:</strong> <em>%s</em>' % obj.email.replace('<', '&lt;').replace('>', '&gt;')
-#             html += u'<br /><strong>Plantilla:</strong> <em>%s</em></p>' % obj.email_template
-#         if obj.ftp_host:
-#             html += u'<p><strong>FTP:</strong> <em>%s (puerto %s)</em>' % (obj.ftp_host, obj.get_ftp_port())
-#             if obj.ftp_user:
-#                 html += u'<br /><strong>Usuario:</strong> <em>%s</em>' % obj.ftp_user
-#             if obj.ftp_pass:
-#                 html += u'<br /><strong>Contraseña:</strong> <em>%s</em>' % obj.ftp_pass
-#             if obj.ftp_dir:
-#                 html += u'<br /><strong>Directorio:</strong> <em>%s</em>' % obj.ftp_dir
-#             html += u'</p>'
-#         return html
-#     canales.allow_tags=True
-# admin.site.register(Distribucion, DistribucionAdmin)
-
-
-# class DistribuidoAdmin(vModelAdmin):
-#     list_display = ['pk', 'fecha', 'distribucion', 'video']
-#     list_filter = ['distribucion', 'fecha', 'video__corresponsal']
-#     readonly_fields = ['video']
-#     list_per_page = 50
-
-#     def has_add_permission(self, request):
-#         return False
-# admin.site.register(Distribuido, DistribuidoAdmin)

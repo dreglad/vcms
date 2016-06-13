@@ -70,6 +70,51 @@ def can_show_toolbar(request):
         return False
     return bool(DEBUG)
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'file_log': {
+            'level': 'ERROR',
+            'formatter': 'simple',
+            'class': 'logging.FileHandler',
+            'filename': '/var/log/vcms_error.log',
+        },
+        'file_debug': {
+            'level': 'DEBUG',
+            'formatter': 'verbose',
+            'filters': ['require_debug_true'],
+            'class': 'logging.FileHandler',
+            'filename': '/var/log/vcms_debug.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file_debug', 'file_log'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'filters': [],
+        },
+        'vcms': {
+            'handlers': ['file_debug', 'file_log'],
+            'level': 'DEBUG',
+            'filters': [],
+        }
+    },
+}
+
 
 MIDDLEWARE_CLASSES = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
@@ -228,7 +273,7 @@ RQ_QUEUES = {
         'DB': 3,
     }
 }
-RQ_EXCEPTION_HANDLERS = ['vcms.jobs.ops.error_handler']
+#RQ_EXCEPTION_HANDLERS = ['vcms.jobs.video.error_handler']
 
 THUMBNAIL_KVSTORE = 'sorl.thumbnail.kvstores.redis_kvstore.KVStore'
 THUMBNAIL_REDIS_DB = 2

@@ -89,7 +89,10 @@ class Video(models.Model):
     archivo = models.FileField(upload_to='videos', blank=True, null=True)
     imagen = SorlImageField(upload_to='images', blank=True, null=True)
     hls = models.FileField(u'HLS', upload_to='hls', blank=True, null=True)
-    resolucion = models.IntegerField(u'resolución máxima',
+    resolucion = models.IntegerField(u'resolución',
+        db_index=True, blank=True, null=True
+        )
+    max_resolucion = models.IntegerField(u'resolución máxima',
         db_index=True, blank=True, null=True
         )
     dash = models.FileField(u'DASH', upload_to='hls', blank=True, null=True)
