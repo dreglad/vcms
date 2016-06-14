@@ -47,7 +47,7 @@ body {
     #middle-container {
         @import "video_article.scss";
         @import "playlist.scss";
-        max-width: 1308px;
+        max-width: $maxWidth;
         padding: 0 2rem;
 
         h1,h2 {

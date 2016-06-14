@@ -1,15 +1,17 @@
 {% load static from staticfiles %}
 
-<header class="container-fluid" id="page-header"
-        itemscope itemtype="https://schema.org/WPHeader">
-    <a class="home-lajornada" title="La Jornada"
-        href="http://www.jornada.unam.mx/">
-      <span>La Jornada</span>
-    </a>
-    <a class="home-videos" title="La Jornada Videos" href="{% url 'home' %}">
-      <span class="text-hide">La Jornada Videos</span>
-    </a>
-    <button class="navbar-toggler hidden-lg-up" type="button" data-toggle="collapse" data-target="#menuOptions">
-      &#9776;
-    </button>
-</header>
+<div id="header-wrap" class="container-fluid">
+  <header class="container" id="page-header"
+          itemscope itemtype="https://schema.org/WPHeader">
+      <a class="home-lajornada" title="La Jornada"
+          href="http://www.jornada.unam.mx/">
+        <span>La Jornada</span>
+      </a>
+      <a class="home-videos" title="La Jornada Videos" href="{% url 'home' %}">
+        <span class="text-hide">La Jornada Videos</span>
+      </a>
+      <button class="navbar-toggler hidden-lg-up" type="button" data-toggle="collapse" data-target="#menuOptions">
+        &#9776;
+      </button>
+  </header>
+</div>
