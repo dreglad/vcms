@@ -19,7 +19,7 @@ td.field-video {
     padding: 4px !important;
 }
 
-td.field-video img {
+td.field-video img.procesando {
   /* placeholder img */
   opacity: 0.8;
 }
@@ -118,9 +118,10 @@ td.field-video img {
   margin: 1em auto !important;
 }
 
-.jwplayer {
-  -webkit-box-shadow: rgba(0,0,0,0.4) 0 0 16px;
-  box-shadow: rgba(0,0,0,0.4) 0 0 16px;
+.player-wrap {
+  -webkit-box-shadow: rgba(0,0,0,0.4) 0 0 10px;
+  box-shadow: rgba(0,0,0,0.4) 0 0 10px;
+  margin: 10px;
 }
 
 

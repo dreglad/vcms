@@ -2,65 +2,65 @@
 {% load staticfiles %}
 
 {% if lista.enlistado.exists %}
-    <div class="playlist-player-wrap">
-      <div id="lista-{{ lista.pk }}"></div>
-    </div>
-    <script>
-        var playlist = [], sources, tracks, aspcetratio = '';
+  <div class="playlist-player-wrap">
+    <div id="lista-{{ lista.pk }}"></div>
+  </div>
+  <script>
+    var playlist = [], sources, tracks, aspcetratio = '';
 
-        {% for listado in lista.enlistado.all %}
-            {% if forloop.first %}
-            aspectratio = "{{ listado.video.original_width }}:{{ listado.video.original_height }}";
-            {% endif %}
-            sources = [];
-            tracks = [];
+    {% for listado in lista.enlistado.all %}
+      {% if forloop.first %}
+      aspectratio = "{{ listado.video.original_width }}:{{ listado.video.original_height }}";
+      {% endif %}
+      sources = [];
+      tracks = [];
 
-            {% if listado.video.hls %}
-                sources.push({ file: "{{ listado.video.hls.url }}"});
-            {% endif %}
-            {% if listado.video.archivo %}
-                sources.push({ file: "{{ listado.video.archivo.url }}" });
-            {% endif %}
+      {% if listado.video.hls %}
+        sources.push({ file: "{{ listado.video.hls.url }}"});
+      {% endif %}
+      {% if listado.video.archivo %}
+        sources.push({ file: "{{ listado.video.archivo.url }}" });
+      {% endif %}
 
-            {% if listado.video.sprites %}
-                tracks.push({ file: "{{ video.sprites.url }}", kind: 'thumbnails'});
-            {% endif %}
+      {% if listado.video.sprites %}
+        tracks.push({ file: "{{ video.sprites.url }}", kind: 'thumbnails'});
+      {% endif %}
 
-            playlist.push({
-                {% thumbnail listado.video.imagen "360" quality=45 as thumb %}
-                    image: '{{ thumb.url }}',
-                {% endthumbnail %}
-                {% if listado.video.titulo %}
-                    title: "{{ listado.video.titulo }}",
-                {% else %}
-                    title: "{{ lista.nombre }}",
-                {% endif %}
-                {% if lista.descripcion %}
-                    description: "{{ lista.descripcion_plain }}",
-                {% endif %}
-                sources: sources,
-                tracks: tracks
-            })
-        {% endfor %}
-        jwplayer('lista-{{ lista.pk }}').setup({
-            playlist: playlist,
-            visualplaylist: true,
-            preload: 'none',
-            hlshtml: true,
-            primary: 'html5',
-            sharing: null,
-            width: '100%',
-            aspectratio: aspectratio
-        });
+      playlist.push({
+        {% thumbnail listado.video.imagen "360" quality=45 as thumb %}
+          image: '{{ thumb.url }}',
+        {% endthumbnail %}
+        {% if listado.video.titulo %}
+          title: "{{ listado.video.titulo }}",
+        {% else %}
+          title: "{{ lista.nombre }}",
+        {% endif %}
+        {% if lista.descripcion %}
+          description: "{{ lista.descripcion_plain }}",
+        {% endif %}
+        sources: sources,
+        tracks: tracks
+      })
+    {% endfor %}
+    jwplayer('lista-{{ lista.pk }}').setup({
+      playlist: playlist,
+      visualplaylist: true,
+      preload: 'none',
+      hlshtml: true,
+      primary: 'html5',
+      sharing: null,
+      width: '100%',
+      aspectratio: aspectratio
+    });
 
-        jwplayer().on('displayClick', function() {
-          var player = jwplayer();
-          if (!player.getControls()) {
-            player.play();  // toggle
-          }
-        });
-    </script>
+    jwplayer().on('displayClick', function() {
+      var player = jwplayer();
+      if (!player.getControls()) {
+      player.play();  // toggle
+      }
+    });
+  </script>
 
 {% else %}
-    <h2>[Lista vacía]</h2>
+  <h2>[Lista vacía]</h2>
 {% endif %}

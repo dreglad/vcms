@@ -2,58 +2,76 @@
 {% load staticfiles %}
 
 {% if video.archivo %}
-    <div id="video-{{ video.pk }}"></div>
-    <script>
-        var sources = [], tracks = [];
 
-        {% if video.hls %}
-        sources.push({ file: "{{ video.hls.url }}"});
-        {% endif %}
+  {% thumbnail video.imagen "360" quality=45 as thumb %}
+  <div class="player-wrap"><div id="video-{{ video.pk }}">
+    <a href="#"><img src="{{ thumb.url }}" width="100%" /></a>
+  </div></div>
 
-        {% if video.archivo %}
-        sources.push({ file: "{{ video.archivo.url }}" });
-        {% endif %}
+  <script>
+  $(function() {
+    $('div#video-{{ video.pk }}').click(function(ev) {
+      ev.preventDefault();
 
-        {% if video.sprites %}
-        tracks.push({ file: "{{ video.sprites.url }}", kind: 'thumbnails'});
-        {% endif %}
+      var sources = [], tracks = [];
 
-        var player = jwplayer('video-{{ video.pk }}').setup({
-            //tiatle: "{video.titulo}",
-            //description: "{video.descripcion}",
-            sources: sources, tracks: tracks,
-            preload: 'auto',
-            sharing: {
-               code: '<iframe src="xxx"  width="480"  height="270"  frameborder="0"  scrolling="auto" />',
-               heading: "Compartir video"
-            },
-            width: '100%',
-            hlshtml: true,
-            primary: 'html5',
-            aspectratio: '{{video.original_width}}:{{video.original_height}}',
-            
-            {% thumbnail video.imagen "360" quality=45 as thumb %}
-            image: '{{ thumb.url }}'
-            {% endthumbnail %}
-        }).on('displayClick', function() {
-            var player = jwplayer('video-{{ video.pk }}');
-          if (!player.getControls()) {
-            player.play();  // toggle
+      {% if video.hls %}
+      sources.push({ file: "{{ video.hls.url }}"});
+      {% endif %}
+
+      {% if video.archivo %}
+      sources.push({ file: "{{ video.archivo.url }}" });
+      {% endif %}
+
+      {% if video.sprites %}
+      tracks.push({ file: "{{ video.sprites.url }}", kind: 'thumbnails'});
+      {% endif %}
+
+      var player = jwplayer('video-{{ video.pk }}').setup({
+        //tiatle: "{video.titulo}",
+        //description: "{video.descripcion}",
+        sources: sources, tracks: tracks,
+        preload: 'auto',
+        autostart: true,
+        sharing: {
+          code: '<iframe src="xxx"  width="480"  height="270"  frameborder="0"  scrolling="auto" />',
+           heading: "Compartir video"
+        },
+        width: '100%',
+        hlshtml: true,
+        primary: 'html5',
+        aspectratio: '{{video.original_width}}:{{video.original_height}}',
+        image: '{{ thumb.url }}'
+      }).on('displayClick', function() {
+        if (!player.getControls()) {
+          player.play();  // toggle
+        }
+      }).on('resize', function() {
+        var player = jwplayer('video-{{ video.pk }}');
+        if (player.getWidth() < 250) {
+          player.setControls(false);
+        }
+        return true;
+      }).on('play', function() {
+        $('div.jwplayer:not(#video-{{ video.pk }})').each(function() {
+          if (jwplayer(this).getState() == 'playing') {
+            jwplayer(this).pause();
           }
-        }).on('resize', function() {
-            var player = jwplayer('video-{{ video.pk }}');
-            console.log(player);
-            console.log(player.getWidth());
-            if (player.getWidth() < 250) {
-                player.setControls(false);
-            }
-            return true;
         });
-    </script>
+      });
+    });
+  });
+  </script>
+  {% endthumbnail %}
+
 {% else %}{% if video.imagen %}
-    {% thumbnail video.imagen "360" as thumb %}
-        <img src="{{ thumb.url }}" />
-    {% endthumbnail %}
+
+  {% thumbnail video.imagen "360" quality=90 as thumb %}
+  <img src="{{ thumb.url }}" eidth="100%" />
+  {% endthumbnail %}
+
 {% else %}
-    <img src="/static/vcms/img/generic-video.png" width="360" />
+
+  <img src="{% static 'vcms/img/generic-video.png' %}" width="360" />
+
 {% endif %}{% endif %}
