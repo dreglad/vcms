@@ -24,6 +24,7 @@ ALLOWED_HOSTS = ['videosadmin-stg.jornada.com.mx']
 INSTALLED_APPS = [
     'suit',
     'suit_redactor',
+    'suit_rq',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -43,10 +44,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'reversion',
     'sorl.thumbnail',
-    'suit_rq',
     'taggit',
 
-    'videos',
+    'vcms.apps.VcmsVideosConfig',
 ]
 
 
@@ -88,7 +88,7 @@ LOGGING = {
     },
     'handlers': {
         'file_log': {
-            'level': 'ERROR',
+            'level': 'INFO',
             'formatter': 'simple',
             'class': 'logging.FileHandler',
             'filename': '/var/log/vcms_error.log',

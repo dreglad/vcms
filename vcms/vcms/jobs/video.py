@@ -9,6 +9,7 @@ from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import connection
 from django_rq import job
+from PIL import Image
 
 from vcms import makesprites, video_ops
 from videos.models import Video
@@ -17,16 +18,28 @@ from videos.models import Video
 logger = logging.getLogger('vcms')
 
 
+def _video_status_file(video, content=None):
+    """Helper to write to video status file"""
+    with open(os.path.join(settings.TEMP_ROOT, 'status', video.uuid),'w') as f:
+        if content is not None:
+            logger.debug('Writing "%s" to status file "%s"' % (content, f))
+            return f.write(content)
+        else:
+            logger.debug('Created blank status file: %s' % f)
+
+
 @job('low', timeout=2*3600)
 def make_sprites_job(video_pk):
     TOTAL_SPRITES = 120  # total de 120 sprites
-    connection.close() # force re-connnect to avoid DB tomeout issues
 
+    connection.close() # force re-connnect to avoid DB tomeout issues
     video = Video.objects.get(pk=video_pk)
 
     # prepare
     sprites_dir = os.path.join(settings.MEDIA_ROOT, 'sprites', video.uuid)
-    if os.path.isdir(sprites_dir): shutil.rmtree(sprites_dir)
+    if os.path.isdir(sprites_dir):
+        shutil.rmtree(sprites_dir)
+        logger.info('Removed existing sprites directory: %s' % sprites_dir)
     os.makedirs(sprites_dir)
 
     # make sprites
@@ -37,7 +50,7 @@ def make_sprites_job(video_pk):
 
     # update object
     Video.objects.filter(pk=video_pk).update(
-        sprites=os.path.join('sprites', video.uuid, 'video.vtt')
+        sprites=os.path.join('sprites', video.uuid, 's.vtt')
         )
 
 
@@ -56,28 +69,26 @@ def make_hls_job(video_pk):
 
         if playlist == 'playlist.m3u8':
             Video.objects.filter(pk=video.pk).update(hls=hls_uri)
-            logger.info('Finished segmenting all video modes')
+            logger.debug('Finished segmenting all video modes: %s' % hls_uri)
         else:
             Video.objects.filter(pk=video.pk) \
                 .update(hls=hls_uri, resolucion=current, max_resolucion=total)
-            logger.info(('Finished partial playlist %s of height %d '
-                          'out of %d ') % (hls_uri, height, total_height))
+            logger.debug(('Finished partial playlist %s of height %d '
+                          'out of %d ') % (hls_uri, current, total))
     # make HLS segments and playlists
     video_ops.make_hls_segments(
-        video.archivo.path,
-        os.path.join(settings.MEDIA_ROOT, 'hls', video.uuid),
+        input_file=video.archivo.path,
+        output_dir=os.path.join(settings.MEDIA_ROOT, 'hls', video.uuid),
         progress_fn=playlist_progress
         )
 
 
 @job('high', timeout=3600)
 def create_new_video_job(video_pk):
-    connection.close();
-    sleep(2)
+    logger.info('Sarting create_new_video_job with video_pk: %d' % video_pk)
 
+    connection.close();
     video = Video.objects.get(pk=video_pk)
-    status_file = open(  # file to report status and progress
-        os.path.join(settings.TEMP_ROOT, 'status', video.uuid), 'w')
 
     '''
     Download
@@ -85,10 +96,10 @@ def create_new_video_job(video_pk):
     download_path = os.path.join(settings.TEMP_ROOT, 'original', video.uuid)
     source = video.origen_url or video.archivo_original
     logger.info('About to download %s to %s' % (source, download_path))
-    def progress(source, path, progress):
-        sttus_file.write('download %g' % progress)
+    def progress_fn(source, destination, progress):
+        _video_status_file(video, 'download %g' % progress)
     download = video_ops.download_video(source, download_path,
-                                        progress_fn=progress)
+                                        progress_fn=progress_fn)
     '''
     Validate
     '''
@@ -105,11 +116,12 @@ def create_new_video_job(video_pk):
         if not 'duration' in video_format_info:
             raise AssertionError('3 El archivo obtenido parece ser una imgaen, no un video')
 
-        status_file.write('valid %s' % video_format_info['duration'])
+        _video_status_file(video, 'valid %s' % video_format_info['duration'])
 
     except AssertionError as e:
-        logger.error('Error: %s' % e)
-        status_file.write('error %s' % e)
+        logger.error('Error validating download %s, error: %s' % (download, e))
+        _video_status_file(video, 'error %s' % e)
+
         Video.objects.filter(pk=video.pk) \
             .update(procesamiento=Video.PROCESAMIENTO.error)
         return
@@ -127,12 +139,15 @@ def create_new_video_job(video_pk):
     image_path = os.path.join(settings.TEMP_ROOT, 'img', image_name)
 
     video_ops.extract_video_image(download_path, image_path)
+    img_size=Image.open(image_path).size
 
     video.imagen.save(image_name, # move file to target storage
         ContentFile(open(image_path).read()), save=False)
     os.remove(image_path)
-    Video.objects.filter(pk=video.pk).update(imagen='images/%s' % image_name)
-
+    Video.objects.filter(pk=video.pk) \
+        .update(imagen='images/%s' % image_name,
+                original_width=img_size[0],
+                original_height=img_size[1])
     '''
     Video
     '''
@@ -150,10 +165,9 @@ def create_new_video_job(video_pk):
                 procesamiento=Video.PROCESAMIENTO.listo)
 
     # update status file
-    status_file.write('done %d' % video.pk)
+    _video_status_file(video, 'done %d' % video.pk)
 
     #cleanup
-    status_file.close()
     os.remove(vstats_path)
     os.remove(download_path)
 

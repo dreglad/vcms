@@ -3,13 +3,14 @@ Pillow
 sorl-thumbnail
 MySQL-python
 django-mptt
-django_rq
+django-rq
 rq-scheduler
 markdown
 django-filter
 django-crispy-forms
 #django-supervisor
 python-dateutil
+elasticsearch
 mandrill
 wget
 django-suit

@@ -1,18 +1,21 @@
 # -*- coding: utf-8 -*-
 """Video operations with FFmpeg"""
+from datetime import timedelta
 import json
 import logging
+from math import ceil
 import os
 import re
 import shutil
+import uuid
 import wget
 
 from django.conf import settings
 from django.core.files.base import ContentFile
-from subprocess import Popen, PIPE, call
+from subprocess import Popen, PIPE, call, check_output
 
 
-logger = logging.getLogger('vcms.video_ops')
+logger = logging.getLogger('vcms')
 
 
 H264_PARAMS = {
@@ -86,17 +89,18 @@ def get_video_info(file):
 def get_video_autocrop_filter(input_file):
     """Returns measured recommended crop filter switch to get rid of black bars
     """
-    cmd = ('ffmpeg -ss 10 -i {input} -t 1 -vf cropdetect -f null - 2>&1 | '
-           'awk "/crop/ { print $NF }" | tail -1').format(input_file)
-    autocrop = Popen(cmd, stdout=PIPE, shell=True).stdout.read()
+    cmd = ("ffmpeg -ss 10 -i {input} -t 1 -vf cropdetect -f null - 2>&1 | "
+           "awk '/crop/ {{ print $NF }}' | tail -1").format(input=input_file)
+    logger.debug('Geting autocrop filter with command: %s' % cmd)
+    autocrop = check_output(cmd, shell=True).strip()
     logger.debug('Got video autocrop value: %s' % autocrop)
-    return '-vf "crop=%s"' % autocrop
+    return '-vf "%s"' % autocrop
 
 
 def get_video_duration(input_file):
     """Returns a datetime.timedelta representing video duration"""
     cmd = ('ffmpeg -i {input_file} 2>&1 | grep "Duration" '
-           '| cut -d " " -f 4 | cut -d "." -f 1').format(input=input_file)
+           '| cut -d " " -f 4 | cut -d "." -f 1').format(input_file=input_file)
     d = Popen(cmd, stdout=PIPE, shell=True).stdout.read().strip().split(':')
     logger.debug('Got video duration: %s' % d)
     return timedelta(hours=int(d[0]), minutes=int(d[1]), seconds=int(d[2]))
@@ -110,24 +114,24 @@ def extract_video_image(input_file, output_file, offset=-1, autocrop=True):
     autocrop -- Apply autocrop filter to get rid of black bars (default True)
     """
     if offset == -1:
-        offset = abs(math.ceil(get_video_duration(input_file).seconds/2))
+        offset = abs(ceil(get_video_duration(input_file).seconds/2))
     crop_filter = ''
     if autocrop:
-        crop_filter = '-vf "crop=%s"' % get_video_autocrop(input_file)
+        crop_filter = get_video_autocrop_filter(input_file)
     cmd = ('ffmpeg -y -ss {offset} -i {input_file} -vframes 1 {crop_filter} '
            '-an {output_file}').format(
                 input_file=input_file, output_file=output_file,
                 offset=offset, crop_filter=crop_filter
                 )
-    logger.info('Extracting iamge with command: %s' % cmd)
+    logger.debug('Extracting iamge with command: %s' % cmd)
     call(cmd, shell=True)
     cmd = ('convert -strip -interlace Plane -gaussian-blur 0.025 '
-           '-quality 99% {img} {img}').format(img=img_file)
-    logger.info('Optimizing iamge with command: %s' % cmd)
+           '-quality 99% {img} {img}').format(img=output_file)
+    logger.debug('Optimizing iamge with command: %s' % cmd)
     return (call(cmd, shell=True) == 0)
 
 
-def compress_h264mpeg4avc(imput_file, output_file, vstats_file, autocrop=True):
+def compress_h264mpeg4avc(input_file, output_file, vstats_file, autocrop=True):
     """Compress to a normalized H264/MPEG-4 AVC video.
 
     Keyword arguments:
@@ -139,8 +143,9 @@ def compress_h264mpeg4avc(imput_file, output_file, vstats_file, autocrop=True):
            '-c:a libfdk_aac -b:a {params[audio_bitrate]}k '
            '-ar {params[audio_samplerate]} -c:v libx264 -crf {params[crf]} '
            '-vf "scale=\'min(iw,{params[max_width]})\':-2" '
-           '{autocrop_filter} -profile:v {profile} -level:v {level} '
-           '-pix_fmt yuv420p -threads 0 -movflags +faststart {output_file}'
+           '{autocrop_filter} -profile:v {params[profile]} '
+           '-level:v {params[level]} -pix_fmt yuv420p -threads 0 '
+           '-movflags +faststart {output_file}'
                 ).format(input_file=input_file, output_file=output_file,
                          params=H264_PARAMS, autocrop_filter=autocrop_filter,
                          vstats_file=vstats_file or '/dev/null')
@@ -159,9 +164,10 @@ def make_hls_segments(input_file, output_dir, progress_fn=None):
     playlists = []
 
     # cleanup output directory (will delete any previous segments)
-    if os.path.isdir(hls_dir):
-        shutil.rmtree(hls_dir)
-    os.makedirs(hls_dir)
+    if os.path.isdir(output_dir):
+        shutil.rmtree(output_dir)
+        logger.info('Removed existing HLS directory: %s' % output_dir)
+    os.makedirs(output_dir)
 
     # detemrine needed modes (different qualities)
     video_height = get_video_stream_info(input_file)['height']
@@ -169,7 +175,7 @@ def make_hls_segments(input_file, output_dir, progress_fn=None):
         if video_height >= max_mode['cut_height']:
             # select maximum AND all lower modes
             modes = [m for m in HLS_MODES if m['height'] <= max_mode['height']]
-            logger.info('Starting HLS segmentation, max_mode: %s' % max_mode)
+            logger.debug('Found max quality mode: %s' % max_mode)
             break
     
     # create segments for each mode, lowest first, so video can play sooner
@@ -191,7 +197,7 @@ def make_hls_segments(input_file, output_dir, progress_fn=None):
         # generate and append current playlist line of global playlist
         playlists.append((
             '#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH={bandwidth},'
-            'RESOLUTION={sream[width]}x{sream[height]}\n{mmplaylist}') \
+            'RESOLUTION={stream[width]}x{stream[height]}\n{playlist}') \
                 .format(bandwidth=mode['bandwidth'],
                         stream=get_video_stream_info(playlist_file),
                         playlist=os.path.basename(playlist_file))
@@ -204,6 +210,7 @@ def make_hls_segments(input_file, output_dir, progress_fn=None):
     # write global playlist
     with open(os.path.join(output_dir, 'playlist.m3u8'), 'w') as f:
         f.write("#EXTM3U\n" + "\n".join(playlists[::-1])) # reverse order again
+        logger.debug('Created main playlist HLS file: %s' % f)
 
     # finished
     progress_fn and progress_fn(playlist='playlist.m3u8')
@@ -223,27 +230,35 @@ def make_dash_segments():
 
 def download_video(source, output_file, progress_fn=None, force_direct=False):
     """Downloads video file from url and"""
+    logger.debug('download_video with params: %s, %s' % (source, output_file))
 
     if os.path.isabs(source) and os.path.exists(source):
-        # is a local file
-        return shutil.copyfile(source, output_file)
+        logger.debug('download is a local file, just copy.')
+        shutil.copyfile(source, output_file)
+        return os.path.exists(output_file)
 
     elif force_direct or source.endswith(VIDEO_EXTENSIONS):
-        # is a direct download
+        logger.debug('download is a direct file download')
+        temp = os.path.join(settings.TEMP_ROOT, str(uuid.uuid4()))
         def wget_progress(current, total, width=80):
-            if progress_fn: progress_fn(url, path, (current/float(total))*100)
-        wget.download(src, path, bar=wget_progress)
+            if hasattr(progress_fn, '__call__'):
+                progress_fn(source, output_file, (current/float(total))*100)
+        wget.download(source, temp, bar=wget_progress)
+        shutil.move(temp, output_file)
         return os.path.exists(output_file)
 
     else:
-        # is a you-get download
-        p = Popen(['you-get', '--force',
-                   '--output-dir', os.path.dirname(output_file),
-                   '--output-filename', os.path.basename(output_file),
-                   source], stdout=PIPE)
-        if progress_fn:
+        logger.debug('Automagic download via you-get')
+        p = Popen([
+            'you-get', '--force','--output-dir', os.path.dirname(output_file),
+            '--output-filename', os.path.basename(output_file), source
+            ], stdout=PIPE)
+        if hasattr(progress_fn, '__call__'):
             for line in iter(lambda: p.stdout.read(50), b''):
                 m = re.match(r'.* (\d+\.\d+)%.*', line)
-                if m: progress_fn(url, path, float(m.group(1)))
+                if m:
+                    progress = float(m.group(1))
+                    logger.debug('You-get download progress: %g' % progress)
+                    progress_fn(source, output_file, progress)
         p.communicate()
-        return p.returncode == 0 and os.path.exists(path)
+        return p.returncode == 0 and os.path.exists(output_file)
