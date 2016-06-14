@@ -214,7 +214,7 @@ def make_hls_segments(input_file, output_dir, progress_fn=None):
 
     # finished
     progress_fn and progress_fn(playlist='playlist.m3u8')
-    logger.debug('Finished HLS segmentation to %s' % output_file)
+    logger.debug('Finished HLS segmentation to %s' % output_dir)
     return os.path.exists(os.path.join(output_dir, 'playlist.m3u8'))
 
 

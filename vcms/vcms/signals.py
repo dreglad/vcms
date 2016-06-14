@@ -24,7 +24,7 @@ def process_video(sender, **kwargs):
         status_path = os.path.join(settings.TEMP_ROOT, 'status', video.uuid)
         with open(status_path, 'w') as status_file:
             status_file.write('queue')
-            logger.debug('Marked video as queuedprocessing: %s' % video)
+            logger.debug('Marked video as queued for processing: %s' % video)
 
         create_new_video_job.delay(video.pk)
         logger.debug('create_new_video_job launched with %d' % video.pk)

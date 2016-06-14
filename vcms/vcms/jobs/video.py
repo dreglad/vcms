@@ -63,7 +63,7 @@ def make_hls_job(video_pk):
     else:  # mark as currently being segmenting
         Video.objects.filter(pk=video_pk).update(resolucion=-1)
 
-    def playlist_progress(playlist, current, total):
+    def playlist_progress(playlist, current=None, total=None):
         """Called after each partial or the global playlist finises"""
         hls_uri = os.path.join('hls', video.uuid, playlist)
 
@@ -176,10 +176,10 @@ def create_new_video_job(video_pk):
     make_hls_job.delay(video.pk)
 
 
-def error_handler(job, exc_type, exc_value, traceback):
+def error_handler(job, *exc_info):
     """Error hanfling"""
     video_pk = job.args[0]
-    logger.error('Error executing %s for %s' % (job.func_name, video_pk))
+    logger.error('Error executing job %s for %s' % (exc_info, video_pk))
     if job.func_name == make_hls_job.func_name:
         Video.objects.get(pk=video_pk).update(resolucion=0)
     elif job.func_name == create_new_video_job.func_name:
