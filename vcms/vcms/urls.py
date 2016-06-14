@@ -9,7 +9,6 @@ from django.views.generic.base import RedirectView
 
 from vcms import views
 from vcms.api import router
-import vcms.signals
 
 
 urlpatterns = [
