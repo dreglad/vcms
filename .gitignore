@@ -1,6 +1,7 @@
 *.py[cod]
 .vagrant
 .Python
+.DS_Store
 
 src/bin
 src/include
