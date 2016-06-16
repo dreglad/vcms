@@ -163,7 +163,7 @@ class TipoViewSet(viewsets.ModelViewSet):
     serializer_class = TipoSerializer
 
 
-class VideoViewSet(viewsets.ReadOnlyModelViewSet):
+class VideoViewSet(viewsets.ModelViewSet):
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
 
