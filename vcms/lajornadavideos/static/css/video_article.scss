@@ -1,14 +1,14 @@
 article.video {
-    font-size: 1rem;
+    margin-right: 1.5rem;
     a {
         -webkit-box-shadow: rgba(0,0,0,0.4) 0 0 8px;
         box-shadow: rgba(0,0,0,0.4) 0 0 8px;
         color: white;
         display: block;
         position: relative;
-        margin: 1.1rem;
+        margin: 0.5rem 0;
         figure {
-            margin: 0;
+            margin:0;
             /* background: linear-gradient(to bottom,
                                         rgba(0, 0, 0, 0) 50%,
                                         rgba(0, 0, 0, 1)); */
@@ -16,14 +16,14 @@ article.video {
                                         rgba(0, 0, 0, 0) 0,
                                         rgba(0, 0, 0, 0.3) 30%,
                                         rgba(0, 0, 0, 0.9) 95%);
-            img { 
+            img {
                 display: inline-block;
                 position: relative;
                 z-index: -1;
                 width: 100%;
             }
 
-            &:hover { 
+            &:hover {
                 span.titulo {
                     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
                 }
@@ -63,5 +63,5 @@ article.video {
                 }
             }
         }
-    } 
+    }
 }

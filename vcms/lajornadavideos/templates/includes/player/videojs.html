@@ -1,6 +1,6 @@
 {% load thumbnail %}
 
-{% thumbnail video.imagen "360" quality=45 as im %}
+{% thumbnail video.imagen.file "360" quality=45 as im %}
 <div class="player-wrap">
   <video id="video-{{ video.uuid }}" class="video-js vjs-default-skin"
          preload="auto" width="640" height="264" controls poster="{{ im.url }}"

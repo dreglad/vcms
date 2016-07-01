@@ -53,17 +53,26 @@
 
     <div class="col-lg-5">
       <div class="labels">
-        <span class="label categoria">{{ video.categoria.nombre }}</span>
-        {% if video.serie %}
-        <span class="label serie" title="{{ video.serie.nombre }}">
-          {{ video.serie.nombre }}
-        </span>
-        {% endif %}
-        {% if video.tipo %}
-        <span class="label tipo" title="{{ video.tipo.nombre }}">
-          {{ video.tipo.nombre }}
-        </span>
-        {% endif %}
+        {% for lista in video.listas.all %}
+          {% if lista.mostrar_icono and lista.icono %}
+            {% thumbnail lista.icono.file "25" as im %}
+            {% with lista.links.latest as link %}
+            <span>
+              {% if link %}
+                <a title="{{ link.titulo }}" href="{{ link.url }}"
+                   target="{% if link.blank %}_blank{% endif %}">
+              {% else %}{% if lista.pagina %}
+                <a title="{{ lista.pagina }}" href="/secciones/{{ link.url }}">
+              {% endif %}{% endif %}
+              <img src="{{ im.url }}" style="margin:{{ im|margin:"30x30" }}">
+              {% if link or lista.pagina %}</a>{% endif %}
+            </span>
+            {% endwith %}
+            {% endthumbnail %}
+          {% else %}
+            <span class="label {{ lista.clasificador.nombre }}">{{ lista.nombre }}</span>
+          {% endif %}
+        {% endfor %}
       </div>
 
       <h1>{{ video.titulo }}</h1>
@@ -89,35 +98,42 @@
           {{ video.fecha|date:"j \d\e N, Y" }}
         </span>
         <span class="duracion">
-          <i class="fa fa-clock-o" aria-hidden="true"></i> 
+          <i class="fa fa-clock-o" aria-hidden="true"></i>
           {{ video.duracion|duration }}
         </span>
       </div>
 
 
       <div class="descripcion">{{ video.descripcion|safe }}</div>
+      <ul class="links">
+          {% for link in video.links.all %}
+            <li><span class="fa fa-link"></span> <a href="{{ link.url }}">{{ link.titulo }}</a></li>
+          {% endfor %}
+      </ul>
 
     </div>
   </article>
-</main>
 
-<section class="relacionados">
-  <h2>Videos similares</h2>
-  <ol class="row">
-    {% more_like_this video as relacionados limit 12 %}
-    {% for result in relacionados %}
-        <li class="col-xl-3 col-lg-4 col-sm-6">
-          {% include "includes/video_article.html" with video=result.object %}
-        </li>
-    {% endfor %}
-  </ol>
-</section>
+{% for lista in video.listas.all %}
+    {% if lista.clasificador.slug != 'autor' and lista.videos.count %}
+    <section class="relacionados">
+      <h2>{{ lista.nombre_plural|default:lista.nombre }}</h2>
+      <ol class="row">
+        {% for video in lista.videos.all|slice:"12" %}
+          <li class="col-xl-3 col-lg-4 col-sm-6">
+            {% include "includes/video_article.html" %}
+          </li>
+        {% endfor %}
+      </ol>
+    </section>
+    {% endif %}
+{% endfor %}
 
-{% if relacionados_categoria %}
+{% if relacionados %}
 <section class="relacionados">
-  <h2>Más videos de {{ video.categoria }}</h2>
+  <h2>Relacionados</h2>
   <ol class="row">
-    {% for video in relacionados_categoria %}
+    {% for video in relacionados %}
       <li class="col-xl-3 col-lg-4 col-sm-6">
         {% include "includes/video_article.html" %}
       </li>
@@ -126,24 +142,13 @@
 </section>
 {% endif %}
 
-{% if video.serie %}
-<section class="relacionados">
-  <h2>Más videos de {{ video.serie.nombre }}</h2>
-  <ol class="row">
-    {% for video in video.serie.videos.all|slice:":12" %}
-      <li class="col-xl-3 col-lg-4 col-sm-6">
-        {% include "includes/video_article.html" %}
-      </li>
-    {% endfor %}
-  </ol>
-</section>
-{% endif %}
+</main>}
 
 {% endblock %}
 
 
 {% block ljjson %}{{ block.super }}
-{% thumbnail video.imagen "640" as im %}
+{% thumbnail video.imagen.file "640" as im %}
 <script type="application/ld+json">
 {
     "@context": "http://schema.org",
@@ -170,4 +175,3 @@
 </script>
 {% endthumbnail %}
 {% endblock %}
-

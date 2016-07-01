@@ -9,45 +9,34 @@ from videos.models import *
 
 
 class BaseView(TemplateView):
+    home = Pagina.objects.get(slug='home', activo=True)
+    paginas = Pagina.objects.filter(activo=True)
+
     def get_context_data(self, **kwargs):
         context = super(BaseView, self).get_context_data(**kwargs)
-        context.update({ 'categorias': Categoria.objects.all() })
-        if getattr(self, 'categoria', None):
-            context.update({'categoria_actual': self.categoria })
-        elif getattr(self, 'video', None):
-            context.update({'categoria_actual': self.video.categoria })
-        return context
-
-
-class HomeView(BaseView):
-
-    template_name = "home.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(HomeView, self).get_context_data(**kwargs)
+        if hasattr(self, 'pagina'):
+            context.update({
+                'pagina': self.pagina,
+            })
         context.update({
-            'videos': Video.objects.publicos()[:20],
-            'listas': Lista.objects.destacados(),
+            'home': self.home,
+            'paginas': self.paginas,
         })
         return context
 
 
-class CategoriaView(BaseView):
-
-    template_name = "categoria.html"
+class SeccionView(BaseView):
+    template_name = "seccion.html"
 
     def dispatch(self, request, *args, **kwargs):
-        self.categoria = get_object_or_404(Categoria,
-                                           slug=kwargs['categoria_slug'])
-        return super(CategoriaView, self).dispatch(request, *args, **kwargs)
+        self.pagina = get_object_or_404(Pagina, slug=kwargs['seccion_slug'])
+        return super(SeccionView, self).dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs):
-        context = super(CategoriaView, self).get_context_data(**kwargs)
-        context.update({
-            'listas': Lista.objects.destacados(self.categoria),
-            'videos': list(Video.objects.publicos().filter(categoria=self.categoria)[:32]),
-        })
-        return context
+
+class HomeView(SeccionView):
+    def dispatch(self, request, *args, **kwargs):
+        self.pagina = self.home
+        return super(SeccionView, self).dispatch(request, *args, **kwargs)
 
 
 
@@ -68,16 +57,16 @@ class VideoView(BaseView):
             return redirect(video, permanent=True)
 
         self.player = request.GET.get('player', 'jwplayer')
-        
+
         return super(VideoView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(VideoView, self).get_context_data(**kwargs)
+
         context.update({
             'player': self.player,
             'video': self.video,
-            'relacionados_categoria': Video.objects.publicos().filter(
-                    categoria=self.video.categoria)[:12],
+            'relacionados': Video.objects.publicos()[:24],
         })
         return context
 

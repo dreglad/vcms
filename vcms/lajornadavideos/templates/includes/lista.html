@@ -1,36 +1,41 @@
 <section class="lista videos">
-  {% if lista.usar_nombre %}
-    <h2>{{ lista.nombre }}</h2>
+  {% if listado.mostrar_nombre or mostrar_nombre %}
+    <h2>
+      {% if listado.lista.pagina %}
+        <a title="{{ listado.lista.nombre }}" href="/secciones/{{ listado.lista.pagina.slug }}">
+      {% endif %}
+      {{ listado.lista.nombre_plural|default:listado.lista.nombre }}
+      {% if listado.lista.pagina %}</a>{% endif %}
+    </h2>
   {% endif %}
-  {% if lista.usar_descripcion and lista.descripcion_plain %}
-    <div class="descripcion">{{ lista.descripcion|safe }}</div>
-  {% endif %}
-  <ol class="container-fluid">
-    {% with videos=lista.videos.all %}
 
-    {% if videos|length_is:"1" or lista.layout == "c100" %}
+  {% if listado.mostrar_descripcion and listado.lista.descripcion_plain %}
+    <div class="descripcion">{{ listado.lista.descripcion|safe }}</div>
+  {% endif %}
+
+    <ol class="container-fluid">
+    {% if videos|length_is:"1" or listado.layout == "c100" %}
 
       <li class="grid-sizer c100"></li>
       {% for video in videos %}
         <li class="c100">{% include "includes/video_article.html" %}</li>
       {% endfor %}
 
-    {% else %}{% if videos|length_is:"2" or layout == 'c50' %}
+    {% else %}{% if videos|length_is:"2" or listado.layout == 'c50' %}
 
       <li class="grid-sizer c25"></li>
       {% for video in videos %}
         <li class="c50">{% include "includes/video_article.html" %}</li>
       {% endfor %}
 
-    {% else %}{% if videos|length_is:"3" or videos|length_is:"6" or layout == 'c33' %}
+    {% else %}{% if videos|length_is:"3" or listado.layout == 'c33' %}
 
       <li class="grid-sizer c33"></li>
       {% for video in videos %}
         <li class="c33">{% include "includes/video_article.html" %}</li>
       {% endfor %}
 
-    {% else %}{% if videos|length_is:"6" or layout == "6" %}
-
+    {% else %}{% if videos|length_is:"6" or listado.layout == "6" %}
       <li class="grid-sizer c25"></li>
       {% for video in videos|slice:":1" %}
         <li class="c50">{% include "includes/video_article.html" %}</li>
@@ -49,15 +54,11 @@
       {% endfor %}
 
     {% else %}
-
       <li class="grid-sizer c25"></li>
       {% for video in videos %}
         <li class="c25">{% include "includes/video_article.html" %}</li>
       {% endfor %}
 
     {% endif %}{% endif %}{% endif %}{% endif %}
-
-
-    {% endwith %}
   </ol>
 </section>

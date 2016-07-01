@@ -1,10 +1,20 @@
 {% extends 'base.html' %}
 
-{% block title %}Videos de {{ categoria.nombre }} - La Jornada Videos{% endblock %}
+{% block title %}Videos de {{ pagina.titulo }} - La Jornada Videos{% endblock %}
 
 {% block content %}
 <main>
-  <h1>{{ categoria_actual.nombre }}</h1>
+  <h1>{{ pagina.titulo }}</h1>
+
+  {% with videos=pagina.videos.all|slice:":12" %}
+    {% include "includes/lista.html" %}
+  {% endwith %}
+
+  {% for listado in pagina.listas_en_pagina.all %}
+    {% with videos=listado.videos_recientes %}
+    {% include "includes/lista.html" %}
+    {% endwith %}
+  {% endfor %}
 
   <section class="videos">
     <ol class="container-fluid">
@@ -17,6 +27,7 @@
       {% endfor %}
     </ol>
   </section>
+
   <section class="videos">
     <ol class="container-fluid">
       <li class="grid-sizer c33"></li>
@@ -27,8 +38,6 @@
   </section>
 </main>
 
-<button type="button" class="btn btn-primary">MOSTRAR MÁS VIDEOS</button>
+<!-- <button type="button" class="btn btn-primary">MOSTRAR MÁS VIDEOS</button> -->
 
 {% endblock %}
-
-

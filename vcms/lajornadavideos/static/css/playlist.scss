@@ -9,7 +9,7 @@ section.videos { /* grupo de videos */
             &.c33  { width: 33.333%; font-size: 110%; }
             &.c50  { width: 50%;     font-size: 130%; }
             &.c66  { width: 66.666%; font-size: 150%; }
-            &.c100 { width: 100%;    font-size: 170%; }
+            &.c100 { width: 100%;    font-size: 200%; }
 
             @include media-breakpoint-down(md) {
                 &.c25  { width: 25%;     font-size: 75%; }

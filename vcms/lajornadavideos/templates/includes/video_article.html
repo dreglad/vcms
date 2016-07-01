@@ -4,7 +4,7 @@
 <article class="video video-{{ video.uuid }}">
   <a href="{{ video.url }}">
     <figure>
-      {% thumbnail video.imagen size|default:"640x360" crop="center" upscale=True as im %}
+      {% thumbnail video.imagen.file size|default:"640x360" crop="center" upscale=True as im %}
       <img class="img-fluid" src="{{ im.url }}" alt="{{ video.titulo }}"
             title="{{ video.titulo }}">
       {% endthumbnail %}

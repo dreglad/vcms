@@ -4,25 +4,21 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.views.decorators.cache import cache_page
 
-from .views import CategoriaView, HomeView, VideoView, crossdomain
+from .views import SeccionView, HomeView, VideoView, crossdomain
 
 urlpatterns = [
-    url(r'^$', cache_page(60)(HomeView.as_view()),
-        name='home'
-        ),
-    url(r'^secciones/(?P<categoria_slug>.+)/$',
-        cache_page(60)(CategoriaView.as_view()),
-        name='categoria'
-        ),
+    url(r'^$', cache_page(30)(HomeView.as_view()),
+        name='home'),
+    url(r'^secciones/(?P<seccion_slug>.+)/$',
+        cache_page(30)(SeccionView.as_view()),
+        name='seccion'),
     url(r'^video/(?P<video_uuid>\d+)/(?P<video_slug>.+)/$',
-        cache_page(60 * 30)(VideoView.as_view()),
-        name='video'
-        ),
+        cache_page(60)(VideoView.as_view()),
+        name='video'),
 
     url(r'^busqueda/', include('haystack.urls')),
 
     url(r'^crossdomain\.xml$', crossdomain),
-
     url(r'^crossadomain\.xml$', crossdomain, name='busqueda'),
 ]
 

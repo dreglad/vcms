@@ -1,16 +1,27 @@
 {% load static from staticfiles %}
+{% load mptt_tags %}
 
 <nav class="menu navbar container-fluid">
   <div class="collapse navbar-toggleable-md" id="menuOptions">
     <ul itemscope itemtype="http://schema.org/SiteNavigationElement"
         class="nav navbar-nav">
-      {% for categoria in categorias %}
       <li class="nav-item">
-        <a {% if categoria_actual == categoria %}class="active"{% endif %} href="{% url 'categoria' categoria.slug %}" title="{{ categoria.nombre }}">
-          {{ categoria.nombre }}
-        </a>
+          <a {% if pagina.slug == home.slug %}class="active"{% endif %} href="{% url 'home' %}" title="{{ home.titulo }}">
+            {{ home.titulo }}
+          </a>
       </li>
-      {% endfor %}
+      {% recursetree home.get_children %}
+      <li class="nav-item">
+          <a {% if pagina.slug == node.slug %}class="active"{% endif %} href="{% url 'seccion' node.slug %}" title="{{ node.titulo }}">
+            {{ node.titulo }}
+          </a>
+          {% if not node.is_leaf_node %}
+              <ul class="children">
+                  {{ children }}
+              </ul>
+          {% endif %}
+      </li>
+      {% endrecursetree %}
     </ul>
   </div>
 </nav>

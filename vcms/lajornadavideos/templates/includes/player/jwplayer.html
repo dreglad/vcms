@@ -19,9 +19,9 @@
   {% endif %}
 
   jwplayer('video-{{ video.uuid }}').setup({
-    title: "{{ video.titulo }}",
+    //title: "{{ video.titulo }}",
     //description: "{{ video.resumen }}",
-    {% thumbnail video.imagen "360" quality=45 as thumb %}
+    {% thumbnail video.imagen.file "360" quality=45 as thumb %}
     image: '{{ thumb.url }}',
     {% endthumbnail %}
     sources: sources, tracks: tracks,

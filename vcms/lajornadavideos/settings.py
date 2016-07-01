@@ -21,6 +21,8 @@ ALLOWED_HOSTS = ['videos-stg.jornada.com.mx']
 
 # Application definition
 INSTALLED_APPS = [
+    'polymorphic',
+
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
@@ -30,6 +32,9 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'django_countries',
     'haystack',
+    'locality',
+    'mptt',
+    'gm2m',
     'rest_framework',
     'sorl.thumbnail',
     'taggit',

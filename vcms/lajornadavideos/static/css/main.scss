@@ -19,7 +19,7 @@
 }
 
 
-body { 
+body {
     background: $bodyBackground;
     color: $fontColor;
     font-family: $mainFont, sans-serif;
@@ -27,6 +27,10 @@ body {
     -webkit-touch-callout: none;
 
     ol, ul { margin: 0; padding: 0; }
+
+    .relacionados {
+        padding: 0 1rem;
+    }
 
     a {
         color: $fontColor;
@@ -48,19 +52,23 @@ body {
         @import "video_article.scss";
         @import "playlist.scss";
         max-width: $maxWidth;
-        padding: 0 2rem;
+        padding: 0 1rem;
 
         h1,h2 {
             font-size: 27px;
             font-family: $headingsFontFamily;
             font-weight: $headingsFontWeight;
             text-transform: uppercase;
-            color: $rojoColor; 
+            color: $rojoColor;
             padding: 1rem 0 0.25em 0;
         }
 
         h2 {
             font-size: 24px;
+            a {
+                color: $rojoColor;
+                &:hover { text-decoration: underline; }
+            }
         }
     }
 
@@ -69,8 +77,3 @@ body {
         @import "footer.scss";
     }
 }
-
-
-
-
-
