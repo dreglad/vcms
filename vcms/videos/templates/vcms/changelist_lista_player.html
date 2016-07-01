@@ -27,7 +27,7 @@
       {% endif %}
 
       playlist.push({
-        {% thumbnail listado.video.imagen "360" quality=45 as thumb %}
+        {% thumbnail listado.video.imagen.file "360" quality=45 as thumb %}
           image: '{{ thumb.url }}',
         {% endthumbnail %}
         {% if listado.video.titulo %}

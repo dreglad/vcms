@@ -1,0 +1,77 @@
+[
+{
+    "model": "videos.plataforma",
+    "pk": 1,
+    "fields": {
+        "fecha_creacion": "2016-06-19T19:51:01Z",
+        "fecha_modificacion": "2016-06-20T12:40:28Z",
+        "orden": 0,
+        "tipo": "web",
+        "slug": "la-jornada-videos",
+        "nombre": "La Jornada Videos",
+        "descripcion": "Sitio web http://videos.telesurtv.net",
+        "api_key": "",
+        "usar_publicidad": true
+    }
+},
+{
+    "model": "videos.plataforma",
+    "pk": 2,
+    "fields": {
+        "fecha_creacion": "2016-06-19T19:51:01Z",
+        "fecha_modificacion": "2016-06-20T12:41:19Z",
+        "orden": 2,
+        "tipo": "movil",
+        "slug": "la-jornada-para-ios",
+        "nombre": "La Jornada para iOS",
+        "descripcion": "",
+        "api_key": "dkj4#99sj2",
+        "usar_publicidad": true
+    }
+},
+{
+    "model": "videos.plataforma",
+    "pk": 3,
+    "fields": {
+        "fecha_creacion": "2016-06-19T19:51:01Z",
+        "fecha_modificacion": "2016-06-20T12:41:19Z",
+        "orden": 3,
+        "tipo": "movil",
+        "slug": "la-jornada-para-android",
+        "nombre": "La Jornada para Android",
+        "descripcion": "",
+        "api_key": "DP50csm",
+        "usar_publicidad": true
+    }
+},
+{
+    "model": "videos.plataforma",
+    "pk": 4,
+    "fields": {
+        "fecha_creacion": "2016-06-19T19:51:01Z",
+        "fecha_modificacion": "2016-06-20T12:40:37Z",
+        "orden": 1,
+        "tipo": "web",
+        "slug": "la-jornada-online",
+        "nombre": "La Jornada Online",
+        "descripcion": "",
+        "api_key": "0293948832",
+        "usar_publicidad": false
+    }
+},
+{
+    "model": "videos.plataforma",
+    "pk": 5,
+    "fields": {
+        "fecha_creacion": "2016-06-20T12:41:37Z",
+        "fecha_modificacion": "2016-06-20T12:42:19Z",
+        "orden": 4,
+        "tipo": "tv",
+        "slug": "la-jornada-para-samsung-smart-tv",
+        "nombre": "La Jornada para Samsung Smart TV",
+        "descripcion": "",
+        "api_key": "",
+        "usar_publicidad": true
+    }
+}
+]

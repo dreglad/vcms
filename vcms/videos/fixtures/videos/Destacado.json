@@ -1,0 +1,74 @@
+[
+{
+    "model": "videos.destacado",
+    "pk": 1,
+    "fields": {
+        "fecha_creacion": "2016-06-18T00:33:57Z",
+        "fecha_modificacion": "2016-06-20T20:26:00Z",
+        "orden": 1,
+        "slug": "videos-principales",
+        "activo": true,
+        "nombre": "Videos principales",
+        "descripcion": "Lista de videos principales, para mostrarse en el Home o P\u00e1gina principal de cualquier plataforma<br>",
+        "categoria": null,
+        "layout": "auto",
+        "usar_nombre": false,
+        "usar_descripcion": false,
+        "plataformas": []
+    }
+},
+{
+    "model": "videos.destacado",
+    "pk": 2,
+    "fields": {
+        "fecha_creacion": "2016-06-18T00:34:38Z",
+        "fecha_modificacion": "2016-06-20T20:27:47Z",
+        "orden": 0,
+        "slug": "super-destacado",
+        "activo": true,
+        "nombre": "Super destacado",
+        "descripcion": "<p><br></p>",
+        "categoria": null,
+        "layout": "auto",
+        "usar_nombre": false,
+        "usar_descripcion": false,
+        "plataformas": []
+    }
+},
+{
+    "model": "videos.destacado",
+    "pk": 3,
+    "fields": {
+        "fecha_creacion": "2016-06-18T00:41:23Z",
+        "fecha_modificacion": "2016-06-20T00:09:36Z",
+        "orden": 1,
+        "slug": "principales-de-politica",
+        "activo": true,
+        "nombre": "Principales de pol\u00edtica",
+        "descripcion": "<p><br></p>",
+        "categoria": 1,
+        "layout": "auto",
+        "usar_nombre": false,
+        "usar_descripcion": false,
+        "plataformas": []
+    }
+},
+{
+    "model": "videos.destacado",
+    "pk": 4,
+    "fields": {
+        "fecha_creacion": "2016-06-19T23:57:08Z",
+        "fecha_modificacion": "2016-06-20T00:10:22Z",
+        "orden": 2,
+        "slug": "secundarios-de-politica",
+        "activo": true,
+        "nombre": "Secundarios de pol\u00edtica",
+        "descripcion": "<p><br></p>",
+        "categoria": 1,
+        "layout": "auto",
+        "usar_nombre": true,
+        "usar_descripcion": true,
+        "plataformas": []
+    }
+}
+]

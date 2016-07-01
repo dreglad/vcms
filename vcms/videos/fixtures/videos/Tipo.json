@@ -1,0 +1,100 @@
+[
+{
+    "model": "videos.tipo",
+    "pk": 1,
+    "fields": {
+        "fecha_creacion": "2016-06-01T05:00:00Z",
+        "fecha_modificacion": null,
+        "orden": 1,
+        "slug": "111",
+        "nombre": "Noticia",
+        "nombre_plural": "Noticias",
+        "descripcion": "",
+        "reproduccion": "auto"
+    }
+},
+{
+    "model": "videos.tipo",
+    "pk": 2,
+    "fields": {
+        "fecha_creacion": "2016-06-01T05:00:00Z",
+        "fecha_modificacion": null,
+        "orden": 2,
+        "slug": "aasx",
+        "nombre": "Entrevista",
+        "nombre_plural": "Entrevistas",
+        "descripcion": "",
+        "reproduccion": "auto"
+    }
+},
+{
+    "model": "videos.tipo",
+    "pk": 4,
+    "fields": {
+        "fecha_creacion": "2016-06-01T05:00:00Z",
+        "fecha_modificacion": null,
+        "orden": 4,
+        "slug": "mmdn",
+        "nombre": "Reportaje",
+        "nombre_plural": "Reportajes",
+        "descripcion": "",
+        "reproduccion": "auto"
+    }
+},
+{
+    "model": "videos.tipo",
+    "pk": 5,
+    "fields": {
+        "fecha_creacion": "2016-06-01T05:00:00Z",
+        "fecha_modificacion": null,
+        "orden": 5,
+        "slug": "3333",
+        "nombre": "Pron\u00f3stico del tiempo",
+        "nombre_plural": "Pron\u00f3sticos del tiempo",
+        "descripcion": "",
+        "reproduccion": "auto"
+    }
+},
+{
+    "model": "videos.tipo",
+    "pk": 6,
+    "fields": {
+        "fecha_creacion": "2016-06-01T05:00:00Z",
+        "fecha_modificacion": null,
+        "orden": 6,
+        "slug": "ppppkj",
+        "nombre": "Videochat",
+        "nombre_plural": "Videochats",
+        "descripcion": "",
+        "reproduccion": "auto"
+    }
+},
+{
+    "model": "videos.tipo",
+    "pk": 7,
+    "fields": {
+        "fecha_creacion": "2016-06-01T05:00:00Z",
+        "fecha_modificacion": null,
+        "orden": 7,
+        "slug": "ppoWW",
+        "nombre": "[Independiente]",
+        "nombre_plural": "[Independientes]",
+        "descripcion": "",
+        "reproduccion": "local"
+    }
+},
+{
+    "model": "videos.tipo",
+    "pk": 8,
+    "fields": {
+        "fecha_creacion": "2016-06-01T05:00:00Z",
+        "fecha_modificacion": null,
+        "orden": 8,
+        "slug": "videoblog",
+        "nombre": "Videoblog",
+        "nombre_plural": "Videoblogs",
+        "descripcion": "",
+        "reproduccion": "auto"
+    }
+}
+]

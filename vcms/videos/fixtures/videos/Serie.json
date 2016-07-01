@@ -1,0 +1,36 @@
+[
+{
+    "model": "videos.serie",
+    "pk": 1,
+    "fields": {
+        "fecha_creacion": "2016-06-18T00:14:23Z",
+        "fecha_modificacion": "2016-06-18T01:08:38Z",
+        "orden": 1,
+        "slug": "dosis-de-ciencia",
+        "activo": true,
+        "nombre": "Dosis de Ciencia",
+        "descripcion": "",
+        "categoria": null,
+        "imagen": "series/dosis-de-ciencia.jpg",
+        "autor": 1,
+        "plataformas": []
+    }
+},
+{
+    "model": "videos.serie",
+    "pk": 2,
+    "fields": {
+        "fecha_creacion": "2016-06-18T00:16:57Z",
+        "fecha_modificacion": "2016-06-18T01:09:55Z",
+        "orden": 2,
+        "slug": "pronosticos-del-tiempo",
+        "activo": true,
+        "nombre": "Pron\u00f3sticos del Tiempo",
+        "descripcion": "",
+        "categoria": null,
+        "imagen": "",
+        "autor": 3,
+        "plataformas": []
+    }
+}
+]

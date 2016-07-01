@@ -1,0 +1,123 @@
+[
+{
+    "model": "videos.categoria",
+    "pk": 1,
+    "fields": {
+        "fecha_creacion": "2016-06-01T05:00:00Z",
+        "fecha_modificacion": null,
+        "orden": 1,
+        "slug": "politica",
+        "nombre": "Pol\u00edtica"
+    }
+},
+{
+    "model": "videos.categoria",
+    "pk": 2,
+    "fields": {
+        "fecha_creacion": "2016-06-01T05:00:00Z",
+        "fecha_modificacion": null,
+        "orden": 2,
+        "slug": "economia",
+        "nombre": "Econom\u00eda"
+    }
+},
+{
+    "model": "videos.categoria",
+    "pk": 3,
+    "fields": {
+        "fecha_creacion": "2016-06-01T05:00:00Z",
+        "fecha_modificacion": null,
+        "orden": 3,
+        "slug": "mundo",
+        "nombre": "Mundo"
+    }
+},
+{
+    "model": "videos.categoria",
+    "pk": 4,
+    "fields": {
+        "fecha_creacion": "2016-06-01T05:00:00Z",
+        "fecha_modificacion": null,
+        "orden": 4,
+        "slug": "sociedad",
+        "nombre": "Sociedad"
+    }
+},
+{
+    "model": "videos.categoria",
+    "pk": 5,
+    "fields": {
+        "fecha_creacion": "2016-06-01T05:00:00Z",
+        "fecha_modificacion": null,
+        "orden": 5,
+        "slug": "opinion",
+        "nombre": "Opini\u00f3n"
+    }
+},
+{
+    "model": "videos.categoria",
+    "pk": 6,
+    "fields": {
+        "fecha_creacion": "2016-06-01T05:00:00Z",
+        "fecha_modificacion": null,
+        "orden": 6,
+        "slug": "capital",
+        "nombre": "Capital"
+    }
+},
+{
+    "model": "videos.categoria",
+    "pk": 7,
+    "fields": {
+        "fecha_creacion": "2016-06-01T05:00:00Z",
+        "fecha_modificacion": null,
+        "orden": 7,
+        "slug": "estados",
+        "nombre": "Estados"
+    }
+},
+{
+    "model": "videos.categoria",
+    "pk": 8,
+    "fields": {
+        "fecha_creacion": "2016-06-01T05:00:00Z",
+        "fecha_modificacion": null,
+        "orden": 8,
+        "slug": "ciencias",
+        "nombre": "Ciencias"
+    }
+},
+{
+    "model": "videos.categoria",
+    "pk": 9,
+    "fields": {
+        "fecha_creacion": "2016-06-01T05:00:00Z",
+        "fecha_modificacion": null,
+        "orden": 9,
+        "slug": "cultura",
+        "nombre": "Cultura"
+    }
+},
+{
+    "model": "videos.categoria",
+    "pk": 10,
+    "fields": {
+        "fecha_creacion": "2016-06-01T05:00:00Z",
+        "fecha_modificacion": null,
+        "orden": 10,
+        "slug": "espectaculos",
+        "nombre": "Espect\u00e1culos"
+    }
+},
+{
+    "model": "videos.categoria",
+    "pk": 11,
+    "fields": {
+        "fecha_creacion": "2016-06-01T05:00:00Z",
+        "fecha_modificacion": null,
+        "orden": 11,
+        "slug": "deportes",
+        "nombre": "Deportes"
+    }
+}
+]

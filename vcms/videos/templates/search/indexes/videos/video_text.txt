@@ -6,5 +6,9 @@
 {{ object.ciudad }}
 {{ object.pais }}
 {{ object.transcripcion }}
+{% if object.serie %}
+{{ object.serie.nombre }}
+{{ object.serie.descripcion_plain }}
+{% endif %}
 {% for tag in object.tags.all %} {{ tag.name }} {% endfor %}
 {% for lista in object.listas.all %} {{ lista.nombre }} {% endfor %}

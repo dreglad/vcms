@@ -7,11 +7,11 @@
     {% if video.procesamiento != "error" %}
       setInterval(function() {{
         update_status('{{ video.pk }}',
-                      '{% url "query_procesamiento" video.pk %}');
+                      '{% url "procesamiento_status" video.pk %}');
       }}, 2000);
     {% endif %}
     update_status('{{ video.pk }}',
-                  '{% url "query_procesamiento" video.pk %}');
+                  '{% url "procesamiento_status" video.pk %}');
   </script>
 {% endif %}
 

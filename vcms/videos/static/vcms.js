@@ -5,12 +5,88 @@
     //       ellipClass: 'ellip',
     //       responsive: true
         // });
+
+        // ..
+        $('span.help-inline:contains("Mantenga presionado")').hide();
+
+
+        $('.field-plataformas select').attr(
+            'data-placeholder', 'Disponible en todas las plataformas');
+        $('.field-categoria select').attr(
+            'data-placeholder', 'Sin categoría');
+        $('#destacado_form .field-categoria select').attr(
+            'data-placeholder', 'Página principal');
+
+        $('.related-widget-wrapper-link.add-related').hide();
+        $('.related-widget-wrapper-link.delete-related').hide();
+
+        $('#Video_links-group .add-related').show();
+        $('#Video_links-group .delete-related').show();
+
+
         $('#left-nav>ul>li:not(:first-child)').addClass('active');
 
         $('.breadcrumb li:contains("Gestor de video")').remove()
 
-
         if ($('#fieldset-video').is(':visible'))  {
+
+            var playerInstance = jwplayer();
+             playerInstance.on('ready',function() {
+                    if (jwplayer().getRenderingMode() == "html5"){
+                        videoTag = document.querySelector('video');
+                         if(videoTag.playbackRate) {
+                            playerInstance.addButton(
+                                "icon_dir.png",
+                                "0.25x",
+                                function() {
+                                  changeSpeed(0.25);
+                                },
+                                "0p25xslow"
+                            );
+
+                            playerInstance.addButton(
+                                "icon_dir.png",
+                                "0.5x",
+                                function() {
+                                  changeSpeed(0.5);
+                                },
+                                "0p5slow"
+                            );
+
+                            playerInstance.addButton(
+                                "icon_dir.png",
+                                "1x",
+                                function() {
+                                  changeSpeed(1);
+                                },
+                                "1xnormal"
+                            );
+
+                            playerInstance.addButton(
+                                "icon_dir.png",
+                                "1.5x",
+                                function() {
+                                  changeSpeed(1.5);
+                                },
+                                "1p5xforward"
+                            );
+
+                            playerInstance.addButton(
+                                "icon_dir.png",
+                                "2x",
+                                function() {
+                                  changeSpeed(2);
+                                },
+                                "2xforward"
+                            );
+                        }
+                    }
+                    else{
+                        alert("your browser doesn't support HTML5，cant't change speed.");
+                    }
+                    console.log("state is :"+playerInstance.getState());
+                });
+
 
             $(document).scroll(function() {
                  var current_scroll = $(document).scrollTop(),
@@ -58,7 +134,7 @@ function update_status(id, url) {
                 row.find('.bar').html('Procesando video...');
                 row.find('.progress').addClass('progress-success');
             } else if (status.status == 'queue') {
-                row.find('.msg').html('<div class="alert alert-warn">El video está en cola para ser procesado.</div>');    
+                row.find('.msg').html('<div class="alert alert-warn">El video está en cola para ser procesado.</div>');
             } else if (status.status == 'error') {
                 row.find('.msg').html('<div class="alert alert-error">Error. '+ status.msg +'</div>');
             } else if (status.status == 'done') {

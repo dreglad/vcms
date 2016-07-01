@@ -1,4 +1,4 @@
-<fieldset class="module aligned suit-tab suit-tab-general suit-tab-editorial suit-tab-listas suit-tab-seo" style="margin-top:-9px">
+<fieldset class="module aligned suit-tab suit-tab-clasificacion suit-tab-general suit-tab-links suit-tab-editorial suit-tab-listas suit-tab-seo" style="margin-top:-9px">
 
   <div class="box box-video">
     {% load thumbnail %}
@@ -36,8 +36,8 @@
             primary: 'html5',
             //height: 202,
             aspectratio: '{{video.original_width}}:{{video.original_height}}',
-            
-            {% thumbnail video.imagen "360" quality=45 as thumb %}
+
+            {% thumbnail video.imagen.file "360" quality=45 as thumb %}
             image: '{{ thumb.url }}'
             {% endthumbnail %}
         });
@@ -56,10 +56,10 @@
         jwplayer().on('ready', function(event){
           //$('.box-video').css('height', $('#fieldset-video').height() + 30);
         });
-        
+
     </script>
 {% else %}{% if video.imagen %}
-    {% thumbnail video.imagen "360" as thumb %}
+    {% thumbnail video.imagen.file "360" as thumb %}
         <img src="{{ thumb.url }}" />
     {% endthumbnail %}
 {% else %}

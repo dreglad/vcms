@@ -2,25 +2,43 @@
 from datetime import datetime
 import json
 
+from django.contrib.contenttypes.admin import  GenericTabularInline,  GenericStackedInline
+
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.widgets import AdminFileWidget
 from django.core.exceptions import FieldDoesNotExist
-from django.db.models import Max
+from django.db.models import Max, Lookup
 from django.forms import ModelForm, RadioSelect, TextInput, FileInput
 from django.forms.widgets import CheckboxSelectMultiple
 from django.template import loader, Context
 from django.utils.safestring import mark_safe
-from django_select2.forms import Select2MultipleWidget, Select2Widget
+from django.utils.encoding import force_text
+
+from locality.models import Country, Territory
+
+from django_select2.forms import Select2MultipleWidget
+
+from django_select2.forms import ModelSelect2Widget, Select2Widget, Select2TagWidget
+
 from reversion.admin import VersionAdmin
+from salmonella.admin import SalmonellaMixin
 from sorl.thumbnail.admin import AdminImageMixin
-from sorl.thumbnail import get_thumbnail
+from sorl.thumbnail import (
+    delete as delete_thumbnail, ImageField, get_thumbnail)
 from suit.admin import SortableModelAdmin, SortableTabularInline
-from suit.widgets import SuitSplitDateTimeWidget, AutosizedTextarea
+from mptt.admin import MPTTModelAdmin
+
+from suit.widgets import SuitSplitDateTimeWidget, SuitDateWidget, AutosizedTextarea
 from suit_redactor.widgets import RedactorWidget
 
 from .forms import FilestackWidget, AdminImageWidget
 from .models import *
+
+from django.contrib.admin.widgets import ManyToManyRawIdWidget
+from django.utils.encoding import smart_unicode
+from django.utils.html import escape
+
 
 RESUMEN_REDACTOR_OPTIONS = {
     'toolbar': False,
@@ -51,31 +69,91 @@ DESCRIPCIONCORTA_REDACTOR_OPTIONS = {
 }
 
 User = settings.AUTH_USER_MODEL
-
-# admin.site.site_header = u'Administración de Videos ' + settings.SITE_NAME
-# admin.site.site_title = u'Videos ' + settings.SITE_NAME
-# admin.site.index_title = u'Administración'
-# admin.site.site_url = None
-
-
-# class PerfilInline(admin.StackedInline):
-#     model = User
-#     can_delete = False
-#     verbose_name_plural = 'perfiles'
-
-# class UserAdmin(BaseUserAdmin):
-#     inlines = (PerfilInline, )
-
-# # Re-register UserAdmin
-# admin.site.unregister(User)
-# admin.site.register(User, UserAdmin)
-
-
-
 admin.site.empty_value_display = ''#mark_safe(u'<em>(Vacío)</em>')
 
-class vModelAdmin(admin.ModelAdmin):
+
+DEFAULT_FORMFIELD_OVERRIDES = {
+    models.ManyToManyField: {
+        'widget': Select2MultipleWidget(
+            attrs={'data-placeholder': 'Ninguno',
+                   'data-minimum-results-for-search': 10}
+        )
+    },
+    models.ForeignKey: {
+        'widget': Select2Widget(
+            attrs={'data-placeholder': 'Ninguno',
+                   'data-minimum-results-for-search': 10}
+        )
+    },
+    ImageField: {
+        'widget': AdminImageWidget
+    },
+    # models.DateTimeField: {
+    #     'widget': SuitSplitDateTimeWidget
+    # },
+    # models.DateTimeField: {
+    #     'widget': SuitSplitDateTimeWidget
+    # },
+    models.DateField: {
+        'widget': SuitDateWidget
+    }
+}
+
+
+class AutorImageMixin(object):
+    def autor(self, obj):
+        if obj.autor:
+            return mark_safe('<strong>%s</strong>' % obj.autor)
+
+
+class SortedWithMixin(SortableModelAdmin):
+    """
+    Only sortable with 'sorted_with'
+    """
+    sorted_with = 'categoria'
+    sorted_with_filter = 'seccion'
+
+    def is_sortable(self, request):
+        return request.GET.get(self.sorted_with_filter) is not None \
+                and len(request.GET.items()) == 1
+
+    def get_list_display(self, request):
+        list_display = super(SortedWithMixin, self).get_list_display(
+            request)
+        if not self.is_sortable(request) and self.sortable in list_display:
+             list_display.remove(self.sortable)
+        elif self.sorted_with_filter in list_display:
+            list_display.remove(self.sorted_with_filter)
+        return list_display
+
+    def get_changelist_form(self, request, **kwargs):
+        if self.is_sortable(request):
+            return super(SortedWithMixin, self) \
+                        .get_changelist_form(request, **kwargs)
+        else:
+            return super(SortableModelAdmin, self) \
+                        .get_changelist_form(request, **kwargs)
+
+
+    def save_model(self, request, obj, form, change):
+        if not obj.pk or getattr(obj, self.sortable, None) is None or self.sorted_with in form.changed_data:
+            max_order = obj.__class__.objects.filter(
+                **{self.sorted_with: getattr(obj, self.sorted_with)}
+                ).aggregate(models.Max(self.sortable))
+            try:
+                next_order = max_order['%s__max' % self.sortable] + 1
+            except TypeError:
+                next_order = 1
+            setattr(obj, self.sortable, next_order)
+        super(SortableModelAdmin, self).save_model(request, obj, form, change)
+
+
+class ModelAdminBase(admin.ModelAdmin):
     actions_on_top = True
+    formfield_overrides = DEFAULT_FORMFIELD_OVERRIDES
+
+    def lookup_allowed(self, key, val):
+        return True
 
     def get_video_tabs(self, obj=None):
         return None
@@ -89,41 +167,49 @@ class vModelAdmin(admin.ModelAdmin):
 
 
 
-
-class ListaInline(admin.TabularInline):
-    model = ListaVideo
-    suit_classes = 'suit-tab suit-tab-listas'
-    fields = ('lista', )
-    show_change_link = True
-    #fields = ('video', 'player')
-    #readonly_fields = ('player', )
-    #raw_id_fields = ('video', )
-    extra = 1
-    verbose_name  = 'lista a la que pertenece este video'
-    verbose_name_plural  = 'listas a las que pertenece este video'
-
-
-class VideoInline(SortableTabularInline):
-    model = Video.listas.through
-    sortable = 'orden'
-    suit_classes = 'suit-tab suit-tab-videos'
-    fields = ('video', 'player')
-    readonly_fields = ('player', )
-    raw_id_fields = ('video', )
+class LinkInline(admin.StackedInline):
+    model = Link
+    suit_classes = 'suit-tab suit-tab-links'
+    #fields = ('link',)
     show_change_link = True
     extra = 1
-    verbose_name = 'video en esta lista'
-    verbose_name_plural  = 'Agregue, reordene o elimine los videos pertenecientes a esta lista'
+    verbose_name  = 'Link externo'
+    verbose_name_plural  = 'Links externos'
 
-    def player(self, obj):
-        if obj.video:
-            if obj.lista.videos.count() < 10:
-                t = loader.get_template('vcms/changelist_video_player.html')
-                return mark_safe(t.render(Context({'video': obj.video})))
-            else:
-                t = loader.get_template('vcms/changelist_video_thumbnail.html')
-                return mark_safe(t.render(Context({'video': obj.video})))
 
+class LinkEnListaInline(LinkInline):
+    model = Lista.links.through
+
+class LinkEnVideoInline(LinkInline):
+    model = Video.links.through
+
+# class VideoInlineBase(admin.TabularInline):
+#     suit_classes = 'suit-tab suit-tab-videos'
+#     list_fields = ('video', 'player')
+#     readonly_fields = ('player',)
+#     raw_id_fields = ('video', )
+#     show_change_link = True
+#     extra = 1
+#     lista_field = 'lista'
+#
+#     def player(self, obj):
+#         return
+#         if obj.video:
+#             if getattr(obj, self.lista_field).videos.count() < 10:
+#                 t = loader.get_template('vcms/changelist_video_player.html')
+#                 return mark_safe(t.render(Context({'video': obj.video})))
+#             else:
+#                 t = loader.get_template('vcms/changelist_video_thumbnail.html')
+#                 return mark_safe(t.render(Context({'video': obj.video})))
+
+class PaisWidget(ModelSelect2Widget):
+    model = Country
+    search_fields = [
+        'name__icontains'
+    ]
+
+    def label_from_instance(self, obj):
+        return force_text(obj.name)
 
 
 class VideoChangeForm(ModelForm):
@@ -143,50 +229,47 @@ class VideoChangeForm(ModelForm):
                 'onchange': "$('button[name=_save]).removeAttr('disabled')')",
                 'type': "filepicker-dragdrop",
                 }),
-            'fecha': SuitSplitDateTimeWidget,
-            'imagen': AdminImageWidget,
+            #'tags': Select2TagWidget,
             'sprites': AdminImageWidget,
-            'transcripcion': AutosizedTextarea(attrs={'rows': 6,
-                                                'class': 'input-block-level'}),
-            'resumen': AutosizedTextarea(attrs={'rows': 2,
-                                                'class': 'input-block-level'}),
+            'transcripcion': AutosizedTextarea(attrs={
+                'rows': 6, 'class': 'input-block-level'}),
+            'resumen': AutosizedTextarea(attrs={
+                'rows': 2, 'class': 'input-block-level'}),
             #'tags': TextInput(attrs={'class': 'input-block-level'}),
             'titulo': TextInput(attrs={'class': 'input-block-level'}),
             'descripcion': RedactorWidget(
                 editor_options=DESCRIPCION_REDACTOR_OPTIONS),
-            # 'listas': Select2MultipleWidget,
-            # 'sitios': CheckboxSelectMultiple,
-            'categoria': Select2Widget,
-            'pais': Select2Widget,
-            'autor': Select2Widget,
-            'tipo': Select2Widget({
-                'placeholder': 'Elige',
-            }),
-            #'date_joined': SuitSplitDateTimeWidget,
+            # 'listas': Select2MultipleWidget(attrs={'data-placeholder': 'Ninguna lista', 'data-minimum-results-for-search': 10}),
+            'pais': Select2Widget(attrs={'data-placeholder': 'Ninguno', 'data-minimumResultsForSearch': 10}),
+            'territorio': Select2Widget(attrs={'data-placeholder': 'Ninguno', 'data-minimum-results-for-search': 10}),
         }
 
 
-class VideoAdmin(VersionAdmin, vModelAdmin, AdminImageMixin):
+class VideoAdmin(VersionAdmin, ModelAdminBase, AdminImageMixin):
     form = VideoChangeForm
-    inlines = [ListaInline]
+    inlines = [LinkEnVideoInline]
 
     list_display = ('padded_pk', 'video', 'info')
-    list_filter = ('tipo', 'categoria', 'autor', 'listas', 'estado', 'usuario_creacion',)
+    list_filter = (
+        ('listas', admin.RelatedOnlyFieldListFilter),
+        ('listas__clasificador'),
+        ('territorio', admin.RelatedOnlyFieldListFilter),
+    )
     date_hierarchy = 'fecha'
     search_fields = ('titulo', 'descripcion', 'transcripcion', 'observaciones')
-    list_select_related = ('autor', 'categoria', 'tipo',)
-    
+    #list_select_related = ('listas',)
+
     readonly_fields = ['origen', 'origen_url', 'archivo_original', 'duracion',
-                        'procesamiento', 'usuario_creacion', 'fecha_creacion',
+                       'procesamiento', 'usuario_creacion', 'fecha_creacion',
                        'usuario_modificacion', 'fecha_modificacion',
                        'archivo']
     readonly_fields_new = []
 
-    info_fields = ('titulo', 'fecha', 'autor', 'descripcion', 'tipo',
-                   'categoria', 'duracion_iso', 'usuario_creacion')
-    info_fields_procesando = ('origen_url', 'autor', 'duracion_iso',
-                              'usuario_creacion', 'fecha_creacion')
-    info_fields_error = ('fecha_creacion', 'origen', 'query_procesamiento',
+    info_fields = ( 'fecha', 'titulo', 'descripcion', 'duracion_iso',
+                    'pais', 'territorio', 'ciudad')
+    info_fields_procesando = ('origen_url', 'duracion_iso',
+                              'fecha_creacion')
+    info_fields_error = ('fecha_creacion', 'origen', 'procesamiento_status',
                          'archivo_original', 'observaciones')
     list_per_page = 20
 
@@ -195,9 +278,10 @@ class VideoAdmin(VersionAdmin, vModelAdmin, AdminImageMixin):
     )
 
     suit_form_tabs = [
-        ('general', u'General'),
-        ('editorial', u'Editorial'),
-        ('listas', u'Listas'),
+        ('general', u'Hoja de datos'),
+        ('editorial', u'Redacción'),
+        ('clasificacion', u'Clasificación'),
+        ('links', u'Links'),
         ('seo', 'SEO'),
     ]
 
@@ -209,7 +293,6 @@ class VideoAdmin(VersionAdmin, vModelAdmin, AdminImageMixin):
         ('nuevo', u'Reintar nuevo video'),
     ]
 
-    # filter_horizontal = ('sitios',)
     radio_fields = {
         'estado': admin.HORIZONTAL,
         'reproduccion': admin.HORIZONTAL,
@@ -223,16 +306,11 @@ class VideoAdmin(VersionAdmin, vModelAdmin, AdminImageMixin):
         }),
         (u'Subir video', {
             'classes': ('suit-tab', 'suit-tab-nuevo', 'local'),
-            'fields': ['archivo_original', 'autor'],
+            'fields': ['archivo_original', ],
         }),
         (u'Importar video', {
             'classes': ('suit-tab', 'suit-tab-nuevo','externo'),
             'fields': ['origen_url'],
-        }),
-        (mark_safe(u'Destino <small>Elija al menos un sitio a asociar ' \
-                   u'con este video. Se puede cambiar después</small>'), {
-            'classes': ('suit-tab', 'suit-tab-nuevo'),
-            'fields': ['sitios'],
         }),
     ]
 
@@ -249,16 +327,11 @@ class VideoAdmin(VersionAdmin, vModelAdmin, AdminImageMixin):
         }),
         (u'Subir video', {
             'classes': ('suit-tab', 'suit-tab-nuevo', 'local'),
-            'fields': ['archivo_original', 'autor'],
+            'fields': ['archivo_original', ],
         }),
         (u'Importar video', {
             'classes': ('suit-tab', 'suit-tab-nuevo','externo'),
             'fields': ['origen_url'],
-        }),
-        (mark_safe(u'Destino <small>Elija al menos un sitio a asociar ' \
-                   u'con este video. Se puede cambiar después</small>'), {
-            'classes': ('suit-tab', 'suit-tab-nuevo'),
-            'fields': ['sitios'],
         }),
     ]
 
@@ -270,36 +343,31 @@ class VideoAdmin(VersionAdmin, vModelAdmin, AdminImageMixin):
                        ('fecha_modificacion', 'usuario_modificacion'),
                        ('origen', 'origen_url')]
         }),
-
         (u'Archivos', {
             'classes': ('suit-tab', 'suit-tab-general', 'compact-fieldset'),
             'fields': [('imagen', 'sprites'), 'archivo'],
         }),
-        
-        (u'Básico', {
-            'classes': ('suit-tab', 'suit-tab-general'),
-            'fields': ['fecha', 'autor', 'sitios'],
-        }),
+
+        # (u'Básico', {
+        #     'classes': ('suit-tab', 'suit-tab-general'),
+        #     'fields': ['fecha', 'serie', 'autor',],
+        # }),
         (u'Clasificación', {
-            'classes': ('suit-tab', 'suit-tab-general', 'suit-tab-editorial'),
-            'fields': ['tipo', 'categoria'],
+            'classes': ('suit-tab', 'suit-tab-clasificacion'),
+            'fields': ['listas',]
         }),
-        (u'Texto', {
-            'classes': ('suit-tab', 'suit-tab-general', 'suit-tab-editorial'),
-            'fields': ['titulo', 'resumen', 'descripcion'],
+        (None, {
+            'classes': ('suit-tab', 'suit-tab-editorial'),
+            'fields': ['titulo', 'descripcion'],
+        }),
+        (u'Links', {
+            'classes': ('suit-tab', 'suit-tab-links'),
+            'fields': ['links', ],
         }),
         (u'Ubicación', {
-            'classes': ('suit-tab', 'suit-tab-general', 'suit-tab-editorial'),
-            'fields': ['ciudad', 'pais'],
+            'classes': ('suit-tab', 'suit-tab-editorial'),
+            'fields': ['fecha', 'pais', 'territorio', 'ciudad'],
         }),
-        # (u'Listas de reproducción', {
-        #     'classes': ('suit-tab', 'suit-tab-listas' ),
-        #     'fields': ('listas', ),
-        # }),
-        # (u'Descripción', {
-        #     'classes': ('full-width', 'suit-tab', 'suit-tab-general' ),
-        #     'fields': ('descripcion', ),
-        # }),
         (u'SEO y Accesibilidad', {
              'classes': ('suit-tab', 'suit-tab-seo'),
              'fields': ['tags', 'transcripcion']
@@ -321,21 +389,22 @@ class VideoAdmin(VersionAdmin, vModelAdmin, AdminImageMixin):
         obj.save()
 
 
-    def save_formset(self, request, form, formset, change):
-        instances = formset.save(commit=False)
-        for obj in formset.deleted_objects:
-            obj.delete()
-        for instance in instances:
-            if isinstance(instance, ListaVideo):
-                if not instance.orden:
-                    max_orden = ListaVideo.objects.all() \
-                                    .filter(lista=instance.lista) \
-                                    .aggregate(Max('orden'))
-                    instance.orden = (max_orden['orden__max'] or 0) + 1
-            instance.save()
-        formset.save_m2m()
+    # def save_formset(self, request, form, formset, change):
+    #     instances = formset.save(commit=False)
+    #     for obj in formset.deleted_objects:
+    #         obj.delete()
+    #     for instance in instances:
+    #         if isinstance(instance, DestacadoVideo):
+    #             if not instance.orden:
+    #                 max_orden = DestacadoVideo.objects.all() \
+    #                                 .filter(destacado=instance.destacado) \
+    #                                 .aggregate(Max('orden'))
+    #                 instance.orden = (max_orden['orden__max'] or 0) + 1
+    #         instance.save()
+    #     formset.save_m2m()
 
-    @property
+    # fields = ('video', 'pagina', 'player', 'orden')
+
     def player(self, obj):
         if obj.video:
             t = loader.get_template('vcms/changeform_video_player.html')
@@ -375,16 +444,16 @@ class VideoAdmin(VersionAdmin, vModelAdmin, AdminImageMixin):
                 field['field'] = Video._meta.get_field(field_name)
             except FieldDoesNotExist:
                 field['field'] = field_name
-                if field_name == 'query_procesamiento':
+                if field_name == 'procesamiento_status':
                     field['value'] = json \
-                        .dumps(obj.query_procesamiento, indent=4) \
+                        .dumps(obj.procesamiento_status, indent=4) \
                         .replace('{', '', ) \
                         .replace('}', '').strip() \
                         .replace("\n", '<br>')
                     field['field'] = 'Procesamiento'
             fields.append(field)
 
-#        if obj.proce
+
         t = loader.get_template('vcms/changelist_video_info.html')
         html = t.render(Context({'info_fields': fields, 'video': obj}))
         return mark_safe(html)
@@ -399,7 +468,6 @@ class VideoAdmin(VersionAdmin, vModelAdmin, AdminImageMixin):
         t = loader.get_template('vcms/changelist_video_player.html')
         return mark_safe(t.render(Context({'video': obj})))
         # return mark_safe('<video height="100" poster="%s" src="%s" />' % (imagen_url, obj.archivo.url))
-
 
     def get_video_tabs(self, obj=None):
         if not obj:
@@ -417,7 +485,7 @@ class VideoAdmin(VersionAdmin, vModelAdmin, AdminImageMixin):
             return self.readonly_fields_new
         else:
             return self.readonly_fields
-            
+
 
     def get_fieldsets(self, request, obj=None):
         if not obj or obj.is_error:
@@ -432,166 +500,265 @@ class VideoAdmin(VersionAdmin, vModelAdmin, AdminImageMixin):
               '//content.jwplatform.com/libraries/eQkjoc7U.js',
               '//api.filestackapi.com/filestack.js')
 
-admin.site.register(Video, VideoAdmin)
 
-class ListaPlataformaFilter(admin.SimpleListFilter):
-    title = 'Plataforma'
-    # Parameter for the filter that will be used in the URL query.
-    parameter_name = 'plataforma'
-
-    def lookups(self, request, model_admin):
-        return (
-            ('wev', 'Sitio web'),
-            ('movil', 'Apps móviles'),
-            ('tv', 'Apps de TV'),
-        )
-
-    def queryset(self, request, queryset):
-        if self.value() == 'web':
-            return queryset.filter(usar_web=True)
-        if self.value() == 'movil':
-            return queryset.filter(usar_movil=True)
-        if self.value() == 'tv':
-            return queryset.filter(usar_tv=True)
-
-class ListaCategoriaFilter(admin.SimpleListFilter):
-    title = 'Sección'
-    # Parameter for the filter that will be used in the URL query.
-    parameter_name = 'seccion'
-
-    def lookups(self, request, model_admin):
-        return [
-            ('home', 'Home/Principal')
-        ] + [(cat.id, cat.nombre) for cat in Categoria.objects.all()]
-
-    def queryset(self, request, queryset):
-        if self.value() == 'home':
-            return queryset.filter(categoria__isnull=self.value())
-        else:
-            return queryset.filter(categoria__pk=self.value())
-
-
-class ListaChangeForm(ModelForm, vModelAdmin):
-    class Meta:
-        model = Lista
-        exclude = ['pk']
-        widgets = {
-            'descripcion': RedactorWidget(
-                editor_options=DESCRIPCIONCORTA_REDACTOR_OPTIONS),
-        }
-
-class ListaAdmin(VersionAdmin, vModelAdmin, SortableModelAdmin):
-    form = ListaChangeForm
-    inlines = (VideoInline,)
-    list_display = ('nombre', 'tipo', 'categoria_', 'videos_', 'player')
-    list_filter = ('tipo', ListaCategoriaFilter, ListaPlataformaFilter)
-    sortable = 'orden'
-    readonly_fields = ('fecha_creacion', 'fecha_modificacion')
-
-    suit_form_tabs = [
-        ('general', u'Configuración de la lista'),
-        ('videos', u'Videos en la lista'),
+class LinkAdmin(VersionAdmin, ModelAdminBase):
+    list_display = ('url', 'titulo', 'tipo', 'videos_')
+    list_filter = ('tipo', 'tipo',)
+    search_fields = ['titulo', 'url']
+    # readonly_fields = ('videos_',)
+    fieldsets= [
+        (u'Datos del link', {
+            'classes': ('suit-tab-general'),
+            'fields': [('url', 'blank'), 'titulo', 'tipo']
+        })
     ]
+
+    def videos_(self, obj):
+        return obj.videos.count()
+    videos_.admin_order_field = 'videos__count'
+
+
+
+class PlataformaAdmin(VersionAdmin, ModelAdminBase, SortableModelAdmin):
+    list_display = ('nombre', 'tipo', 'usar_publicidad', 'api_key')
+    list_filter = ('tipo', 'usar_publicidad',)
+    sortable = 'orden'
+
+
+# class AutorAdmin(VersionAdmin, ModelAdminBase, SortableModelAdmin, AdminImageMixin):
+#     sortable = 'orden'
+#     list_display = ('nombre', 'logo_', 'url', 'reproduccion')
+#     radio_fields = { 'reproduccion': admin.HORIZONTAL, }
+#     save_as = True
+#
+#     def logo_(self, obj):
+#         if obj.logo:
+#             return mark_safe(u'<img style="max-width: 300px; max-height: 150px;" src="%s"' % obj.logo.url)
+#
+#
+# class CategoriaSerieInline(admin.TabularInline):
+#     model = Serie
+#     extra = 0
+#     fields = ('nombre',)
+#
+# class CategoriaDestacadoInline(admin.TabularInline):
+#     model = Destacado
+#     extra = 0
+#     fields = ('nombre',)
+#
+# class CategoriaAdmin(VersionAdmin, ModelAdminBase, SortableModelAdmin):
+#     inlines = [DestacadoAdminGen]
+#     list_display = ('nombre',)
+#     sortable = 'orden'
+#     save_as = True
+
+#
+#
+# class TipoChangeForm(ModelForm):
+#     class Meta:
+#         model = Tipo
+#         exclude = ['pk']
+#         widgets = {
+#             'descripcion': RedactorWidget(
+#                 editor_options=RESUMEN_REDACTOR_OPTIONS),
+#         }
+#
+#
+# class TipoAdmin(VersionAdmin, ModelAdminBase, SortableModelAdmin):
+#     form = TipoChangeForm
+#     list_display = ('nombre', 'reproduccion', )
+#     radio_fields = { 'reproduccion': admin.HORIZONTAL, }
+#     sortable = 'orden'
+#     fields = ( ('nombre', 'nombre_plural'), 'descripcion', 'reproduccion')
+#     save_as = True
+
+
+
+class ListaInline(SortableTabularInline):
+    model = ListaEnPagina
+    sortable = 'orden'
+    suit_classes = 'suit-tab suit-tab-listas'
+    show_change_link = True
+    #list_fields = ('id',)
+    raw_id_fields = ('lista',)
+    #salmonella_fields = ('lista',)
+    fields = ('lista', 'pagina', 'mostrar_nombre', 'mostrar_descripcion', 'num_videos', 'layout', 'orden')
+    extra = 0
+    verbose_name  = 'Lista'
+    verbose_name_plural  = 'Listas'
+
+class VideoInline(SortableTabularInline):
+    model = VideoEnPagina
+    sortable = 'orden'
+    suit_classes = 'suit-tab suit-tab-videos'
+    show_change_link = True
+    list_fields = ('video', 'player', 'orden')
+    raw_id_fields = ('video',)
+    readonly_fields = ('player',)
+    #salmonella_fields = ('lista',)
+    fields = ('video', 'pagina', 'player', 'orden',)
+    extra = 0
+    verbose_name  = 'video destacado'
+    verbose_name_plural  = 'videos destacados'
+
+    def player(self, obj):
+        if obj.video:
+            t = loader.get_template('vcms/changelist_video_thumbnail.html')
+            return mark_safe(t.render(Context({'video': obj.video})))
+
+    # def formfield_for_dbfield(self, db_field, **kwargs):
+    #     if db_field.name in ('lista',):
+    #         kwargs.pop('request', None)
+    #         kwargs['widget'] = VerboseManyToManyRawIdWidget(db_field.rel)
+    #         return db_field.formfield(**kwargs)
+    #     return super(ListaInline,self).formfield_for_dbfield(db_field,**kwargs)
+
+
+
+    class ClasificadorFilter(admin.SimpleListFilter):
+        title = 'Clasificador'
+        parameter_name = 'clasificador'
+
+        def lookups(self, request, model_admin):
+            return [
+                ('home', 'Principal')
+            ] + [(cat.id, cat.nombre) for cat in Categoria.objects.all()]
+
+        def queryset(self, request, queryset):
+            if self.value() == 'home':
+                return queryset.filter(categoria__isnull=self.value())
+            elif self.value() is not None:
+                return queryset.filter(clasificador__slug=self.value())
+            else:
+                return queryset
+
+
+class PaginaAdmin(MPTTModelAdmin, ModelAdminBase, SortableModelAdmin):
+    inlines = [VideoInline, ListaInline]
+    mptt_level_indent = 20
+    list_display = ('titulo', 'mostrar_en_menu', 'listas_', 'videos_', 'activo')
+    list_filter = (
+        ('listas', admin.RelatedOnlyFieldListFilter),
+    )
+    list_editable = ('activo',)
+    sortable = 'orden'
+    suit_form_tabs = [
+        ('general', u'General'),
+        ('videos', u'Videos'),
+        ('listas', u'Listas'),
+        # ('links', u'Links'),
+        ('seo', 'SEO'),
+    ]
+
     fieldsets = [
-        # (None, {
-        #     'classes': ('suit-tab', 'suit-tab-general',),
-        #     'fields': ['fecha_creacion', 'fecha_modificacion']
-        # }),
-        (None, {'classes': ('suit-tab', 'suit-tab-general',),
-                'fields': ['tipo',]
+        (None, {
+            'classes': ('suit-tab', 'suit-tab-general'),
+            'fields': ['titulo']
         }),
-        ('Datos generales', {'classes': ('suit-tab', 'suit-tab-general',),
-                'fields': [('nombre', 'usar_nombre', 'usar_descripcion'),
-                           'descripcion', 'tags']
+        (u'Configuración', {
+            'classes': ('suit-tab', 'suit-tab-general',),
+            'fields': ['parent', 'activo', 'mostrar_en_menu'],
         }),
-        (u'Categoría', {'classes': ('suit-tab', 'suit-tab-general'),
-                'fields': [('categoria')]
+        (u'SEO y Accesibilidad', {
+             'classes': ('suit-tab', 'suit-tab-seo'),
+             'fields': ['descripcion',]
         }),
-        ('Layout', {'classes': ('suit-tab', 'suit-tab-general'),
-                'fields': [('layout')]
-        }),
-        ('Plataformas', {'classes': ('suit-tab', 'suit-tab-general',
-                                     'checkboxes'),
-                'fields': [('usar_web', 'usar_movil', 'usar_tv'),
-                           ('ads_web', 'ads_movil', 'ads_tv')]
-        }),
-    ]   
+    ]
 
     def get_video_tabs(self, obj=None):
         return self.suit_form_tabs
 
-    def get_readonly_fields(self, request, obj=None):
-        return self.readonly_fields
-
-    def has_delete_permission(self, request, obj=None):
-        # if obj and getattr(obj, 'nombre', '').startswith('['):
-        #     return False
-        return True
-            
-
-    def categoria_(self, obj):
-        if obj.tipo == Lista.TIPO.destacado:
-            return obj.categoria or u'Home'
-        else:
-            return 'N/A'
-    categoria_.admin_order_field = 'categoria'
+    def listas_(self, obj):
+        return obj.listas.count()
+    listas_.admin_order_field = 'listas__count'
 
     def videos_(self, obj):
-        return obj.enlistado.count()
-    videos_.admin_order_field = 'enlistado__count'
-
-    def player(self, obj):
-        t = loader.get_template('vcms/changelist_lista_player.html')
-        return mark_safe(t.render(Context({'lista': obj, 'videos': obj.enlistado.all() })))
-        # return mark_safe('<video height="100" poster="%s" src="%s" />' % (imagen_url, obj.archivo.url))
-
-    class Media:
-        js = ('//content.jwplatform.com/libraries/eQkjoc7U.js',
-              '//api.filestackapi.com/filestack.js')
+        return obj.videos.count()
+    videos_.admin_order_field = 'videos__count'
 
 
+
+class FiltroAdmin(ModelAdminBase):
+    pass
+
+class ListaAdmin(ModelAdminBase):
+    inlines = [LinkEnListaInline]
+    list_display = ('nombre', 'activo', 'videos_', 'clasificador')
+    list_filter = ('clasificador',)
+    list_editable = ('activo',)
+    search_fields = ['nombre', 'clasificador__nombre']
+    list_per_page = 100
+
+    suit_form_tabs = (
+        ('general', 'General'),
+        ('relacionadas', 'Listas relacionadas'),
+        ('media', 'Medios'),
+        ('links', 'Links'),
+        ('seo', 'SEO y Accesibilidad'),
+
+    )
+    fieldsets= [
+        (None, {
+            'classes': ('suit-tab', 'suit-tab-general'),
+            'fields': ['clasificador', ('nombre', 'nombre_plural'), 'descripcion'],
+        }),
+        (None, {
+            'classes': ('suit-tab', 'suit-tab-media'),
+            'fields': [
+                ('icono', 'mostrar_icono'), ('imagen', 'mostrar_imagen'),
+                ('cortinilla_inicio', 'mostrar_cortinilla_inicio'),
+                ('cortinilla_final', 'mostrar_cortinilla_final'),
+            ],
+        }),
+        (None, {
+            'classes': ('suit-tab', 'suit-tab-relacionadas'),
+            'fields': ['listas_relacionadas'],
+        }),
+        (u'Link interno', {
+            'classes': ('suit-tab', 'suit-tab-links'),
+            'fields': ['pagina', ],
+        }),
+        (None, {
+            'classes': ('suit-tab', 'suit-tab-seo'),
+            'fields': ['tags'],
+        }),
+    ]
+
+    def videos_(self, obj):
+        return obj.videos.count()
+    videos_.admin_order_field = 'videos__count'
+
+    def get_video_tabs(self, obj=None):
+        return self.suit_form_tabs
+
+
+class ClasificadorAdmin(ModelAdminBase):
+    list_display = ('nombre', 'nombre_plural', 'listas_', 'videos_')
+    # suit_form_tabs = (
+    #     ('general', 'General'),
+    # )
+    fieldsets= [
+        ('Datos del clasificador', {
+            'classes': ('suit-tab-general'),
+            'fields': [('nombre', 'nombre_plural'), 'descripcion'],
+        }),
+    ]
+
+    def videos_(self, obj):
+        return Video.objects.filter(listas__clasificador=obj).count()
+    videos_.admin_order_field = 'videos__count'
+
+    def listas_(self, obj):
+        return obj.listas.count()
+    listas_.admin_order_field = 'listas__count'
+
+
+
+
+admin.site.register(Video, VideoAdmin)
+admin.site.register(Link, LinkAdmin)
+admin.site.register(Plataforma, PlataformaAdmin)
 admin.site.register(Lista, ListaAdmin)
-
-
-
-class AutorAdmin(VersionAdmin, vModelAdmin, SortableModelAdmin):
-    sortable = 'orden'
-    list_display = ('nombre', 'reproduccion', )
-    radio_fields = { 'reproduccion': admin.HORIZONTAL, }
-    save_as = True
-admin.site.register(Autor, AutorAdmin)
-
-
-class CategoriaAdmin(VersionAdmin, vModelAdmin, SortableModelAdmin):
-    sortable = 'orden'
-    save_as = True
-admin.site.register(Categoria, CategoriaAdmin)
-
-
-
-class TipoChangeForm(ModelForm):
-    class Meta:
-        model = Tipo
-        exclude = ['pk']
-        widgets = {
-            'descripcion': RedactorWidget(
-                editor_options=RESUMEN_REDACTOR_OPTIONS),
-        }
-
-
-class TipoAdmin(VersionAdmin, vModelAdmin, SortableModelAdmin):
-    form = TipoChangeForm
-    list_display = ('nombre', 'reproduccion', )
-    radio_fields = { 'reproduccion': admin.HORIZONTAL, }
-    sortable = 'orden'
-    fields = ( ('nombre', 'nombre_plural'), 'descripcion', 'reproduccion')
-    save_as = True
-admin.site.register(Tipo, TipoAdmin)
-
-
-class SitioAdmin(VersionAdmin, vModelAdmin, SortableModelAdmin):
-    sortable = 'orden'
-    list_display = ('nombre', 'url', 'reproduccion', )
-    radio_fields = { 'reproduccion': admin.HORIZONTAL, }
-    save_as = True
-admin.site.register(Sitio, SitioAdmin)
+admin.site.register(Clasificador, ClasificadorAdmin)
+admin.site.register(Pagina, PaginaAdmin)
+admin.site.register(Filtro, FiltroAdmin)

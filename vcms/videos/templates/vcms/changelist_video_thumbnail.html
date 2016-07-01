@@ -1,7 +1,11 @@
 {% load thumbnail %}
 
+<a href="/videos/video/{{ video.pk }}/change/">
 {% if video.imagen %}
-  {% thumbnail video.imagen "160" as im %}
+  {% thumbnail video.imagen.file "160" as im %}
     <img src="{{ im.url }}" width="160">
   {% endthumbnail %}
+{% else %}
+  {{ video }}
 {% endif %}
+</a>

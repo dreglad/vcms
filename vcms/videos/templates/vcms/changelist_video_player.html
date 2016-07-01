@@ -3,7 +3,7 @@
 
 {% if video.archivo %}
 
-  {% thumbnail video.imagen "360" quality=45 as thumb %}
+  {% thumbnail video.imagen.file "360" quality=45 as thumb %}
   <div class="player-wrap"><div id="video-{{ video.pk }}">
     <a href="#"><img src="{{ thumb.url }}" width="100%" /></a>
   </div></div>
@@ -66,7 +66,7 @@
 
 {% else %}{% if video.imagen %}
 
-  {% thumbnail video.imagen "360" quality=90 as thumb %}
+  {% thumbnail video.imagen.file "360" quality=90 as thumb %}
   <img src="{{ thumb.url }}" eidth="100%" />
   {% endthumbnail %}
 

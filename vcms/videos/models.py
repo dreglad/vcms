@@ -1,31 +1,56 @@
 # -*- coding: utf-8 -*- #
 from datetime import datetime, timedelta
 import os
+import uuid
 
 from autoslug import AutoSlugField
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+from django.core.files import File
+from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
 from django.utils.html import strip_tags
-from django_countries.fields import CountryField
+#from django_countries.fields import CountryField
 from jsonfield import JSONField
+from locality.models import Country, Territory
 from model_utils import Choices, FieldTracker
 from model_utils.fields import StatusField, MonitorField
+from mptt.models import MPTTModel, TreeForeignKey
+from polymorphic.models import PolymorphicModel
 import shortuuid
-from sorl.thumbnail import ImageField as SorlImageField
+from sorl.thumbnail import ImageField as SorlImageField, delete as delete_thumbnail
 from taggit.managers import TaggableManager
 
+from mptt.models import MPTTModel, TreeForeignKey
 
-REPRODUCCION_CHOICES = Choices(
-    ('auto', u'Automático'),
-    ('local', u'Sólo desde el sitio web'),
-    ('youtube', u'Sólo desde YouTube'),
-)
+
 
 ESTADO_CHOICES = Choices(
     ('despublicado', u'Despublicado'),
     ('publicado', u'Publicado'),
+)
+
+LISTA_LAYOUT_CHOICES = Choices(
+    ('auto', u'Automático'),
+    ('c100', u'1 columna'),
+    ('c50', u'1 o 2 columnas'),
+    ('c33', u'Hasta 3 columnas'),
+    ('c25', u'Hasta 4 columnas'),
+)
+
+ORIGEN_CHOICES = Choices(
+    ('local', u'Subir archivo de video'),
+    ('externo', u'Importar video desde un sitio web'),
+)
+
+PLATAFORMA_TIPO_CHOICES = Choices(
+    ('web', u'Sitio web'),
+    ('movil', u'Aplicación móvil'),
+    ('tv', u'Aplicación para TV'),
+    ('youtube', u'Canal de YouTuve'),
 )
 
 PROCESAMIENTO_CHOICES = Choices(
@@ -35,10 +60,291 @@ PROCESAMIENTO_CHOICES = Choices(
     ('error', u'Error'),
 )
 
-ORIGEN_CHOICES = Choices(
-    ('local', u'Subir archivo de video'),
-    ('externo', u'Importar video desde un sitio web'),
+REPRODUCCION_CHOICES = Choices(
+    ('auto', u'Automático'),
+    ('local', u'Sólo desde el sitio web'),
+    ('youtube', u'Sólo desde YouTube'),
 )
+
+OPERADOR_CHOICES = Choices(
+    ('igual', u'Es igual a'),
+    ('diferente', u'Es diferente a'),
+    ('notnull', u'No está vacío'),
+    ('null', u'Está vacío'),
+    ('contains', u'Contiene el texto'),
+)
+
+LINK_TIPO_CHOICES = Choices(
+    ('auto', u'Genérico'),
+    ('site', u'Home de sitio web'),
+    ('post', u'Artículo o post con contenido relacionado'),
+    ('social', u'Cuenta o perfil de redes sociales'),
+    ('mailto', u'Cuenta de correo electrónico'),
+)
+
+NUM_VIDEOS_CHOICES = (
+    (0, u'Automático'),
+    (1, 'Hasta 1 video'),
+    (2, 'Hasta 2 videos'),
+    (4, 'Hasta 4 videos'),
+    (8, 'Hasta 8 videos'),
+    (12, 'Hasta 12 videos'),
+    (18, 'Hasta 18 videos'),
+    (24, 'Hasta 24 videos'),
+    (48, 'Hasta 48 videos'),
+)
+
+class OverwriteStorage(FileSystemStorage):
+    """FileSystem storage that overwrites existing files"""
+    def get_available_name(self, name):
+        if self.exists(name):
+            img = File(open(os.path.join(self.location, name), 'w'))
+            delete_thumbnail(img, delete_file=False)
+            os.remove(os.path.join(self.location, name))
+        return name
+
+
+class ModelBase(models.Model):
+    """Base model with created_at/updated_at fields"""
+    fecha_creacion = models.DateTimeField(
+        u'fecha de creación', db_index=True, auto_now_add=True, editable=False)
+    fecha_modificacion = models.DateTimeField(
+        u'última modificación', null=True, blank=True, auto_now=True,
+        editable=False)
+    usuario_creacion = models.ForeignKey(
+        settings.AUTH_USER_MODEL, models.SET_NULL,
+        verbose_name=u'creado por', related_name='%(class)ss_creados',
+        blank=True, null=True)
+    usuario_modificacion = models.ForeignKey(
+        settings.AUTH_USER_MODEL, models.SET_NULL,
+        verbose_name=u'última modificación por', related_name='%(class)ss_modificados',
+        blank=True, null=True)
+
+    class Meta:
+        abstract = True
+        ordering = ['-fecha_creacion', '-pk']
+        get_latest_by = "fecha_creacion"
+
+
+class SortableMixin(models.Model):
+    """Base sortable Model"""
+    orden = models.PositiveIntegerField(db_index=True)
+
+    class Meta:
+        abstract = True
+        ordering = ['orden', '-fecha_creacion', '-pk']
+
+
+class ActivableMixin(models.Model):
+    activo = models.BooleanField(default=True, db_index=True)
+
+    class Meta:
+        abstract = True
+
+
+class NamedMixin(models.Model):
+    """Model with name, description and slug"""
+    slug = AutoSlugField(populate_from='nombre', always_update=True)
+    nombre = models.CharField(max_length=255, blank=True)
+    descripcion = models.TextField(u'descripción', blank=True)
+
+    def __unicode__(self):
+        return u'%s' % self.nombre
+
+    class Meta:
+        abstract = True
+
+
+class TitledMixin(models.Model):
+    """Model with name, description and slug"""
+    slug = AutoSlugField(populate_from='titulo', always_update=True)
+    titulo = models.CharField(max_length=255, blank=True)
+    descripcion = models.TextField(u'descripción', blank=True)
+
+    def __unicode__(self):
+        return u'%s' % self.titulo
+
+    class Meta:
+        abstract = True
+
+
+class Filtro(models.Model):
+    pagina = models.ForeignKey('Pagina')
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+    OPERADOR = OPERADOR_CHOICES
+    operador = StatusField(
+        choices_name='OPERADOR', default=OPERADOR.igual, help_text=u'')
+
+
+class ListaEnPagina(ModelBase, SortableMixin):
+    lista = models.ForeignKey('Lista', related_name='listas_en_pagina')
+    pagina =  models.ForeignKey('Pagina', related_name='listas_en_pagina')
+    mostrar_nombre = models.BooleanField(default=False, verbose_name='Nombre')
+    mostrar_descripcion = models.BooleanField(u'desc.', default=False)
+    NUM_VIDEOS = NUM_VIDEOS_CHOICES
+    num_videos = models.PositiveIntegerField(
+        u'núm. de videos', choices=NUM_VIDEOS, default=0)
+    LAYOUT = LISTA_LAYOUT_CHOICES
+    layout = StatusField(
+        choices_name='LAYOUT', default=LAYOUT.auto, help_text=u'')
+
+    NUM_VIDEOS_DEFAULT = 12
+    def videos_recientes(self):
+        return list(self.lista.videos.all()[:(self.num_videos or self.NUM_VIDEOS_DEFAULT)])
+
+    class Meta:
+        unique_together = (("lista", "pagina"),)
+
+
+class VideoEnPagina(ModelBase, SortableMixin):
+    """ManyToMany relation's 'thtough' class between Video and Pagina"""
+    video = models.ForeignKey(
+        'Video', models.CASCADE, related_name='videos_en_pagina')
+    pagina = models.ForeignKey(
+        'Pagina', models.CASCADE, verbose_name=u'página',
+        related_name='videos_en_pagina')
+
+    class Meta:
+        verbose_name = u'vdeo en página'
+        verbose_name_plural = u'videos en página'
+        unique_together = (("video", "pagina"),)
+
+
+class Pagina(MPTTModel, SortableMixin, TitledMixin, ActivableMixin):
+    parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True,
+                            verbose_name=u'padre')
+    mostrar_en_menu = models.BooleanField(default=False, db_index=True)
+    listas = models.ManyToManyField(u'Lista', related_name='paginas', through='ListaEnPagina')
+    videos = models.ManyToManyField(u'Video', related_name='paginas', through='VideoEnPagina')
+    def get_absolute_url(self):
+        return 'http://videos-stg.jornada.com.mx/secciones/%s?nc=%s' % (self.slug, uuid.uuid4())
+
+    class MPTTMeta:
+        order_insertion_by = ['orden']
+
+    # It is required to rebuild tree after save, when using order for mptt-tree
+    def save(self, *args, **kwargs):
+        super(Pagina, self).save(*args, **kwargs)
+        Pagina.objects.rebuild()
+
+    class Meta:
+        verbose_name = u'página'
+        verbose_name_plural = u'páginas'
+
+
+
+class Clasificador(ModelBase, NamedMixin):
+    nombre_plural = models.CharField(max_length=255, blank=True)
+
+    class Meta:
+        ordering = ['nombre']
+        verbose_name_plural = u'clasificadores'
+
+
+class VideoClasificado(models.Model):
+    video = models.ForeignKey('Video')
+    clasificador = models.ForeignKey('Clasificador')
+
+
+class ListaQuerySet(models.query.QuerySet):
+    """
+    Lógica de consulta de listas
+    """
+    def clasificado(self, clasificador, slug=None):
+        if not isinstance(clasificador, Clasificador):
+            clasificador = Clasificador.objects.get(slug=clasificador)
+
+        listas = self.filter(clasificador=clasificador).select_related('pagina')
+        if slug:
+            return listas.get(slug=slug)
+        else:
+            return listas
+
+class Lista(ModelBase, NamedMixin, ActivableMixin):
+    """Base class for playlist-like models"""
+    nombre_plural = models.CharField(max_length=255, blank=True)
+    clasificador = models.ForeignKey('Clasificador', related_name='listas')
+    pagina = models.OneToOneField(
+        'Pagina', related_name='lista_principal', null=True, blank=True,
+        help_text=u'Página dedicada a mostrar contenido sobre esta lista')
+    youtube_playlist = models.CharField(max_length=128, blank=True)
+    tags = TaggableManager(u'tags', blank=True)
+    links = models.ManyToManyField(
+        'Link', blank=True, related_name='%(class)ss')
+    imagen = SorlImageField(
+        upload_to='series', blank=True, null=True, storage=OverwriteStorage())
+    mostrar_imagen = models.BooleanField(default=False, help_text=u'')
+    icono = SorlImageField(
+        upload_to='icons', blank=True, null=True, verbose_name=u'ícono',
+        storage=OverwriteStorage())
+    mostrar_icono = models.BooleanField(default=False, help_text=u'')
+    cortinilla_inicio = models.FileField(
+        upload_to='intros', blank=True, null=True,
+        help_text=u'Video introductorio o cortinilla de inicio')
+    mostrar_cortinilla_inicio = models.BooleanField(
+        default=False,
+        help_text=u'Video con cortinilla de inicio')
+    cortinilla_final = models.FileField(
+        upload_to='endings', blank=True, null=True,
+        help_text=u'video con cortinilla de cierre')
+    mostrar_cortinilla_final = models.BooleanField(
+        default=False,
+        help_text=u'Agrgear cortinilla final a los videos de este autor')
+    REPRODUCCION = REPRODUCCION_CHOICES
+    reproduccion = StatusField(
+        u'reproducción', choices_name='REPRODUCCION',
+        default=REPRODUCCION.auto)
+    listas_relacionadas = models.ManyToManyField('self', blank=True)
+
+    # Default Manager
+    objects = ListaQuerySet.as_manager()
+
+    def __unicode__(self):
+        return u'%s: %s' % (self.clasificador, self.nombre)
+
+    class Meta:
+        ordering = ['clasificador', 'nombre', '-fecha_creacion']
+
+
+
+
+class Autor(Lista):
+    class Meta:
+        verbose_name_plural = u'autores'
+
+
+class Plataforma(ModelBase, SortableMixin, NamedMixin):
+    TIPO = PLATAFORMA_TIPO_CHOICES
+    tipo = StatusField(choices_name='TIPO')
+    api_key = models.CharField(max_length=32, blank=True, db_index=True)
+    usar_publicidad = models.BooleanField(default=True, db_index=True)
+
+    def __unicode__(self):
+        return u'[%s] %s' % (str(self.tipo).upper(), self.nombre)
+
+    class Meta:
+        ordering = ['pk']
+
+
+
+class Link(ModelBase):
+    url = models.URLField(u'URL', db_index=True)
+    titulo = models.CharField(u'título', max_length=255, blank=True)
+    blank = models.BooleanField(u'nuevo tab', default=False,
+                                help_text=u'Abrir en una nuevva ventana/tab')
+    TIPO = LINK_TIPO_CHOICES
+    tipo = StatusField(choices_name='TIPO', default=TIPO.auto)
+
+    def __unicode__(self):
+        if self.titulo:
+            return u'%s (%s)' % (self.titulo, self.url)
+        else:
+            return u'%s' % self.url
+
+
+
 
 class VideoQuerySet(models.query.QuerySet):
     """
@@ -46,12 +352,13 @@ class VideoQuerySet(models.query.QuerySet):
     """
     def publicos(self):
         return self.filter(
-                procesamiento=Video.PROCESAMIENTO.listo,
+                #procesamiento=Video.PROCESAMIENTO.listo,
                 #estado=Video.ESTADO.publicado,
                 fecha__lte=datetime.now()) \
-            .select_related('categoria', 'tipo','autor')
+            .select_related('territorio', 'pais')
 
-class Video(models.Model):
+
+class Video(ModelBase, TitledMixin):
     # Estado
     ESTADO = ESTADO_CHOICES
     estado = StatusField(choices_name='ESTADO',
@@ -69,7 +376,6 @@ class Video(models.Model):
     ORIGEN = ORIGEN_CHOICES
     origen = StatusField(choices_name='ORIGEN', default=ORIGEN.local)
 
-
     # local
     origen_url = models.URLField(u'URL origen',
         blank=True, null=True, help_text=(
@@ -86,18 +392,18 @@ class Video(models.Model):
         max_length=32, blank=True, editable=False
         )
     # video
-    archivo = models.FileField(upload_to='videos', blank=True, null=True)
-    imagen = SorlImageField(upload_to='images', blank=True, null=True)
-    hls = models.FileField(u'HLS', upload_to='hls', blank=True, null=True)
+    archivo = models.FileField(upload_to='videos', blank=True, null=True, storage=OverwriteStorage())
+    imagen = SorlImageField(upload_to='images', blank=True, null=True, storage=OverwriteStorage())
+    hls = models.FileField(u'HLS', upload_to='hls', blank=True, null=True, storage=OverwriteStorage())
     resolucion = models.IntegerField(u'resolución',
         db_index=True, blank=True, null=True
         )
     max_resolucion = models.IntegerField(u'resolución máxima',
         db_index=True, blank=True, null=True
         )
-    dash = models.FileField(u'DASH', upload_to='hls', blank=True, null=True)
-    sprites = models.FileField(upload_to='sprites', blank=True, null=True)
-    captions = models.FileField(upload_to='captions', blank=True, null=True)
+    dash = models.FileField(u'DASH', upload_to='dash', blank=True, null=True, storage=OverwriteStorage())
+    sprites = models.FileField(upload_to='sprites', blank=True, null=True, storage=OverwriteStorage())
+    captions = models.FileField(upload_to='captions', blank=True, null=True, storage=OverwriteStorage())
 
     # stream info
     duracion = models.DurationField(u'duración', default=timedelta(0))
@@ -108,85 +414,52 @@ class Video(models.Model):
 
     # editorial
     fecha = models.DateTimeField(db_index=True, default=timezone.now)
-    titulo = models.CharField(u'título', max_length=128, blank=True)
-    slug = AutoSlugField(
-        populate_from='titulo', unique=True, always_update=True
-        )
     resumen = models.TextField(blank=True)
-    descripcion = models.TextField(u'descripción',
-        blank=True, help_text=u'descripción detallada del video'
-        )
     transcripcion = models.TextField(u'transcripción', blank=True)
     observaciones = models.TextField(blank=True)
 
     # ManyToMany
-    sitios = models.ManyToManyField('Sitio')
-    listas = models.ManyToManyField('Lista',
-        blank=True, through='ListaVideo', related_name='videos'
-        )
-    tags = TaggableManager(u'tags',
-        blank=True, help_text=u'Palabras o frases clave separadas por coma'
-        )
-    
-    # Relaciones
-    categoria = models.ForeignKey('Categoria', models.SET_NULL, blank=True, null=True)
-    tipo = models.ForeignKey('Tipo', models.SET_NULL, blank=True, null=True)
-    autor = models.ForeignKey('Autor', models.SET_NULL, blank=True, null=True)
+    listas = models.ManyToManyField('Lista', related_name='videos')
+    links = models.ManyToManyField('Link', blank=True, related_name='videos')
+    tags = TaggableManager(u'tags', blank=True,
+        help_text=u'Palabras o frases clave separadas por coma')
 
-    ciudad = models.CharField(u'ciudad/estado', max_length=255, blank=True)
-    pais = CountryField(u'país', blank_label=u'Selecciona país', blank=True)
+    # Location
+    ciudad = models.CharField(max_length=128, blank=True, null=True)
+    #pais = CountryField(u'país', blank_label=u'selecciona país', blank=True)
+    pais = models.ForeignKey(Country, verbose_name=u'país', blank=True, null=True)
+    territorio = models.ForeignKey(
+        Territory, verbose_name=u'territorio', blank=True, null=True)
 
-    # tracking
-    fecha_creacion = models.DateTimeField(u'fecha de creación',
-        db_index=True, auto_now_add=True
-        )
-    fecha_modificacion = models.DateTimeField(u'última modificación',
-        null=True, blank=True, editable=False, auto_now=True
-        )
-    fecha_publicacion = MonitorField(u'fecha de publicación',
-        monitor='estado', when=['publicado']
-        )
-    usuario_creacion = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        models.SET_NULL,
-        verbose_name=u'creado por',
-        related_name='videos_creados',
-        blank=True, null=True
-        )
-    usuario_modificacion = models.ForeignKey(
-        settings.AUTH_USER_MODEL, models.SET_NULL,
-        verbose_name=u'modificado por',
-        related_name='videos_modificados',
-        blank=True, null=True
-        )
+    # Tracking
+    fecha_publicacion = MonitorField(
+        u'fecha de publicación', monitor='estado', when=['publicado'])
     tracker = FieldTracker()
 
     # Default Manager
     objects = VideoQuerySet.as_manager()
 
     def __unicode__(self):
-        if self.is_listo:
-            return u'{0}: {1}'.format(self.pk, self.titulo or u'[Sin título]')
+        if self.is_listo and self.titulo:
+            return self.titulo
         else:
             return u'{0}: [{1}]'.format(
-                self.pk, self.PROCESAMIENTO[self.procesamiento]
-                )
+                self.pk, self.PROCESAMIENTO[self.procesamiento])
 
     def get_absolute_url(self):
-        return reverse('video',
-            kwargs={ 'video_slug': self.slug, 'video_uuid': self.uuid }
-            )
+        return reverse('video', kwargs={'video_slug': self.slug,
+                                        'video_uuid': self.uuid })
 
     def get_admin_form_tabs(self):
         return GET_VIDEO_TABS(self)
 
     '''
-       Properties
+    Properties
     '''
     @property
     def uuid(self):
         """
-        strong con ID aumentado a 8 caracteres, siempre de longitud UUID_LENGTH
+        string con ID aumentado a 8 caracteres, siempre de longitud LENGTH
         """
         LENGTH = 8
         if self.pk:
@@ -194,47 +467,62 @@ class Video(models.Model):
             long_uuid = shortuuid.ShortUUID(alphabet="123456789").uuid(str_pk)
             return "{0}0{1}".format(long_uuid[:LENGTH-1-len(str_pk)], str_pk)
 
+    @property
+    def status_path(self):
+        if self.uuid:
+            return os.path.join(settings.TEMP_ROOT, 'status', self.uuid)
 
     @property
-    def query_procesamiento(self):
-        from subprocess import call, check_output, CalledProcessError
+    def vstats_path(self):
+        if self.uuid:
+            return os.path.join(settings.TEMP_ROOT, 'vstats', self.uuid)
 
-        status_path = os.path.join(settings.TEMP_ROOT, 'status', self.uuid)
-        vstats_path = os.path.join(settings.TEMP_ROOT, 'vstats', self.uuid)
+    @property
+    def procesamiento_status(self):
+        from subprocess import check_output, CalledProcessError
 
-        result = {'status': None}
+        status = { 'status': None }
 
-        if os.path.exists(status_path):
-            with open(status_path, 'r') as status_file:
+        if os.path.exists(self.status_path):
+            with open(self.status_path, 'r') as status_file:
                 status_list = status_file.read().split()
 
             if status_list:
-                result['status'] = status_list[0]
+                status['status'] = status_list[0]
 
                 if status_list[0] == 'download':  # download has begun
-                    result['progress'] = float(status_list[1])
+                    status['progress'] = float(status_list[1])
                 elif status_list[0] == 'valid':
                      # download has finished and compreession started
-                    result['total'] = float(status_list[1])
+                    status['total'] = float(status_list[1])
                     try:
-                        tailcmd = ['tail', '-2', vstats_path]
+                        tailcmd = ['tail', '-2', self.vstats_path]
                         vstats_line = check_output(tailcmd).split("\n")[0]
-                        result['seconds'] = float(vstats_line.split()[9])
-                        result['progress'] = 100 * round(
-                            result['seconds']/result['total'], 2
+                        status['seconds'] = float(vstats_line.split()[9])
+                        status['progress'] = 100 * round(
+                            status['seconds'] / status['total'], 2
                             )
                     except (CalledProcessError, IndexError):
                         # No vstats file or invalid
-                        result['seconds'] = 0
-                        result['progress'] = 0
+                        status['seconds'] = 0
+                        status['progress'] = 0
                 elif status_list[0] == 'done':
-                    result['id'] = int(status_list[1])
+                    status['id'] = int(status_list[1])
                 elif status_list[0] == 'error':
-                    result['code'] = int(status_list[1])
-                    result['msg'] = ' '.join(status_list[2:])
-        return result
+                    status['code'] = int(status_list[1])
+                    status['msg'] = ' '.join(status_list[2:])
+        return status
 
-    
+    # @procesamiento_status.setter
+    # def procesamiento_status(self, status):
+    #     valid_statuses = {
+    #         'download': {'progress': float}
+    #         'valid': {'total': float}
+    #     }
+    #     if status.get('status') in ['download', 'valid', 'done', 'error']:
+
+
+
     @property
     def descripcion_plain(self):
         return strip_tags(self.descripcion)
@@ -244,7 +532,7 @@ class Video(models.Model):
         return self.get_absolute_url()
 
     '''
-    Estado
+    Status
     '''
     @property
     def is_nuevo(self):
@@ -260,7 +548,7 @@ class Video(models.Model):
         return self.procesamiento == Video.PROCESAMIENTO.error
 
     '''
-    Duracion
+    Duration
     '''
     @property
     def duracion_iso(self):
@@ -276,306 +564,5 @@ class Video(models.Model):
     def segundos(self):
         return self.duracion.seconds
 
-    @property
-    def hls_url(self):
-        return '{0}opts/hls/{1}/playlist.m3u8'.format(
-            settings.MEDIA_URL, self.pk
-            )
-
-    @property
-    def sprites_url(self):
-        return '{0}opts/sprites/{1}/s.vtt'.format(
-            settings.MEDIA_URL, self.pk
-            )
-
-    '''
-    Listas
-    '''
-    @property
-    def serie(self):
-        try:
-            return Lista.objects.filter(tipo=Lista.TIPO.serie,
-                                        enlistado__video=self)[0]
-        except IndexError:
-            pass
-    
-
     class Meta:
-        '''
-        Video Meta class
-        '''
         ordering = ('-fecha', '-fecha_creacion', '-pk')
-
-
-
-LISTA_TIPO_CHOICES = Choices(
-    ('tematico', u'Lista temática'),
-    ('destacado', u'Lista de destacados'),
-    ('serie', u'Serie'),
-)
-
-LISTA_LAYOUT_CHOICES = Choices(
-    ('auto', u'Automático'),
-    ('c100', u'1 columna'),
-    ('c50', u'1 o 2 columnas'),
-    ('c33', u'Hasta 3 columnas'),
-    ('c25', u'Hasta 4 columnas'),
-)
-
-class ListaQuerySet(models.query.QuerySet):
-    """
-    Lógica de consulta de Listas
-    """
-    def destacados(self, categoria=None):
-        qs = self.filter(tipo=Lista.TIPO.destacado, usar_web=True)
-        if categoria:
-            return qs.filter(categoria=categoria)
-        else:
-            return qs.filter(categoria__isnull=True)
-        
-
-class Lista(models.Model):
-    TIPO = LISTA_TIPO_CHOICES
-    tipo = StatusField(u'tipo de lista', choices_name='TIPO',
-                       default=TIPO.tematico)
-    LAYOUT = LISTA_LAYOUT_CHOICES
-    layout = StatusField(choices_name='LAYOUT', default=LAYOUT.auto,
-        help_text=u'<em>Automático</em> ajusta el layout dependiendo del ' \
-                  u'número de videos que contenga la lista'
-        )
-    slug = AutoSlugField(populate_from='nombre', unique_with=['tipo'],
-                         always_update=True)
-    nombre = models.CharField(max_length=128)
-    descripcion = models.TextField(u'descripción', blank=True)
-
-    usar_nombre = models.BooleanField(default=True)
-    usar_descripcion = models.BooleanField(default=True)
-    # plataformas
-    usar_web = models.BooleanField(u'usar en sitio web',
-        default=True, db_index=True
-        )
-    usar_movil = models.BooleanField(u'usar en apps móviles',
-        default=True, db_index=True
-        )
-    usar_tv = models.BooleanField(u'usar en apps de TV',
-        default=True, db_index=True
-        )
-    # publicidad
-    ads_web = models.BooleanField(u'publicidad en sitio web',
-        default=True, db_index=True
-        )
-    ads_movil = models.BooleanField(u'publicidad en apps móviles',
-        default=True, db_index=True
-        )
-    ads_tv = models.BooleanField(u'publicidad en smart TV',
-        default=True, db_index=True
-        )
-    categoria = models.ForeignKey('Categoria', models.CASCADE,
-        blank=True, null=True, verbose_name=u'Categoría',
-        help_text=u'Dejar vacío para asignar al home/portada'
-        )
-    fecha_creacion = models.DateTimeField(u'fecha de creación',
-        db_index=True, editable=False, auto_now_add=True
-        )
-    fecha_modificacion = models.DateTimeField(u'última modificación',
-        null=True, blank=True, auto_now=True, editable=False
-        )
-    tags = TaggableManager(u'tags', blank=True,
-        help_text=u'Estos tags se aplican a todos los videos de la lista',
-        )
-    orden = models.PositiveIntegerField()
-
-    objects = ListaQuerySet.as_manager()
-
-    @property
-    def descripcion_plain(self):
-        return strip_tags(self.descripcion)
-
-    def __unicode__(self):
-        return self.nombre
-
-    class Meta:
-        ordering = ['orden', '-fecha_creacion', '-pk']
-
-
-class ListaVideo(models.Model):
-    video = models.ForeignKey(Video, related_name='enlistado')
-    lista = models.ForeignKey(Lista, related_name='enlistado')
-    orden = models.PositiveIntegerField()
-
-    class Meta:
-        ordering = ['orden', '-pk']
-        verbose_name = u'Video en lista'
-        verbose_name_plural = u'Videos en lista'
-        unique_together = (("video", "lista"),)
-
-
-class Tipo(models.Model):
-    slug = AutoSlugField(populate_from='nombre', unique=True)
-    nombre = models.CharField(max_length=64, blank=True)
-    nombre_plural = models.CharField(max_length=64, blank=True)
-    descripcion = models.TextField(u'descripción', blank=True)
-    REPRODUCCION = REPRODUCCION_CHOICES
-    reproduccion = StatusField(u'reproducción',
-        choices_name='REPRODUCCION', default=REPRODUCCION.auto
-        )
-    orden = models.PositiveIntegerField()
-
-    def __unicode__(self):
-        return self.nombre
-
-    class Meta:
-        ordering = ['orden', '-pk']
-        verbose_name = 'tipo de video'
-        verbose_name_plural = 'tipos de video'
-
-
-class Categoria(models.Model):
-    slug = AutoSlugField(populate_from='nombre', unique=True)
-    nombre = models.CharField(max_length=100)
-    orden = models.PositiveIntegerField()
-
-    def __unicode__(self):
-        return self.nombre
-
-    class Meta:
-        ordering = ['orden']
-        verbose_name = u'categoría'
-        verbose_name_plural = 'categorías'
-
-
-class Autor(models.Model):
-    slug = AutoSlugField(populate_from='nombre', unique=True)
-    nombre = models.CharField(max_length=128)
-    REPRODUCCION = REPRODUCCION_CHOICES
-    reproduccion = StatusField(u'política de reproducción',
-        choices_name='REPRODUCCION',
-        default=REPRODUCCION.auto
-        )
-    orden = models.PositiveIntegerField()
-    
-    def __unicode__(self):
-        return self.nombre
-
-    class Meta:
-        ordering = ['orden', '-pk']
-        verbose_name_plural = u'autores'
-
-
-
-class Sitio(models.Model):
-    slug = AutoSlugField(populate_from='nombre', unique=True, always_update=True)
-    nombre = models.CharField(max_length=128)
-    url = models.URLField(blank=True, null=True)
-    REPRODUCCION = REPRODUCCION_CHOICES
-    reproduccion = StatusField(u'política de reproducción',
-        choices_name='REPRODUCCION', default=REPRODUCCION.auto
-        )
-    orden = models.PositiveIntegerField()
-
-    def __unicode__(self):
-        return self.nombre
-
-
-# class Distribucion(models.Model):
-#     TEMPLATE_CHOICES = (
-#         ('notificacion-ficha-tecnica', u'Notificación con ficha técnica'),
-#         ('notificacion-sencilla', u'Notificación snecilla')
-#     )
-#     descripcion = models.CharField(u'nombre/descripción', max_length=255)
-#     activo = models.BooleanField(default=True)
-#     fecha_desde = models.DateTimeField(null=True, blank=True, help_text=u'Realizar distribución a partir la fecha seleccionada')
-#     fecha_hasta = models.DateTimeField(null=True, blank=True, help_text=u'Realizar distribución hasta la fecha seleccionada')
-#     configuracion = models.TextField(u'configuración', blank=True, null=True)
-#     email = models.CharField(max_length=255, blank=True, null=True, help_text=u'Uno o varios emails separados por comas con el formato:  Nombre Primer Destinatario &lt;usuario@dominio.com&gt;, Nombre Segundo Destinatario &lt;otro@dominio.com&gt;, ...')
-#     email_template = models.CharField(u'Plantilla e-mail', max_length=255, choices=TEMPLATE_CHOICES, blank=True, null=True, help_text=u'Plantilla a usar para dar formato a los mensajes')
-#     ftp_host = models.CharField(u'Host FTP', max_length=255, blank=True, null=True)
-#     ftp_port = models.CharField(u'Puerto FTP', max_length=255, blank=True, null=True)
-#     ftp_dir = models.CharField(u'Directorio FTP', max_length=255, blank=True, null=True)
-#     ftp_user = models.CharField(u'Usuario FTP', max_length=255, blank=True, null=True)
-#     ftp_pass = models.CharField(u'Contraseña FTP', max_length=255, blank=True, null=True)
-#     # campos para reglas
-#     texto = models.CharField(max_length=255, blank=True, null=True, help_text=u'Videos que contengan el texto especificado en el título o descripción')
-#     tipos = models.ManyToManyField(Tipo, blank=True)
-#     categorias = models.ManyToManyField(Categoria, blank=True)
-#     programas = models.ManyToManyField(Programa, blank=True)
-#     tipos_programa = models.ManyToManyField(TipoPrograma, blank=True)
-#     temas = models.ManyToManyField(Tema, blank=True)
-#     paises = models.ManyToManyField(Pais, blank=True, verbose_name=u'países')
-#     corresponsales = models.ManyToManyField(Corresponsal, blank=True)
-#     con_corresponsal = models.BooleanField(default=False, help_text=u'Elegur unicamente videos que tengan corresponsal asociado')
-#     series = models.ManyToManyField(Serie, blank=True)
-
-#     def get_email_dict(self):
-#          email = map(lambda x: x.strip(), self.email.split(','))
-#          email = map(lambda x: parseaddr(x), email)
-#          return email
-
-#     def get_ftp_port(self):
-#         return self.ftp_port or '21'
-
-#     def get_videos_distribuibles(self, threshold_days=2):
-#         videos = Video.objects.filter(procesado=True, publicado=True)
-#         if self.fecha_desde:
-#             videos = videos.filter(fecha__gte=self.fecha_desde)
-#         if self.fecha_hasta:
-#             videos = videos.filter(fecha__lte=self.fecha_hasta)
-#         if self.texto:
-#             videos = videos.filter(Q(titulo__icontains=self.texto) | Q(descripcion__icontains=self.texto))
-#         if self.con_corresponsal:
-#             videos = videos.exclude(corresponsal__isnull=True)
-#         if self.tipos.exists():
-#             videos = videos.filter(tipo__in=self.tipos.values('pk'))
-#         if self.categorias.exists():
-#             videos = videos.filter(categoria__in=self.categorias.values('pk'))
-#         if self.programas.exists():
-#             videos = videos.filter(programa__in=self.programas.values('pk'))
-#         if self.tipos_programa.exists():
-#             videos = videos.filter(programa__tipo__in=self.tipos_programa.values('pk'))
-#         if self.temas.exists():
-#             videos = videos.filter(tema__in=self.temas.values('pk'))
-#         if self.paises.exists():
-#             videos = videos.filter(pais__in=self.paises.values('pk'))
-#         if self.corresponsales.exists():
-#             videos = videos.filter(corresponsal__in=self.corresponsales.values('pk'))
-#         if self.series.exists():
-#             videos = videos.filter(serie__in=self.series.values('pk'))
-
-#         return videos.exclude(fecha__lte=datetime.datetime.now() - datetime.timedelta(days=threshold_days))
-
-#     def parseConfiguracion(self):
-#         import ConfigParser
-#         import StringIO
-
-#         buf = StringIO.StringIO("[root]\n"+self.configuracion)
-#         config = ConfigParser.ConfigParser()
-
-#         return config.readfp(buf).items('root')
-
-#     def __unicode__(self):
-#         return u'Distribución %s: %s' % (self.pk, self.descripcion)
-
-#     class Meta:
-#         verbose_name = u'notificación/distribución'
-#         verbose_name_plural = u'notificaciones/distribuciones'
-
-
-# class Distribuido(models.Model):
-#     STATUS_CHOICES = (
-#         (1, 'Instrucción recibida'),
-#         (2, 'Iniciado'),
-#         (3, 'Completado'),
-#         (4, 'Error'),
-#     )
-#     fecha = models.DateTimeField(auto_now_add=True)
-#     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
-#     distribucion = models.ForeignKey(Distribucion, related_name='distribuidos')
-#     video = models.ForeignKey(Video)
-
-#     def __unicode__(self):
-#         return u'Video distribuido #%d (%s) por distribución (%s)' % (self.pk, self.video, self.distribucion)
-
-#     class Meta:
-#         verbose_name = u'video notificado/distribuído'
-#         verbose_name_plural = u'videos notificados/distribuídos'
-#         ordering = ['-fecha']

@@ -1,0 +1,82 @@
+[
+{
+    "model": "videos.autor",
+    "pk": 1,
+    "fields": {
+        "fecha_creacion": "2016-06-19T19:50:22Z",
+        "fecha_modificacion": null,
+        "orden": 1,
+        "slug": "la-jornada",
+        "nombre": "AP",
+        "logo": "autores/AP_jXzSQRH.png",
+        "icono": "",
+        "cortinilla_inicio": "",
+        "usar_cortinilla_inicio": false,
+        "cortinilla_final": "",
+        "usar_cortinilla_final": false,
+        "url": "http://www.ap.org/",
+        "usar_url": false,
+        "reproduccion": "local"
+    }
+},
+{
+    "model": "videos.autor",
+    "pk": 2,
+    "fields": {
+        "fecha_creacion": "2016-06-19T19:50:22Z",
+        "fecha_modificacion": null,
+        "orden": 0,
+        "slug": "la-jornada-2",
+        "nombre": "La Jornada",
+        "logo": "autores/La-Jornada.png",
+        "icono": "",
+        "cortinilla_inicio": "",
+        "usar_cortinilla_inicio": false,
+        "cortinilla_final": "",
+        "usar_cortinilla_final": false,
+        "url": "http://www.jornada.unam.mx/",
+        "usar_url": false,
+        "reproduccion": "auto"
+    }
+},
+{
+    "model": "videos.autor",
+    "pk": 3,
+    "fields": {
+        "fecha_creacion": "2016-06-19T19:50:22Z",
+        "fecha_modificacion": null,
+        "orden": 2,
+        "slug": "conagua",
+        "nombre": "CONAGUA",
+        "logo": "autores/conagua.png",
+        "icono": "",
+        "cortinilla_inicio": "",
+        "usar_cortinilla_inicio": false,
+        "cortinilla_final": "",
+        "usar_cortinilla_final": false,
+        "url": "http://conagua.gob.mx",
+        "usar_url": true,
+        "reproduccion": "auto"
+    }
+},
+{
+    "model": "videos.autor",
+    "pk": 4,
+    "fields": {
+        "fecha_creacion": "2016-06-20T00:15:00Z",
+        "fecha_modificacion": "2016-06-20T00:15:00Z",
+        "orden": 3,
+        "slug": "anonimo",
+        "nombre": "An\u00f3nimo",
+        "logo": "autores/images/Anonym.png",
+        "icono": "autores/icons/Anonym.png",
+        "cortinilla_inicio": "",
+        "usar_cortinilla_inicio": false,
+        "cortinilla_final": "",
+        "usar_cortinilla_final": false,
+        "url": "",
+        "usar_url": false,
+        "reproduccion": "auto"
+    }
+}
+]

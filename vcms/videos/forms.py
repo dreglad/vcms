@@ -42,14 +42,24 @@ class AdminImageWidget(FileInput):
             image_path = value.path.replace('.vtt', '.jpg')
             image_url = value.url
             file_name = str(value)
+            vtt = False
             if (file_name.endswith('.vtt')):
+                vtt = True
                 image_path = value.path.replace('.vtt', '.jpg')
                 image_url = value.url.replace('.vtt', '.jpg')
                 file_name = file_name.replace('.vtt', '.jpg')
-            thumb = get_thumbnail(image_path, '400', crop='center', quality=99)
+
+            if name == 'icono':
+                size = '30'
+            else:
+                size = '400'
+            thumb = get_thumbnail(image_path, size, crop='center', quality=99)
             output.append(u'<a href="%s" target="_blank">' \
-                          u'<img style="margin-top:1em;" class="responsive" src="%s" alt="%s" /></a>' \
-                          u'<br/> %s&nbsp; '% (image_url, thumb.url, file_name,
-                                        _('Change:')))
-        output.append(super(FileInput, self).render(name, value, attrs))
+                          u'<img style="margin-top:1em;" class="responsive" src="%s" alt="%s" /></a>' % (
+                              image_url, thumb.url, file_name))
+            if not vtt:
+                output.append('<br>Para modificar elija un nuevo archivo: <br/>')
+                output.append(super(FileInput, self).render(name, value, attrs))
+        else:
+            output.append(super(FileInput, self).render(name, value, attrs))
         return mark_safe(u''.join(output))
