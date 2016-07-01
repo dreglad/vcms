@@ -1,28 +1,20 @@
 # -*- coding: utf-8 -*- #
 SUIT_CONFIG = {
     'MENU': (
-        {'label': u'Videos', 'icon': 'icon-film',
-         'app': 'videos', 'models': ('video', 'lista')},
+        {'label': u'Contenido', 'icon': 'icon-film',
+         'app': 'videos', 'models': ('pagina', 'video', 'link')},
 
-        {'label': u'Categorización', 'icon': 'icon-tags',
-         'app': 'videos', 'models': ('autor', 'categoria', 'tipo',)},
-         
-        {'app': 'auth', 'label': 'Control de acceso', 'icon': 'icon-lock',
-         'models': ('user', 'group')},
+        {'label': u'Listas', 'icon': 'icon-tags',
+         'app': 'videos', 'models': ('clasificador', 'lista')},
 
-        '-',
-
-        {'label': u'Sitios', 'icon': 'icon-globe', 'url': '/videos/sitio/',},
+        {'label': u'Configuración', 'icon': 'icon-cog',
+         'models': ('videos.plataforma', 'auth.user', 'auth.group')},
 
         '-',
-         
-        {'label': u'Configuración', 'icon': 'icon-cog', 'url': '/django-rq/' },
 
-         '-',
-         
          {'label': 'Cola de trabajos', 'icon': 'icon-tasks',
          'url': '/django-rq/' }
-        
+
         #{'label': 'Support', 'icon':'icon-question-sign', 'url': '/support/'},
     ),
     # header

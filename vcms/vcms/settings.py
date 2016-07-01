@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'suit',
     'suit_redactor',
     'suit_rq',
+    'polymorphic',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -34,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     #'cities_light',
+    'corsheaders',
     'crispy_forms',
     'debug_toolbar',
     'django_countries',
@@ -41,13 +43,25 @@ INSTALLED_APPS = [
     'django_select2',
     #'djsupervisor',
     'haystack',
+    'locality',
+    'mptt',
     'rest_framework',
     'reversion',
+    'salmonella',
     'sorl.thumbnail',
     'taggit',
 
     'vcms.apps.VcmsVideosConfig',
 ]
+
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_WHITELIST = (
+    'www.jornada.unam.mx',
+    'jornada.com.mx',
+    'videos.jornada.com.mx',
+    'videos-stg.jornada.com.mx',
+)
 
 
 CACHES = {
@@ -121,6 +135,7 @@ MIDDLEWARE_CLASSES = [
     #'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -252,7 +267,10 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 20,
+
+    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',)
 }
+
 
 RQ_QUEUES = {
     'default': {

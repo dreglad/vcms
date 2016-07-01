@@ -5,6 +5,7 @@ import random
 
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
+from django.views.generic import View
 from django.views.generic.base import RedirectView
 
 from vcms.video_ops import extract_video_image
@@ -25,10 +26,16 @@ def change_thumbnail_view(request):
     return HttpResponse(json.dumps(result), content_type="application/json")
 
 
-def query_status_view(request, video_pk):
-    video = get_object_or_404(Video, pk=video_pk)
-    return HttpResponse(json.dumps(video.query_procesamiento),
-                        content_type="application/json")
+class VideoStatusView(View):
+    def get(self, request, video_pk):
+        video = get_object_or_404(Video, pk=video_pk)
+        return HttpResponse(json.dumps(video.procesamiento_status),
+                            content_type="application/json")
+
+    def post(self, request, video_pk):
+        video = get_object_or_404(Video, pk=video_pk)
+        return HttpResponse(json.dumps(video.procesamiento_status),
+                            content_type="application/json")
 
 
 class VideoRedirectView(RedirectView):
@@ -37,5 +44,3 @@ class VideoRedirectView(RedirectView):
             settings.BASE_FRONTEND_URL, kwargs['video_uuid'],
             kwargs['video_slug'],
             )
-
-

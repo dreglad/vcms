@@ -58,10 +58,10 @@ def make_sprites_job(video_pk):
 def make_hls_job(video_pk):
     connection.close() # force re-connnect to avoid DB tomeout issues
     video = Video.objects.get(pk=video_pk)
-    if video.resolucion or video.resolucion == -1:
-        return  # already segmented (>0) or being segmented right now (-1)
-    else:  # mark as currently being segmenting
-        Video.objects.filter(pk=video_pk).update(resolucion=-1)
+    #if video.resolucion == -1:
+    #    return  # Being segmented right now (-1)
+    #else:  # mark as currently being segmenting
+    #    Video.objects.filter(pk=video_pk).update(resolucion=-1)
 
     def playlist_progress(playlist, current=None, total=None):
         """Called after each partial or the global playlist finises"""
@@ -94,7 +94,7 @@ def create_new_video_job(video_pk):
     Download
     '''
     download_path = os.path.join(settings.TEMP_ROOT, 'original', video.uuid)
-    source = video.origen_url or video.archivo_original
+    source = video.origen_url or video.archivo_original or (video.archivo and video.archivo.path)
     logger.info('About to download %s to %s' % (source, download_path))
     def progress_fn(source, destination, progress):
         _video_status_file(video, 'download %g' % progress)

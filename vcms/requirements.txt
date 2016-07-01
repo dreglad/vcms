@@ -5,13 +5,13 @@ MySQL-python
 django-mptt
 django-rq
 rq-scheduler
+django-cors-middleware
 markdown
 django-filter
 django-crispy-forms
 #django-supervisor
+django-polymorphic
 python-dateutil
-elasticsearch
-mandrill
 wget
 django-suit
 django-suit-rq
