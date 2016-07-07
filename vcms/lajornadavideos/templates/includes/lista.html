@@ -1,32 +1,44 @@
+{% load el_pagination_tags %}
+{% with pagina_param=listado.lista.slug num_videos=listado.num_videos|default:"12" %}
+
+{% paginate num_videos videos using pagina_param %}
+
 <section class="lista videos">
   {% if listado.mostrar_nombre or mostrar_nombre %}
     <h2>
-      {% if listado.lista.pagina %}
-        <a title="{{ listado.lista.nombre }}" href="/secciones/{{ listado.lista.pagina.slug }}">
-      {% endif %}
-      {{ listado.lista.nombre_plural|default:listado.lista.nombre }}
-      {% if listado.lista.pagina %}</a>{% endif %}
+      <a title="{{ listado.lista.nombre }}"
+          {% if listado.lista.pagina %}
+            href="/secciones/{{ listado.lista.pagina.slug }}"
+          {% else %}
+            href="/listas/{{ listado.lista.slug }}"{% endif %}>
+         {{ listado.lista.nombre_plural|default:listado.lista.nombre }}
+      </a>
     </h2>
   {% endif %}
 
-  {% if listado.mostrar_descripcion and listado.lista.descripcion_plain %}
-    <div class="descripcion">{{ listado.lista.descripcion|safe }}</div>
+  {% if listado.mostrar_descripcion and listado.lista.descripcion %}
+    <div class="descripcion"><p>{{ listado.lista.descripcion|safe }}</p></div>
   {% endif %}
 
-    <ol class="container-fluid">
+    <ol class="container-fluid endless_page_template">
+
     {% if videos|length_is:"1" or listado.layout == "c100" %}
 
       <li class="grid-sizer c100"></li>
+      {% with importante=True %}
       {% for video in videos %}
         <li class="c100">{% include "includes/video_article.html" %}</li>
       {% endfor %}
+      {% endwith %}
 
     {% else %}{% if videos|length_is:"2" or listado.layout == 'c50' %}
 
       <li class="grid-sizer c25"></li>
+      {% with importante=True %}
       {% for video in videos %}
         <li class="c50">{% include "includes/video_article.html" %}</li>
       {% endfor %}
+      {% endwith %}
 
     {% else %}{% if videos|length_is:"3" or listado.layout == 'c33' %}
 
@@ -62,3 +74,7 @@
     {% endif %}{% endif %}{% endif %}{% endif %}
   </ol>
 </section>
+{% if listado.mostrar_paginacion %}{% show_more "mostrar más" "cargando..." %}{% endif %}
+
+<!-- <button type="button" class="btn btn-primary">MOSTRAR MÁS VIDEOS</button> -->
+{% endwith %}

@@ -1,18 +1,23 @@
 {% load static from staticfiles %}
 {% load mptt_tags %}
+{% load videos %}
+
+
 
 <nav class="menu navbar container-fluid">
   <div class="collapse navbar-toggleable-md" id="menuOptions">
     <ul itemscope itemtype="http://schema.org/SiteNavigationElement"
         class="nav navbar-nav">
       <li class="nav-item">
-          <a {% if pagina.slug == home.slug %}class="active"{% endif %} href="{% url 'home' %}" title="{{ home.titulo }}">
+
+          <a {% if home and pagina.slug == home.slug %}class="active"{% endif %} href="{% url 'home' %}" title="{{ home.titulo }}">
             {{ home.titulo }}
           </a>
       </li>
       {% recursetree home.get_children %}
+      {% if node.mostrar_en_menu %}
       <li class="nav-item">
-          <a {% if pagina.slug == node.slug %}class="active"{% endif %} href="{% url 'seccion' node.slug %}" title="{{ node.titulo }}">
+          <a {% if node.slug == pagina.slug or node.slug == video|clasificacion:"seccion" %}class="active"{% endif %} href="{% url 'seccion' node.slug %}" title="{{ node.titulo }}">
             {{ node.titulo }}
           </a>
           {% if not node.is_leaf_node %}
@@ -21,6 +26,7 @@
               </ul>
           {% endif %}
       </li>
+      {% endif %}
       {% endrecursetree %}
     </ul>
   </div>

@@ -96,9 +96,10 @@ def create_new_video_job(video_pk):
     download_path = os.path.join(settings.TEMP_ROOT, 'original', video.uuid)
     source = video.origen_url or video.archivo_original or (video.archivo and video.archivo.path)
     logger.info('About to download %s to %s' % (source, download_path))
+    cdn = '://cdn.' in source
     def progress_fn(source, destination, progress):
         _video_status_file(video, 'download %g' % progress)
-    download = video_ops.download_video(source, download_path,
+    download = video_ops.download_video(source, download_path, force_direct=cdn,
                                         progress_fn=progress_fn)
     '''
     Validate

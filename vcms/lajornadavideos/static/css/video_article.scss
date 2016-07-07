@@ -1,13 +1,32 @@
 article.video {
-    margin-right: 1.5rem;
+    i {
+        font-size: 30px;
+    }
+    // margin: 0 0.1rem;
     a {
-        -webkit-box-shadow: rgba(0,0,0,0.4) 0 0 8px;
-        box-shadow: rgba(0,0,0,0.4) 0 0 8px;
+        -webkit-box-shadow: rgba(0,0,0,0.4) 0 0 4px;
+        box-shadow: rgba(0,0,0,0.4) 0 0 4px;
         color: white;
         display: block;
         position: relative;
-        margin: 0.5rem 0;
+        margin: 0.9rem 0.9rem;
         figure {
+            &:hover {
+                .icon {
+                    // opacity: 0.8;
+                    // text-shadow: none;
+                    text-shadow: 2px 2px 2px rgba(0,0,0,0.25);
+                    color: $rojoColor;
+                }
+
+
+                .descripcion {
+                    @include media-breakpoint-up(md) {
+                        opacity: 0.8;
+                    }
+                }
+            }
+
             margin:0;
             /* background: linear-gradient(to bottom,
                                         rgba(0, 0, 0, 0) 50%,
@@ -34,6 +53,20 @@ article.video {
                 bottom: 0;
                 width: 100%;
 
+                .descripcion {
+                    font-size: 70%;
+                    padding: 0 2.8rem;
+                    opacity: .7;
+                    display: inline-block;
+                    opacity: 0;
+                    margin: 0;
+                       -webkit-transition: opacity 0.6s ease-out;
+                      -moz-transition: opacity 0.6s ease-out;
+                      -o-transition: opacity 0.4s ease-out;
+                      transition: opacity 0.4s ease-out;
+
+                }
+
                 .titulo {
                     padding: 0.5rem 0.75rem;
                     display: block;
@@ -45,6 +78,14 @@ article.video {
                         content:"\a";
                         white-space: pre;
                     }
+
+                    .icon {
+                        padding: 0 0.3rem;
+                         -webkit-transition: color 0.4s ease-out;
+                      -moz-transition: color 0.4s ease-out;
+                      -o-transition: color 0.25s ease-out;
+                      transition: color 0.25s ease-out;
+                    }
                 }
 
                 .detalle {
@@ -55,8 +96,16 @@ article.video {
                     color: rgba(255,255,255,0.85);
 
                     span {
+                        float: left;
                         margin-bottom: 0.5rem;
                         display: block;
+                        .icon { 
+                            font-size: 150%;
+                            margin-right: 0.5rem;
+                            &:hover {
+                                color: black;
+                            }
+                        }
                         &.fecha { float: left; }
                         &.duracion { float: right; }
                     }

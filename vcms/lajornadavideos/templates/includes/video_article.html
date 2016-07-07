@@ -9,10 +9,16 @@
             title="{{ video.titulo }}">
       {% endthumbnail %}
       <figcaption>
+      {% if importante %}
+          <span class="descripcion solo">
+              {{ video.descripcion|truncatewords:"50"}}
+          </span>
+        {% endif %}
         <span class="titulo">
-          {{ video.titulo|truncatewords:12|truncatechars:60|breaksentence }}
+          <span class="icon fa fa-play" aria-hidden="true"></span> {{ video.titulo|truncatewords:20|breaksentence }}
         </span>
         <div class="detalle">
+          {# <span class="icon fa fa-youtube-play" aria-hidden="true"></span> #}
           <span class="fecha">{{ video.fecha|date:"N j, Y" }}</span>
           <span class="duracion">{{ video.duracion|duration }}</span>
         </div>

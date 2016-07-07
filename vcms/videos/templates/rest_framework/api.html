@@ -1,10 +1,11 @@
 {% extends "rest_framework/base.html" %}
+{% load videos_admin %}
 
-{% block title %}{% if name %}{{ name }} – {% endif %}REST API - La Jornada Videos{% endblock %}</title>
+{% block title %}{% if name %}{{ name }} – {% endif %}REST API - {% site_name %} %}{% endblock %}</title>
 
 {% block branding %}
 <a class='navbar-brand' rel="nofollow" href='/api/'>
-    REST API - La Jornada Videos
+    REST API - {% site_name %}
 </a>
 {% endblock %}
 

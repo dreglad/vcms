@@ -10,9 +10,8 @@ from django.views.generic.base import RedirectView
 from vcms import views
 from vcms.api import router
 
-
 urlpatterns = [
-    url(r'^$', RedirectView.as_view(url='/videos/pagina/'), name='vcms_home'),
+    url(r'^$', RedirectView.as_view(url='/videos/video/'), name='vcms_home'),
     url(r'^', include(admin.site.urls)),
 
     url(r'^salmonella/', include('salmonella.urls')),
@@ -39,6 +38,10 @@ urlpatterns = [
 
     url(r'^crossdomain\.xml$', views.crossdomain),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+def can_show_toolbar(request):
+    return False
 
 
 if settings.DEBUG:

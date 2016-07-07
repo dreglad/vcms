@@ -54,24 +54,34 @@
     <div class="col-lg-5">
       <div class="labels">
         {% for lista in video.listas.all %}
-          {% if lista.mostrar_icono and lista.icono %}
-            {% thumbnail lista.icono.file "25" as im %}
+          
             {% with lista.links.latest as link %}
-            <span>
-              {% if link %}
-                <a title="{{ link.titulo }}" href="{{ link.url }}"
-                   target="{% if link.blank %}_blank{% endif %}">
-              {% else %}{% if lista.pagina %}
-                <a title="{{ lista.pagina }}" href="/secciones/{{ link.url }}">
-              {% endif %}{% endif %}
+            {% if lista.slug != 'formato' %}
+            {% if link %}
+              <a title="{{ link.titulo }}" href="{{ link.url }}"
+                 target="{% if link.blank %}_blank{% endif %}">
+            {% else %}{% if lista.pagina %}
+              <a title="{{ lista.pagina.titulo }}"
+                 href="/secciones/{{ lista.pagina.slug }}">
+            {% else %}
+              <a title="{{ lista.nombre }}"
+                 href="/listas/{{ lista.slug }}">
+            {% endif %}{% endif %}
+
+            {% if lista.mostrar_icono and lista.icono %}
+              {% thumbnail lista.icono.file "25" as im %}
               <img src="{{ im.url }}" style="margin:{{ im|margin:"30x30" }}">
-              {% if link or lista.pagina %}</a>{% endif %}
-            </span>
+              {% endthumbnail %}
+            {% else %}
+              <span class="label {{ lista.clasificador.nombre }}">{{ lista.nombre }}</span>
+            {% endif %}
+
+            
+              </a>
+            
+            {% endif %}
             {% endwith %}
-            {% endthumbnail %}
-          {% else %}
-            <span class="label {{ lista.clasificador.nombre }}">{{ lista.nombre }}</span>
-          {% endif %}
+          
         {% endfor %}
       </div>
 
@@ -114,35 +124,17 @@
     </div>
   </article>
 
+
 {% for lista in video.listas.all %}
     {% if lista.clasificador.slug != 'autor' and lista.videos.count %}
-    <section class="relacionados">
-      <h2>{{ lista.nombre_plural|default:lista.nombre }}</h2>
-      <ol class="row">
-        {% for video in lista.videos.all|slice:"12" %}
-          <li class="col-xl-3 col-lg-4 col-sm-6">
-            {% include "includes/video_article.html" %}
-          </li>
-        {% endfor %}
-      </ol>
-    </section>
+    {% with nombre=lista.nombre %}
+    {% include "ajax_lista.html" %}
+    {% endwith %}
     {% endif %}
 {% endfor %}
 
-{% if relacionados %}
-<section class="relacionados">
-  <h2>Relacionados</h2>
-  <ol class="row">
-    {% for video in relacionados %}
-      <li class="col-xl-3 col-lg-4 col-sm-6">
-        {% include "includes/video_article.html" %}
-      </li>
-    {% endfor %}
-  </ol>
-</section>
-{% endif %}
 
-</main>}
+</main>
 
 {% endblock %}
 

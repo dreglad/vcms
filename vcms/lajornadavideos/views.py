@@ -4,8 +4,10 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 
 from django.views.generic.base import TemplateView
+from haystack.generic_views import SearchView
 
 from videos.models import *
+
 
 
 class BaseView(TemplateView):
@@ -14,13 +16,46 @@ class BaseView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(BaseView, self).get_context_data(**kwargs)
+
+        if self.request.is_ajax():
+            context.update({
+                'lista': Lista.objects.get(
+                    slug=self.request.GET.get('querystring_key')),
+            })
+
         if hasattr(self, 'pagina'):
             context.update({
                 'pagina': self.pagina,
             })
+        if hasattr(self, 'listado'):
+            context.update({
+                'listado': self.listado,
+            })
         context.update({
             'home': self.home,
             'paginas': self.paginas,
+        })
+        return context
+
+    def get_template_names(self):
+        if self.request.is_ajax():
+            return 'ajax_lista.html'
+        else:
+            return self.template_name
+
+
+
+
+class BusquedaView(SearchView):
+    # def extra_context(self):
+    #     return {
+    #         'home': Pagina.objects.get(slug='home', activo=True),
+    #     }
+
+    def get_context_data(self, **kwargs):
+        context = super(BusquedaView, self).get_context_data(**kwargs)
+        context.update({
+            'home': Pagina.objects.get(slug='home', activo=True),
         })
         return context
 
@@ -36,6 +71,21 @@ class SeccionView(BaseView):
 class HomeView(SeccionView):
     def dispatch(self, request, *args, **kwargs):
         self.pagina = self.home
+        return super(SeccionView, self).dispatch(request, *args, **kwargs)
+
+
+class ListaView(SeccionView):
+
+    template_name = "lista.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        self.listado = {
+            'lista': get_object_or_404(Lista, slug=kwargs['lista_slug']),
+            'mostrar_nombre': True,
+            'mostrar_descripcion': True,
+            'mostrar_paginacion': True,
+            'num_videos': 24,
+        }
         return super(SeccionView, self).dispatch(request, *args, **kwargs)
 
 

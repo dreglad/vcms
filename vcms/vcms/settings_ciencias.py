@@ -1,14 +1,34 @@
 # -*- coding: utf-8 -*- #
+"""
+vcms - ciencias settings
+"""
+
+DEBUG = True
+
+PROJECT = 'ciencias'
+SITE_NAME = 'Videos Ciencias'
+STORAGE_DIR = '/mnt/ciencias_storage'
+RQ_QUEUES_DB = 4
+THUMBNAIL_REDIS_DB = 10
+
+exec open('/vagrant/vcms/vcms/settings.conf') in globals()
+
+# Override ...
+FRONTEND_URL = None
+LANGUAGE_CODE = 'es'
+LANGUAGES = ['es',]
+
+# -*- coding: utf-8 -*- #
 SUIT_CONFIG = {
     'MENU': (
         {'label': u'Contenido', 'icon': 'icon-film',
-         'app': 'videos', 'models': ('pagina', 'video', 'link')},
+         'app': 'videos', 'models': ('video',)},
 
         {'label': u'Listas', 'icon': 'icon-tags',
          'app': 'videos', 'models': ('clasificador', 'lista')},
 
         {'label': u'Configuración', 'icon': 'icon-cog',
-         'models': ('videos.plataforma', 'auth.user', 'auth.group')},
+         'models': ('auth.user', 'auth.group')},
 
         '-',
 
@@ -18,7 +38,7 @@ SUIT_CONFIG = {
         #{'label': 'Support', 'icon':'icon-question-sign', 'url': '/support/'},
     ),
     # header
-    'ADMIN_NAME': 'Videos | La Jornada',
+    'ADMIN_NAME': 'Videos | Micrositio Ciencias',
     'HEADER_DATE_FORMAT': 'l, j \d\e F \d\e Y',
     'HEADER_TIME_FORMAT': 'H:i',
 
@@ -47,3 +67,9 @@ SUIT_CONFIG = {
     # misc
     # 'LIST_PER_PAGE': 15
 }
+
+
+try:
+    from settings_ciencias_local import *
+except ImportError as e:
+    pass

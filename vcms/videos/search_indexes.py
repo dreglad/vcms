@@ -19,8 +19,10 @@ class VideoIndex(indexes.SearchIndex, indexes.Indexable):
 
     def index_queryset(self, using=None):
         """Used when the entire index for model is updated."""
-        return self.get_model().objects.publicos().select_related('listas')
+        return self.get_model().objects.publicos().prefetch_related('listas')
 
-    def prepare_listas(self, using=None)
+    def prepare_listas(self, obj):
+        return [lista.nombre for lista in obj.listas.all()]
+
     def prepare_tags(self, obj):
         return [tag.name for tag in obj.tags.all()]

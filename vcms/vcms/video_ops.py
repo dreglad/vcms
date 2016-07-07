@@ -94,7 +94,8 @@ def get_video_autocrop_filter(input_file):
     logger.debug('Geting autocrop filter with command: %s' % cmd)
     autocrop = check_output(cmd, shell=True).strip()
     logger.debug('Got video autocrop value: %s' % autocrop)
-    return '-vf "%s"' % autocrop
+    
+    return autocrop and ('-vf "%s"' % autocrop) or ''
 
 
 def get_video_duration(input_file):

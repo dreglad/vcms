@@ -86,12 +86,18 @@ NUM_VIDEOS_CHOICES = (
     (0, u'Automático'),
     (1, 'Hasta 1 video'),
     (2, 'Hasta 2 videos'),
+    (3, 'Hasta 3 videos'),
     (4, 'Hasta 4 videos'),
-    (8, 'Hasta 8 videos'),
+    (5, 'Hasta 5 videos'),
+    (6, 'Hasta 6 videos'),
+    (6, 'Hasta 8 videos'),
+    (6, 'Hasta 8 videos'),
+    (6, 'Hasta 9 videos'),
+    (6, 'Hasta 10 videos'),
     (12, 'Hasta 12 videos'),
+    (12, 'Hasta 16 videos'),
     (18, 'Hasta 18 videos'),
     (24, 'Hasta 24 videos'),
-    (48, 'Hasta 48 videos'),
 )
 
 class OverwriteStorage(FileSystemStorage):
@@ -181,8 +187,9 @@ class Filtro(models.Model):
 class ListaEnPagina(ModelBase, SortableMixin):
     lista = models.ForeignKey('Lista', related_name='listas_en_pagina')
     pagina =  models.ForeignKey('Pagina', related_name='listas_en_pagina')
-    mostrar_nombre = models.BooleanField(default=False, verbose_name='Nombre')
+    mostrar_nombre = models.BooleanField(default=True, verbose_name='nom.')
     mostrar_descripcion = models.BooleanField(u'desc.', default=False)
+    mostrar_paginacion = models.BooleanField(u'pág.', default=True)
     NUM_VIDEOS = NUM_VIDEOS_CHOICES
     num_videos = models.PositiveIntegerField(
         u'núm. de videos', choices=NUM_VIDEOS, default=0)
@@ -190,11 +197,14 @@ class ListaEnPagina(ModelBase, SortableMixin):
     layout = StatusField(
         choices_name='LAYOUT', default=LAYOUT.auto, help_text=u'')
 
-    NUM_VIDEOS_DEFAULT = 12
     def videos_recientes(self):
-        return list(self.lista.videos.all()[:(self.num_videos or self.NUM_VIDEOS_DEFAULT)])
+        videos = self.lista.videos.all()
+        if self.num_videos:
+            return videos[:self.num_videos]
+        return videos
 
     class Meta:
+        ordering = ['orden']
         unique_together = (("lista", "pagina"),)
 
 
@@ -207,6 +217,7 @@ class VideoEnPagina(ModelBase, SortableMixin):
         related_name='videos_en_pagina')
 
     class Meta:
+        ordering = ['orden']
         verbose_name = u'vdeo en página'
         verbose_name_plural = u'videos en página'
         unique_together = (("video", "pagina"),)
@@ -216,6 +227,8 @@ class Pagina(MPTTModel, SortableMixin, TitledMixin, ActivableMixin):
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True,
                             verbose_name=u'padre')
     mostrar_en_menu = models.BooleanField(default=False, db_index=True)
+    mostrar_titulo = models.BooleanField(default=True)
+    mostrar_descripcion = models.BooleanField(default=True)
     listas = models.ManyToManyField(u'Lista', related_name='paginas', through='ListaEnPagina')
     videos = models.ManyToManyField(u'Video', related_name='paginas', through='VideoEnPagina')
     def get_absolute_url(self):
@@ -252,7 +265,7 @@ class ListaQuerySet(models.query.QuerySet):
     """
     Lógica de consulta de listas
     """
-    def clasificado(self, clasificador, slug=None):
+    def clasificacion(self, clasificador, slug=None):
         if not isinstance(clasificador, Clasificador):
             clasificador = Clasificador.objects.get(slug=clasificador)
 
@@ -355,7 +368,7 @@ class VideoQuerySet(models.query.QuerySet):
                 #procesamiento=Video.PROCESAMIENTO.listo,
                 #estado=Video.ESTADO.publicado,
                 fecha__lte=datetime.now()) \
-            .select_related('territorio', 'pais')
+            .select_related('territorio', 'pais').prefetch_related('listas')
 
 
 class Video(ModelBase, TitledMixin):
@@ -419,7 +432,7 @@ class Video(ModelBase, TitledMixin):
     observaciones = models.TextField(blank=True)
 
     # ManyToMany
-    listas = models.ManyToManyField('Lista', related_name='videos')
+    listas = models.ManyToManyField('Lista', related_name='videos', blank=True)
     links = models.ManyToManyField('Link', blank=True, related_name='videos')
     tags = TaggableManager(u'tags', blank=True,
         help_text=u'Palabras o frases clave separadas por coma')

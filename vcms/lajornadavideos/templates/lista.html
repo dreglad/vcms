@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Videos de {{ pagina.titulo }} - La Jornada Videos{% endblock %}
+
+{% block content %}
+<main>
+{#   <h1>{{ listado.lista.nombre_plural|default:listado.lista.nombre }}</h1> #}
+  {% if listado.lista.descripcion %}<p>{{ listado.lista.descripcion }}</p>{% endif %}
+
+  {% with videos=listado.lista.videos.all %}
+  {% include "includes/lista.html" %}
+  {% endwith %}
+</main>
+
+{% endblock %}

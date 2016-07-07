@@ -582,7 +582,7 @@ class ListaInline(SortableTabularInline):
     #list_fields = ('id',)
     raw_id_fields = ('lista',)
     #salmonella_fields = ('lista',)
-    fields = ('lista', 'pagina', 'mostrar_nombre', 'mostrar_descripcion', 'num_videos', 'layout', 'orden')
+    fields = ('lista', 'pagina', 'mostrar_nombre', 'mostrar_descripcion', 'mostrar_paginacion', 'num_videos', 'layout', 'orden')
     extra = 0
     verbose_name  = 'Lista'
     verbose_name_plural  = 'Listas'
@@ -636,7 +636,9 @@ class VideoInline(SortableTabularInline):
 class PaginaAdmin(MPTTModelAdmin, ModelAdminBase, SortableModelAdmin):
     inlines = [VideoInline, ListaInline]
     mptt_level_indent = 20
-    list_display = ('titulo', 'mostrar_en_menu', 'listas_', 'videos_', 'activo')
+    list_display = (
+        'titulo', 'mostrar_en_menu', 'mostrar_titulo', 'mostrar_descripcion',
+        'listas_', 'videos_', 'activo')
     list_filter = (
         ('listas', admin.RelatedOnlyFieldListFilter),
     )
@@ -644,8 +646,8 @@ class PaginaAdmin(MPTTModelAdmin, ModelAdminBase, SortableModelAdmin):
     sortable = 'orden'
     suit_form_tabs = [
         ('general', u'General'),
-        ('videos', u'Videos'),
-        ('listas', u'Listas'),
+        ('videos', u'1. Videos destacados'),
+        ('listas', u'2. Listas embedidas'),
         # ('links', u'Links'),
         ('seo', 'SEO'),
     ]
@@ -653,11 +655,14 @@ class PaginaAdmin(MPTTModelAdmin, ModelAdminBase, SortableModelAdmin):
     fieldsets = [
         (None, {
             'classes': ('suit-tab', 'suit-tab-general'),
-            'fields': ['titulo']
+            'fields': [('titulo', 'mostrar_titulo', 'mostrar_descripcion'),
+                        'descripcion']
         }),
         (u'Configuración', {
             'classes': ('suit-tab', 'suit-tab-general',),
-            'fields': ['parent', 'activo', 'mostrar_en_menu'],
+            'fields': [
+                'parent', 'activo', ('mostrar_en_menu'),
+            ],
         }),
         (u'SEO y Accesibilidad', {
              'classes': ('suit-tab', 'suit-tab-seo'),

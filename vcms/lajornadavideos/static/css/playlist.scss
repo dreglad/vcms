@@ -1,5 +1,10 @@
 section.videos { /* grupo de videos */
     font-family: "PT Serif";
+
+    .descripcion {
+        margin: 0.5em 0;
+        font-size: 107%;
+    }
     ol {
         margin: 0; padding: 0;
         li {

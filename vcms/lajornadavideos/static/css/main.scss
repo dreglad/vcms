@@ -1,4 +1,5 @@
 @import "bootstrap/bootstrap.scss";
+@import "font-awesome/font-awesome.scss";
 @import "_variables.scss";
 @import "_mixins.scss";
 
@@ -34,7 +35,7 @@ body {
 
     a {
         color: $fontColor;
-        &:hover, &:active, &.active {
+        &:hover, &:active, &:active, &.active {
             color: $rojoColor;
             text-decoration: none;
         }
@@ -52,19 +53,21 @@ body {
         @import "video_article.scss";
         @import "playlist.scss";
         max-width: $maxWidth;
-        padding: 0 1rem;
+        padding: 0 1.3em;
 
         h1,h2 {
+            letter-spacing: 0.07em;
             font-size: 27px;
             font-family: $headingsFontFamily;
-            font-weight: $headingsFontWeight;
+            font-weight: 400;
             text-transform: uppercase;
             color: $rojoColor;
-            padding: 1rem 0 0.25em 0;
+            padding: 2rem 0 0.25em 0;
         }
 
         h2 {
             font-size: 24px;
+            padding: 4rem 0 0.25em 0;
             a {
                 color: $rojoColor;
                 &:hover { text-decoration: underline; }
@@ -75,5 +78,46 @@ body {
     #bottom-container {
         padding: 0;
         @import "footer.scss";
+    }
+}
+
+
+.endless_container {
+
+}
+
+.endless_loading {
+    &:hover {
+        background: #DD3937 !important;
+        border-bottom: 4px solid  #DD3937;
+
+      -webkit-transition: background-color 0.25s ease-out;
+      -moz-transition: background-color 0.25s ease-out;
+      -o-transition: background-color 0.25s ease-out;
+      transition: background-color 0.25s ease-out;
+    }
+}
+a.endless_more, .endless_loading {
+    font-size: 85%;
+    padding: 8px 0 3px 0;
+    border-bottom: 4px solid  #AD1000;
+    background: #DD3937;
+    color: white;
+    text-transform: uppercase;
+    font-weight: bold;
+    display: block;
+    margin: 1rem auto;
+    text-align: center;
+    width: 200px;
+
+     -webkit-transition: background-color 0.25s ease-out;
+      -moz-transition: background-color 0.25s ease-out;
+      -o-transition: background-color 0.25s ease-out;
+      transition: background-color 0.25s ease-out;
+
+    &:hover, &:active, &:focus, {
+        color: white;
+        background: #AD1000;
+        // border-bottom: 4px solid #DD3937;
     }
 }

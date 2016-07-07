@@ -1,5 +1,4 @@
 @import "bootstrap/bootstrap.scss";
-@import "font-awesome/font-awesome.scss";
 
 @import "_variables.scss";
 @import "bootstrap-social.scss";
@@ -14,7 +13,12 @@ main#video {
         margin-bottom: 20px;
     }
 
+    .fa {
+        color: $azulColor;
+    }
+
     h1 {
+        // color: $fontColor;
         color: $azulColor;
         font-family: 'PT Serif Caption', serif;
         font-weight: 400;
@@ -24,20 +28,41 @@ main#video {
     }
 
     div.compartir {
+        .fa {
+            color: $fontColor;
+            &:hover {
+                color: $azulColor;
+            }
+         }
         margin: 0.5rem 0;
         span {
             font-size: 20px;
-            padding: 0.3rem 0.5rem;
+            padding: 0.4rem 1rem 0.4rem 0;
         }
+        
     }
 
-    .label {
-        padding: 0.3rem 0.6rem;
-        margin: 0 0.20rem;
-        background-color: $verdeColor;
-        text-transform: uppercase;
-        &.categoria { background-color: $verdeColor; }
+    .labels {
+        a:hover span {
+            // text-decoration: underline;
+            background-color: $azulColor;
+
+        }
+        .label {
+            padding: 0.3rem 0.6rem;
+            margin-right: 0 0.40rem;
+            background-color: $verdeColor;
+            text-transform: uppercase;
+            -webkit-transition: background-color 0.4s ease-out;
+          -moz-transition: background-color 0.4s ease-out;
+          -o-transition: background-color 0.25s ease-out;
+          transition: background-color 0.25s ease-out;
+            &.categoria { background-color: $verdeColor; }
+
+        }    
     }
+
+    
 
     .sub-titulo {
         padding-bottom: 0.5rem;
@@ -58,12 +83,12 @@ main#video {
     }
 
     ul.links {
-        color: $rojoColor;
+        color: $azulColor;
         padding: 1em 0 0 0em;
         font-size: 85%;
         li { list-style-type: none; }
         a {
-            color: $rojoColor;
+            color: $azulColor;
         }
     }
 

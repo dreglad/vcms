@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'compressor',
+    'el_pagination',
     'crispy_forms',
     'debug_toolbar',
     'django_countries',
@@ -315,8 +316,9 @@ REST_FRAMEWORK = {
     ),
 }
 
+#THUMBNAIL_FORMAT = 'png'
+THUMBNAIL_PRESERVE_FORMAT = True
 THUMBNAIL_KVSTORE = 'sorl.thumbnail.kvstores.redis_kvstore.KVStore'
-THUMBNAIL_REDIS_DB = 2
 THUMBNAIL_KEY_PREFIX = 'lajornadavideos-thumbs'
 THUMBNAIL_PREFIX = 'thumbs/'
 THUMBNAIL_REDIS_PASSWORD = ''

@@ -1,5 +1,10 @@
 (function($) {
     $(function() {
+        function qs(key) {
+            key = key.replace(/[*+?^$.\[\]{}()|\\\/]/g, "\\$&"); // escape RegEx meta chars
+            var match = location.search.match(new RegExp("[?&]"+key+"=([^&]+)(&|$)"));
+            return match && decodeURIComponent(match[1].replace(/\+/g, " "));
+        }
     //     $('.info-descripcion .info-value').ellipsis({
     //       lines: '1',
     //       ellipClass: 'ellip',
@@ -7,6 +12,20 @@
         // });
 
         // ..
+
+        $('th.field-padded_pk a').on('click', function(ev) {
+            if (qs('_popup').indexOf('http://') === 0) {
+                ev.preventDefault();
+                var id = parseInt($(this).parents('tr').attr('data-video')),
+                    url = qs('_popup');
+                $.ajax({
+                    url: url,
+                    data: { 'video_id': id, 'original_callback': url }
+                })
+                window.close();
+            }
+        });
+
         $('span.help-inline:contains("Mantenga presionado")').hide();
 
 

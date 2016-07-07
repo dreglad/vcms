@@ -7,8 +7,48 @@ from django.utils.safestring import mark_safe
 
 register = template.Library()
 
+@register.filter(name='clasificacion')
+def clasificacion(video, clasificador):
+    try:
+        return video.listas.get(clasificador__slug=clasificador).slug
+    except video.listas.model.DoesNotExist:
+        return None
+
+@register.filter(name='pagina')
+def pagina(video, clasificador):
+    try:
+        return video.listas.get(clasificador__slug=clasificador).slug
+    except video.paginas.model.DoesNotExist:
+        return None
+
 @register.filter(name='breaksentence')
-def breaksentence(text, thresshold=4):
+def breaksentence(text, min_words=4, thresshold=0.3):
+    """
+    Breaks a sentence into spans to balance uneven lines
+
+    Usgae:
+
+    {{ "Quisque tempor diam a sem, pellentesque|breaksentence }}
+
+    Resulting DOM:
+    <span class="broken">
+      <span class="by-2">Quisque tempor diam a sem,</span>
+      <span class="by-2">pellentesque aliquet</span>
+    </span>
+
+    Ugly:
+    *--------------------------------------------*
+    |   Quisque tempor diam a sem, pellentesque  |
+    |   aliquet                                  |
+    *--------------------------------------------*
+
+    Pretty:
+    *--------------------------------------------*
+    |   Quisque tempor diam a sem,               |
+    |   pellentesque aliquet                     |
+    *--------------------------------------------*
+    """
+
     def balance(words, addition=0):
         cutpoint = (len(words)/2) + addition
         halfs = (words[:cutpoint], words[cutpoint:])
@@ -20,11 +60,11 @@ def breaksentence(text, thresshold=4):
             recommended_addition
         )
     words = text.split()
-    if len(words) < thresshold:
+    if len(words) < min_words:
         parts = [text]
     else:
         parts, ratio, recomended = balance(words, 0)
-        if ratio > 0.3:
+        if ratio > thresshold:
             parts, second_ratio, second_recomended = balance(words, recomended)
             if second_ratio > ratio:
                 parts, r, c = balance(words, second_recomended)
