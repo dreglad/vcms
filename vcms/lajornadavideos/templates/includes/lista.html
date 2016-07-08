@@ -3,15 +3,17 @@
 
 {% paginate num_videos videos using pagina_param %}
 
-<section class="lista videos">
+<section class="lista videos
+               {% if listado.invertido or pagina.invertido %}invertido{% else %}noinvertido{% endif %}
+               {% if listado.junto or pagina.junto %}junto{% endif %}">
   {% if listado.mostrar_nombre or mostrar_nombre %}
     <h2>
-      <a title="{{ listado.lista.nombre }}"
+      <a title="{{ listado.nombre|default:listado.lista.nombre_plural|default:listado.lista.nombre }}"
           {% if listado.lista.pagina %}
             href="/secciones/{{ listado.lista.pagina.slug }}"
           {% else %}
             href="/listas/{{ listado.lista.slug }}"{% endif %}>
-         {{ listado.lista.nombre_plural|default:listado.lista.nombre }}
+                {{ listado.nombre|default:listado.lista.nombre_plural|default:listado.lista.nombre }}
       </a>
     </h2>
   {% endif %}
@@ -20,61 +22,79 @@
     <div class="descripcion"><p>{{ listado.lista.descripcion|safe }}</p></div>
   {% endif %}
 
-    <ol class="container-fluid endless_page_template">
 
-    {% if videos|length_is:"1" or listado.layout == "c100" %}
+  <ol class="container-fluid endless_page_template">
 
-      <li class="grid-sizer c100"></li>
+  {% if videos|length_is:"1" or listado.layout == "c100" %}
+
+    <li class="grid-sizer c100"></li>
+    {% with importante=True %}
+    {% for video in videos %}
+      <li class="c100">{% include "includes/video_article.html" %}</li>
+    {% endfor %}
+    {% endwith %}
+
+  {% else %}{% if videos|length_is:"2" or listado.layout == 'c50' %}
+
+    <li class="grid-sizer c25"></li>
+    {% with importante=True %}
+    {% for video in videos %}
+      <li class="c50">{% include "includes/video_article.html" %}</li>
+    {% endfor %}
+    {% endwith %}
+
+  {% else %}{% if videos|length_is:"3" or listado.layout == 'c33' %}
+
+    <li class="grid-sizer c33"></li>
+    {% for video in videos %}
+      <li class="c33">{% include "includes/video_article.html" %}</li>
+    {% endfor %}
+
+
+  {% else %}{% if videos|length_is:"5" or listado.layout == "5" %}
+    <li class="grid-sizer c25"></li>
+    {% for video in videos|slice:":1" %}
       {% with importante=True %}
-      {% for video in videos %}
-        <li class="c100">{% include "includes/video_article.html" %}</li>
-      {% endfor %}
+      <li class="c50">{% include "includes/video_article.html" %}</li>
       {% endwith %}
+    {% endfor %}
+    {% for video in videos|slice:"1:" %}
+      <li class="c25">{% include "includes/video_article.html" %}</li>
+    {% endfor %}
 
-    {% else %}{% if videos|length_is:"2" or listado.layout == 'c50' %}
 
-      <li class="grid-sizer c25"></li>
+  {% else %}{% if videos|length_is:"6" or listado.layout == "6" %}
+    <li class="grid-sizer c25"></li>
+    {% for video in videos|slice:":1" %}
       {% with importante=True %}
-      {% for video in videos %}
-        <li class="c50">{% include "includes/video_article.html" %}</li>
-      {% endfor %}
+      <li class="c50">{% include "includes/video_article.html" %}</li>
       {% endwith %}
+    {% endfor %}
+    {% for video in videos|slice:"1:3" %}
+      <li class="c25">{% include "includes/video_article.html" %}</li>
+    {% endfor %}
+    {% for video in videos|slice:"3:4" %}
+      {% with importante=True %}
+      <li class="c50">{% include "includes/video_article.html" %}</li>
+      {% endwith %}
+    {% endfor %}
+    {% for video in videos|slice:"4:6" %}
+      <li class="c25">{% include "includes/video_article.html" %}</li>
+    {% endfor %}
+    {% for video in videos|slice:"6:" %}
+      <li class="c25">{% include "includes/video_article.html" %}</li>
+    {% endfor %}
 
-    {% else %}{% if videos|length_is:"3" or listado.layout == 'c33' %}
+  {% else %}
+    <li class="grid-sizer c25"></li>
+    {% for video in videos %}
+      <li class="c25">{% include "includes/video_article.html" %}</li>
+    {% endfor %}
 
-      <li class="grid-sizer c33"></li>
-      {% for video in videos %}
-        <li class="c33">{% include "includes/video_article.html" %}</li>
-      {% endfor %}
-
-    {% else %}{% if videos|length_is:"6" or listado.layout == "6" %}
-      <li class="grid-sizer c25"></li>
-      {% for video in videos|slice:":1" %}
-        <li class="c50">{% include "includes/video_article.html" %}</li>
-      {% endfor %}
-      {% for video in videos|slice:"1:3" %}
-        <li class="c25">{% include "includes/video_article.html" %}</li>
-      {% endfor %}
-      {% for video in videos|slice:"3:4" %}
-        <li class="c50">{% include "includes/video_article.html" %}</li>
-      {% endfor %}
-      {% for video in videos|slice:"4:6" %}
-        <li class="c25">{% include "includes/video_article.html" %}</li>
-      {% endfor %}
-      {% for video in videos|slice:"6:" %}
-        <li class="c25">{% include "includes/video_article.html" %}</li>
-      {% endfor %}
-
-    {% else %}
-      <li class="grid-sizer c25"></li>
-      {% for video in videos %}
-        <li class="c25">{% include "includes/video_article.html" %}</li>
-      {% endfor %}
-
-    {% endif %}{% endif %}{% endif %}{% endif %}
+  {% endif %}{% endif %}{% endif %}{% endif %}{% endif %}
   </ol>
 </section>
-{% if listado.mostrar_paginacion %}{% show_more "mostrar más" "cargando..." %}{% endif %}
+{% if listado.mostrar_paginacion %}{% show_more "mostrar más +" "cargando..." %}{% endif %}
 
 <!-- <button type="button" class="btn btn-primary">MOSTRAR MÁS VIDEOS</button> -->
 {% endwith %}

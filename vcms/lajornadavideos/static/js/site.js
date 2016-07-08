@@ -1,33 +1,52 @@
 $(function() {
     /* inicializar búsqueda */
 
-    // $('section.videos ol').each(function() {
-    //     var lista = $(this);
-    //     lista.imagesLoaded().always(function() {
-    //         console.log(lista);
-    //         lista.masonry({
-    //             itemSelector: 'li',
-    //             columnWidth: '.grid-sizer',
-    //             percentPosition: true,
-    //             transitionDuration: 0
-    //         });
-    //     });
-    // });
+    $('section.videos ol').each(function() {
+        var lista = $(this);
+        lista.imagesLoaded().always(function() {
+            console.log(lista);
+            lista.masonry({
+                itemSelector: 'li',
+                columnWidth: '.grid-sizer',
+                percentPosition: true,
+                transitionDuration: 0
+            });
+        });
+    });
 
+    $("img.lazy").lazyload({
+        threshold: 500
+    });
+
+    console.log('aaa endless');
     $.endlessPaginate({
+        onCLick: function(a) {
+            console.log('onclick  endless');
+        },
+
         onCompleted: function(data) {
-            console.log(data);
+            console.log('onCompleted endless');
             var listas = $('section.videos.' + data.key + ' ol').masonry({
               itemSelector: 'li:not(.gid-sizer)',
               columnWidth: '.grid-sizer',
               percentPosition: true,
               transitionDuration: 0
-          });
-
-            listas.imagesLoaded().progress(function() {
-              listas.masonry('layout');
             });
-            listas.masonry('layout');
+
+            // $('section.videos.' + data.key).each(function() {
+            //     if ($(this).prev().hasClass('noinvertido')) {
+            //         $(this).find('article').addClass('noinvertido');
+            //     }
+            //     if ($(this).prev().hasClass('invertido')) {
+            //         $(this).find('article').addClass('invertido');
+            //     }
+            //     if ($(this).prev().hasClass('junto')) {
+            //         $(this).find('article').addClass('junto');
+            //     }
+            // });
+
+            $('section.videos.' + data.key + ' img.lazy').lazyload({})
+            
 
             bindsection();
         }
@@ -40,9 +59,9 @@ $(function() {
         transitionDuration: 0
     });
 
-    listas.imagesLoaded().progress(function() {
-      listas.masonry('layout');
-    });
+    // listas.imagesLoaded().progress(function() {
+    //   listas.masonry('layout');
+    // });
 
     function bindsection() {
         /* mouse over videos listas */
@@ -55,7 +74,7 @@ $(function() {
             return true;
         };
 
-        $('section figure').hover(showDetails, hideDetails).on('touchstart', function() {
+        $('section.noinvertido figure').hover(showDetails, hideDetails).on('touchstart', function() {
             if ($(this).hasClass('hover')) {
                 return true;
             } else {

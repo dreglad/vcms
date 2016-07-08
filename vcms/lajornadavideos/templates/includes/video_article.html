@@ -1,12 +1,15 @@
 {% load thumbnail %}
 {% load videos %}
+{% load static from staticfiles %}
 
-<article class="video video-{{ video.uuid }}">
+<article class="video video-{{ video.uuid }}
+                {% if listado.invertido or pagina.invertido %}invertido{% else %}noinvertido{% endif %}
+                {% if listado.junto or pagina.junto %}junto{% endif %}">
   <a href="{{ video.url }}">
     <figure>
       {% thumbnail video.imagen.file size|default:"640x360" crop="center" upscale=True as im %}
-      <img class="img-fluid" src="{{ im.url }}" alt="{{ video.titulo }}"
-            title="{{ video.titulo }}">
+      <img class="img-fluid lazy" data-original="{{ im.url }}" alt="{{ video.titulo }}"
+            title="{{ video.titulo }}" src="{% static 'img/lazy.jpg' %}">
       {% endthumbnail %}
       <figcaption>
       {% if importante %}
@@ -23,6 +26,18 @@
           <span class="duracion">{{ video.duracion|duration }}</span>
         </div>
       </figcaption>
+      {# {% if listado.invertido or pagina.invertido %} #}
+      <div class="invertido_caption">
+        <span class="titulo">
+          <span class="icon fa fa-play" aria-hidden="true"></span> {{ video.titulo|truncatewords:14 }}
+        </span>
+        <div class="detalle">
+          {# <span class="icon fa fa-youtube-play" aria-hidden="true"></span> #}
+          <span class="fecha">{{ video.fecha|date:"N j, Y" }}</span>
+          <span class="duracion">{{ video.duracion|duration }}</span>
+        </div>
+      </div>
+      {# {% endif %} #}
     </figure>
   </a>
 </article>

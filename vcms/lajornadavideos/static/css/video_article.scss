@@ -2,6 +2,7 @@ article.video {
     i {
         font-size: 30px;
     }
+
     // margin: 0 0.1rem;
     a {
         -webkit-box-shadow: rgba(0,0,0,0.4) 0 0 4px;
@@ -48,6 +49,10 @@ article.video {
                 }
             }
 
+            .invertido_caption {
+                display: none;
+            }
+
             figcaption {
                 position: absolute;
                 bottom: 0;
@@ -68,7 +73,7 @@ article.video {
                 }
 
                 .titulo {
-                    padding: 0.5rem 0.75rem;
+                    padding: 0.65rem 0.80rem;
                     display: block;
                     text-shadow: 1px 1px 1px rgba(255,255,255,0.25);
                     /* background: linear-gradient(to bottom,
@@ -89,7 +94,112 @@ article.video {
                 }
 
                 .detalle {
-                    padding: 0 0.75rem;
+                    padding: 0 1rem;
+                    font-size: 85%;
+                    display: none;
+                    margin-top: 0.3rem;
+                    color: rgba(255,255,255,0.85);
+
+                    span {
+                        float: left;
+                        margin-bottom: 0.3rem;
+                        display: block;
+                        .icon { 
+                            font-size: 150%;
+                            margin-right: 0.5rem;
+                            &:hover {
+                                color: black;
+                            }
+                        }
+                        &.fecha { float: left; }
+                        &.duracion { float: right; }
+                    }
+                }
+            }
+        }
+    }
+
+    &.junto a {
+        margin: 0;
+    }
+
+    &.invertido a {
+        -webkit-box-shadow: none;
+        box-shadow: none;
+        width: 90%;
+        margin: 0.9rem auto;
+        color: $fontColor;
+        position: relative;
+        
+        figure {
+            background: none;
+
+            margin:0;
+            /* background: linear-gradient(to bottom,
+                                        rgba(0, 0, 0, 0) 50%,
+                                        rgba(0, 0, 0, 1)); */
+          
+            img {
+                display: block;
+                margin: 0 auto;
+                width: 100%;
+            }
+
+            &:hover {
+                span.titulo {
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+                }
+            }
+
+            .invertido_caption {
+                display: block;
+                height: 4em;
+                margin-top: 1rem;
+                .titulo {
+                    font-weight: 700;
+                    min-height: 2em;
+                }
+            }
+
+            figcaption {
+                display: none;
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+
+                .descripcion {
+                    padding: 0 2.8rem;
+                    opacity: .7;
+                    display: inline-block;
+                    opacity: 0;
+                    margin: 0;
+                       -webkit-transition: opacity 0.6s ease-out;
+                      -moz-transition: opacity 0.6s ease-out;
+                      -o-transition: opacity 0.4s ease-out;
+                      transition: opacity 0.4s ease-out;
+
+                }
+
+                .titulo {
+                    padding: 0.5rem 0.75rem;
+                    display: block;
+                    .broken .by-2 {
+                        content:"\a";
+                        white-space: pre;
+                    }
+
+                    .icon {
+                        padding: 0 0.3rem;
+                         -webkit-transition: color 0.4s ease-out;
+                      -moz-transition: color 0.4s ease-out;
+                      -o-transition: color 0.25s ease-out;
+                      transition: color 0.25s ease-out;
+                    }
+                }
+
+                .detalle {
+                    margin-top: 1em;
+                    padding: 0 ;
                     font-size: 85%;
                     display: none;
                     margin-top: 0.5rem;

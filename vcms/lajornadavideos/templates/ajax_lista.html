@@ -3,7 +3,9 @@
 
 {% paginate 12 videos using pagina_param %}
 
-<section class="lista videos {{ pagina_param }}">
+<section class="lista videos {{ pagina_param }}
+               {% if lista.invertido or lista.pagina.invertido %}invertido{% endif %}
+               {% if lista.junto or lista.pagina.junto %}junto{% endif %}">
   {% if nombre %}
     <h2>
       {% if lista and lista.pagina %}
@@ -21,5 +23,5 @@
     {% endfor %}
   </ol>
 </section>
-{% show_more "mostrar más" "cargando..." %}
+{% show_more "mostrar más +" "cargando..." %}
 {% endwith %}

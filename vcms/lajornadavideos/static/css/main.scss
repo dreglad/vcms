@@ -20,6 +20,10 @@
 }
 
 
+.lazy {
+    display: none;
+}
+
 body {
     background: $bodyBackground;
     color: $fontColor;
@@ -62,17 +66,25 @@ body {
             font-weight: 400;
             text-transform: uppercase;
             color: $rojoColor;
-            padding: 2rem 0 0.25em 0;
+            padding: 2rem 1rem 0.25em 1rem;
         }
 
         h2 {
             font-size: 24px;
-            padding: 4rem 0 0.25em 0;
+            padding: 2rem 1rem 0.25em 1rem;
             a {
                 color: $rojoColor;
                 &:hover { text-decoration: underline; }
             }
         }
+
+        section>div {
+            margin-left: 1rem !important;
+            margin-right: 1rem !important;
+            text-align: justify;
+            text-justify: inter-word;
+        }
+
     }
 
     #bottom-container {
@@ -86,38 +98,60 @@ body {
 
 }
 
-.endless_loading {
-    &:hover {
-        background: #DD3937 !important;
-        border-bottom: 4px solid  #DD3937;
+// .endless_loading {
+//     &:hover {
+//         background: #DD3937 !important;
+//         border-bottom: 4px solid  #DD3937;
 
-      -webkit-transition: background-color 0.25s ease-out;
-      -moz-transition: background-color 0.25s ease-out;
-      -o-transition: background-color 0.25s ease-out;
-      transition: background-color 0.25s ease-out;
-    }
-}
+//       -webkit-transition: background-color 0.25s ease-out;
+//       -moz-transition: background-color 0.25s ease-out;
+//       -o-transition: background-color 0.25s ease-out;
+//       transition: background-color 0.25s ease-out;
+//     }
+// }
+
+
+
 a.endless_more, .endless_loading {
-    font-size: 85%;
-    padding: 8px 0 3px 0;
-    border-bottom: 4px solid  #AD1000;
-    background: #DD3937;
-    color: white;
-    text-transform: uppercase;
+    font-size: 120%;
+    padding: 0.5rem 0 3px 0;
+    color: $rojoColor;
     font-weight: bold;
     display: block;
     margin: 1rem auto;
     text-align: center;
     width: 200px;
-
-     -webkit-transition: background-color 0.25s ease-out;
-      -moz-transition: background-color 0.25s ease-out;
-      -o-transition: background-color 0.25s ease-out;
-      transition: background-color 0.25s ease-out;
+    font-style: oblique;
+    margin-bottom: 1rem;
 
     &:hover, &:active, &:focus, {
-        color: white;
-        background: #AD1000;
+        color: $rojoColor;
+        
         // border-bottom: 4px solid #DD3937;
     }
 }
+
+// a.endless_more, .endless_loading {
+//     font-size: 85%;
+//     padding: 8px 0 3px 0;
+//     border-bottom: 4px solid  #AD1000;
+//     background: #DD3937;
+//     color: white;
+//     text-transform: uppercase;
+//     font-weight: bold;
+//     display: block;
+//     margin: 1rem auto;
+//     text-align: center;
+//     width: 200px;
+
+//      -webkit-transition: background-color 0.25s ease-out;
+//       -moz-transition: background-color 0.25s ease-out;
+//       -o-transition: background-color 0.25s ease-out;
+//       transition: background-color 0.25s ease-out;
+
+//     &:hover, &:active, &:focus, {
+//         color: white;
+//         background: #AD1000;
+//         // border-bottom: 4px solid #DD3937;
+//     }
+// }

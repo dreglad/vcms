@@ -17,7 +17,9 @@
 {% if player == "videojs" %}
   <link href="{% static 'css/player/videojs.scss' %}" rel="stylesheet"
         type="text/x-scss">
-{% endif %}
+{% else %}{% if player == "jwplayer" %}
+  <link href="{% static 'css/player/jwplayer_skin.scss' %}" rel="stylesheet">
+{% endif %}{% endif %}
 {% endblock %}
 
 {% block script %}{{ block.super }}{% if player == "jwplayer" %}
