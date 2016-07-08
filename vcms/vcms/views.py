@@ -40,7 +40,8 @@ class VideoStatusView(View):
 
 class VideoRedirectView(RedirectView):
     def get_redirect_url(*args, **kwargs):
-        return '%svideo/%s/%s/' % (
-            settings.BASE_FRONTEND_URL, kwargs['video_uuid'],
-            kwargs['video_slug'],
-            )
+        if settings.FRONTEND_URL:
+            return '%svideo/%s/%s/' % (
+                settings.FRONTEND_URL, kwargs['video_uuid'],
+                kwargs['video_slug'],
+                )

@@ -14,7 +14,7 @@ THUMBNAIL_REDIS_DB = 11
 exec open('/vagrant/vcms/vcms/settings.conf') in globals()
 
 # Override ...
-FRONTEND_URL = None
+FRONTEND_URL = 'http://videos-stg.jornada.com.mx/'
 LANGUAGE_CODE = 'es'
 LANGUAGES = ['es',]
 

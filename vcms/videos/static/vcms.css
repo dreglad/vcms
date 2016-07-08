@@ -223,6 +223,10 @@ table.info tr.info-descripcion .info-value {
 .inline-related.tabular .field-layout select {
     max-width: 100px;
 }
+
+.inline-related.tabular .field-nombre input {
+    max-width: 100px;
+}
 /*#enlistado-group .field-video {
     padding: 1em !important;
 }*/

@@ -110,8 +110,6 @@ class SortedWithMixin(SortableModelAdmin):
     """
     Only sortable with 'sorted_with'
     """
-    sorted_with = 'categoria'
-    sorted_with_filter = 'seccion'
 
     def is_sortable(self, request):
         return request.GET.get(self.sorted_with_filter) is not None \
@@ -163,7 +161,6 @@ class ModelAdminBase(admin.ModelAdmin):
             'all': ('vcms.css',)
         }
         js = ('vcms.js', 'jquery.ellipsis.min.js' )
-
 
 
 
@@ -582,7 +579,10 @@ class ListaInline(SortableTabularInline):
     #list_fields = ('id',)
     raw_id_fields = ('lista',)
     #salmonella_fields = ('lista',)
-    fields = ('lista', 'pagina', 'mostrar_nombre', 'mostrar_descripcion', 'mostrar_paginacion', 'num_videos', 'layout', 'orden')
+    fields = (
+        'lista', 'pagina', 'nombre', 'mostrar_nombre', 'mostrar_descripcion',
+        'mostrar_paginacion', 'num_videos', 'layout', 'invertido', 'junto', 'orden'
+    )
     extra = 0
     verbose_name  = 'Lista'
     verbose_name_plural  = 'Listas'
@@ -605,6 +605,19 @@ class VideoInline(SortableTabularInline):
         if obj.video:
             t = loader.get_template('vcms/changelist_video_thumbnail.html')
             return mark_safe(t.render(Context({'video': obj.video})))
+
+    def save_model(self, request, obj, form, change):
+        if not obj.pk or getattr(obj, self.sortable, None) is None or self.sorted_with in form.changed_data:
+            max_order = obj.__class__.objects.filter(
+                **{self.sorted_with: getattr(obj, self.sorted_with)}
+                ).aggregate(models.Max(self.sortable))
+            try:
+                next_order = max_order['%s__max' % self.sortable] + 1
+            except TypeError:
+                next_order = 1
+            setattr(obj, self.sortable, next_order)
+        super(SortableModelAdmin, self).save_model(request, obj, form, change)
+
 
     # def formfield_for_dbfield(self, db_field, **kwargs):
     #     if db_field.name in ('lista',):
@@ -637,8 +650,8 @@ class PaginaAdmin(MPTTModelAdmin, ModelAdminBase, SortableModelAdmin):
     inlines = [VideoInline, ListaInline]
     mptt_level_indent = 20
     list_display = (
-        'titulo', 'mostrar_en_menu', 'mostrar_titulo', 'mostrar_descripcion',
-        'listas_', 'videos_', 'activo')
+        'titulo', 'mostrar_titulo', 'mostrar_descripcion', 'mostrar_en_menu',
+        'invertido', 'junto', 'listas_', 'videos_', 'activo')
     list_filter = (
         ('listas', admin.RelatedOnlyFieldListFilter),
     )
@@ -655,14 +668,15 @@ class PaginaAdmin(MPTTModelAdmin, ModelAdminBase, SortableModelAdmin):
     fieldsets = [
         (None, {
             'classes': ('suit-tab', 'suit-tab-general'),
-            'fields': [('titulo', 'mostrar_titulo', 'mostrar_descripcion'),
-                        'descripcion']
-        }),
-        (u'Configuración', {
-            'classes': ('suit-tab', 'suit-tab-general',),
             'fields': [
-                'parent', 'activo', ('mostrar_en_menu'),
+                ('parent', 'mostrar_en_menu'),
+                ('titulo', 'mostrar_titulo', 'mostrar_descripcion'),
+                'descripcion'
             ],
+        }),
+        (u'Visualización', {
+            'classes': ('suit-tab', 'suit-tab-videos',),
+            'fields': [ ('invertido', 'junto')],
         }),
         (u'SEO y Accesibilidad', {
              'classes': ('suit-tab', 'suit-tab-seo'),

@@ -90,14 +90,15 @@ NUM_VIDEOS_CHOICES = (
     (4, 'Hasta 4 videos'),
     (5, 'Hasta 5 videos'),
     (6, 'Hasta 6 videos'),
-    (6, 'Hasta 8 videos'),
-    (6, 'Hasta 8 videos'),
-    (6, 'Hasta 9 videos'),
-    (6, 'Hasta 10 videos'),
+    (8, 'Hasta 8 videos'),
+    (9, 'Hasta 9 videos'),
+    (10, 'Hasta 10 videos'),
     (12, 'Hasta 12 videos'),
     (12, 'Hasta 16 videos'),
     (18, 'Hasta 18 videos'),
     (24, 'Hasta 24 videos'),
+    (36, 'Hasta 36 videos'),
+    (48, 'Hasta 48 videos'),
 )
 
 class OverwriteStorage(FileSystemStorage):
@@ -185,6 +186,8 @@ class Filtro(models.Model):
 
 
 class ListaEnPagina(ModelBase, SortableMixin):
+    nombre = models.CharField(max_length=255, blank=True)
+    descripcion = models.TextField(u'descripción', blank=True)
     lista = models.ForeignKey('Lista', related_name='listas_en_pagina')
     pagina =  models.ForeignKey('Pagina', related_name='listas_en_pagina')
     mostrar_nombre = models.BooleanField(default=True, verbose_name='nom.')
@@ -196,6 +199,8 @@ class ListaEnPagina(ModelBase, SortableMixin):
     LAYOUT = LISTA_LAYOUT_CHOICES
     layout = StatusField(
         choices_name='LAYOUT', default=LAYOUT.auto, help_text=u'')
+    invertido = models.BooleanField(default=False)
+    junto = models.BooleanField(default=False)
 
     def videos_recientes(self):
         videos = self.lista.videos.all()
@@ -215,6 +220,7 @@ class VideoEnPagina(ModelBase, SortableMixin):
     pagina = models.ForeignKey(
         'Pagina', models.CASCADE, verbose_name=u'página',
         related_name='videos_en_pagina')
+    invertido = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['orden']
@@ -231,6 +237,9 @@ class Pagina(MPTTModel, SortableMixin, TitledMixin, ActivableMixin):
     mostrar_descripcion = models.BooleanField(default=True)
     listas = models.ManyToManyField(u'Lista', related_name='paginas', through='ListaEnPagina')
     videos = models.ManyToManyField(u'Video', related_name='paginas', through='VideoEnPagina')
+    invertido = models.BooleanField(default=False)
+    junto = models.BooleanField(default=False)
+
     def get_absolute_url(self):
         return 'http://videos-stg.jornada.com.mx/secciones/%s?nc=%s' % (self.slug, uuid.uuid4())
 
