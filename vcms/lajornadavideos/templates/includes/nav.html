@@ -1,32 +1,34 @@
 {% load static from staticfiles %}
 {% load mptt_tags %}
-{% load videos %}
-
+{% load videos_tags %}
 
 
 <nav class="menu navbar container-fluid">
   <div class="collapse navbar-toggleable-md" id="menuOptions">
     <ul itemscope itemtype="http://schema.org/SiteNavigationElement"
         class="nav navbar-nav">
+      {% if home.mostrar_en_menu %}
       <li class="nav-item">
-
           <a {% if home and pagina.slug == home.slug %}class="active"{% endif %} href="{% url 'home' %}" title="{{ home.titulo }}">
             {{ home.titulo }}
           </a>
       </li>
-      {% recursetree home.get_children %}
-      {% if node.mostrar_en_menu %}
-      <li class="nav-item">
-          <a {% if node.slug == pagina.slug or node.slug == video|clasificacion:"seccion" %}class="active"{% endif %} href="{% url 'seccion' node.slug %}" title="{{ node.titulo }}">
-            {{ node.titulo }}
+      {% endif %}
+      {% recursetree home.get_descendants %}
+        {% if node.mostrar_en_menu %}
+        <li class="nav-item {% if children %}dropdown{% endif %} {% if node.level > 1 %}dropdown-item{% endif %}">
+          <a href="{% url 'seccion' node.slug %}" title="{{ node.titulo }}"
+             class="{% if node.slug == pagina.slug or node.slug == video|clasificacion:'seccion' %}active{% endif %}">
+            {{ node.nombre }}
           </a>
           {% if not node.is_leaf_node %}
-              <ul class="children">
-                  {{ children }}
-              </ul>
+            <span class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"></span>
+            <ul class="dropdown-menu">
+              {{ children }}
+            </ul>
           {% endif %}
-      </li>
-      {% endif %}
+        </li>
+        {% endif %}
       {% endrecursetree %}
     </ul>
   </div>

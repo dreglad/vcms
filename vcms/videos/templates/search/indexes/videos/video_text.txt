@@ -2,7 +2,7 @@
 {{ object.descripcion_plain }}
 {{ object.ciudad }}
 {{ object.pais }}
-{{ object.transcripcion }}
+{{ object.metadescripcion }}
 {% for tag in object.tags.all %}{{ tag.name }}{% endfor %}
 {% for lista in object.listas.all %}{{ lista.nombre }}{% endfor %}
 

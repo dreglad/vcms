@@ -19,12 +19,15 @@ div#header-wrap {
                 padding-left: $iconWidth+5;
                 height: $iconHeight;
                 line-height: $iconHeight;
-                margin: 20px 0 0 30px;
-                @include media-breakpoint-down(md) {
-                    margin: 16px 0 0 20px;
-                }
+                margin: 18px 0 0 15px;
+                // @include media-breakpoint-down(md) {
+                //     margin: 16px 0 0 20px;
+                // }
+                // @include media-breakpoint-down(xs) {
+                //     margin: 14px 0 0 11px;
+                // }
                 @include media-breakpoint-down(xs) {
-                    margin: 14px 0 0 11px;
+                    // display: none;
                 }
                 &:hover {
                     color: black;
@@ -40,21 +43,26 @@ div#header-wrap {
             }
 
             &.home-videos {
-                width: 260px; height: 40px;
-                line-height: 30px;
+                &.busqueda-open {
+                    display: none;
+                    position: absolute;
+                }
+
+                width: 260px;
+                height: 35px;
+                // line-height: 30px;
                 margin-top: 16px;
                 background: url(../images/logo.jpg) no-repeat;
                 @include media-breakpoint-down(md) {
-                    margin-top: 16px;
-                    width: 208px; height: 28px;
-                    background-size: 208px 28px;
+                    // width: 208px; height: 28px;
+                    // background-size: 208px 28px;
                 }
                 @include media-breakpoint-down(xs) {
-                    margin-top: 16px;
-                    width: 156px; height: 21px;
-                    background-size: 156px 21px;
+                    width: 200px; height: 27px;
+                    background-size: 200px 27px;
                     span { display: none; }
                     position: relative;
+                    margin-left: 10px;
                     top: 3px;
                 }
             }
@@ -68,19 +76,14 @@ div#header-wrap {
         }
 
         .navbar-toggler {
+            font-size: 23px;
+            color: $fontColor;
+            // line-height: 50px;
             font-family: sans-serif;
-            font-size: 20px;
-            line-height: 50px;
             padding: 0;
             float: right;
+            margin-top: 20px;
             position: relative;
-            margin-right: 16px;
-            @include media-breakpoint-down(sm) {
-                 line-height: 50px;   
-            }
-            @include media-breakpoint-down(xs) {
-                line-height: 50px;
-            }
         }
     }
 }

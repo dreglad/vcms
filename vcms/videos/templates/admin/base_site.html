@@ -7,12 +7,15 @@
   <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% endblock %}"/>
   <link rel="stylesheet" type="text/css" href="{% static 'suit/bootstrap/css/bootstrap.min.css' %}" media="all"/>
   <link rel="stylesheet" type="text/css" href="{% static 'suit/css/suit.css' %}" media="all">
+  <link rel="stylesheet" type="text/css" href="{% static 'vcms.css' %}" media="all">
   {% block extrastyle %}{% endblock %}
   {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}"/>{% endif %}
   <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
   <script src="{% static 'suit/js/jquery-1.8.3.min.js' %}"></script>
   <script type="text/javascript">var Suit = { $: $.noConflict() }; if (!$) $ = Suit.$; </script>
   <script src="{% static 'suit/bootstrap/js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'vcms.js' %}"></script>
+
   {% if 'SHOW_REQUIRED_ASTERISK'|suit_conf %}
   <style type="text/css">.required:after { content: '*'; margin: 0 0 0 5px; position: absolute; color: #ccc;}</style>
   {% endif %}
@@ -22,7 +25,7 @@
 </head>
 {% load i18n %}
 
-<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
+<body class="app-{{ opts.app_label }} model-{{ opts.model_name }} {% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
 
 <!-- Sticky footer wrap -->
 <div id="wrap">

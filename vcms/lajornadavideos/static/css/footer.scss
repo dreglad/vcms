@@ -1,7 +1,9 @@
 footer#page-footer {
+    min-height: 100px;
     padding: 3em;
     margin-top: 3em;
     background: $headerBackground;
     text-align: center;
+    box-shadow: 0 -3px 4px rgba(0,0,0,0.10);
 }
 

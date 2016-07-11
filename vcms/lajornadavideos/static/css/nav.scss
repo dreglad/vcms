@@ -2,13 +2,22 @@ nav.menu {
     font-family: $menuFontFamily;
     font-weight: $menuFontWeight;
     background: $headerBackground;
-    box-shadow: 0 6px 5px rgba(0,0,0,0.15);
-    margin-bottom: 20px;
+    box-shadow: 0 3px 4px rgba(0,0,0,0.15);
+    
     text-align: center;
-    padding: 1rem 0 0.5rem 0;
+    // padding: 1rem 0 0.5rem 0;
+
+    margin-bottom: 20px;
+    @include media-breakpoint-down(sm){
+        margin-bottom: 0;
+    }
+
+    padding: 3px;
+    z-index: 10;
 
     .nav-item {
-        letter-spacing: 0.06em;
+        margin-top:1rem;
+        // letter-spacing: 0.06em;
         line-height: 2em;
         float: none;
         display: inline-block;
@@ -20,6 +29,10 @@ nav.menu {
         }
         @include media-breakpoint-down(xs) {
             font-size: 110%;
+        }
+
+        &.dropdown:hover .dropdown-menu {
+            display: block;
         }
     }
 }

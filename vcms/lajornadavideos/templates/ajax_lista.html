@@ -1,5 +1,5 @@
 {% load el_pagination_tags %}
-{% with pagina_param=lista.slug videos=lista.videos.all %}
+{% with pagina_param=lista.slug videos=lista.videos.publicos %}
 
 {% paginate 12 videos using pagina_param %}
 
@@ -19,7 +19,7 @@
   <ol class="container-fluid endless_page_template">
     <li class="grid-sizer c25"></li>
     {% for video in videos %}
-      <li class="c25">{% include "includes/video_article.html" %}</li>
+      <li class="c25">{% include "includes/video_en_lista.html" %}</li>
     {% endfor %}
   </ol>
 </section>

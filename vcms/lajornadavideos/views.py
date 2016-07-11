@@ -47,21 +47,19 @@ class BaseView(TemplateView):
 
 
 class BusquedaView(SearchView):
-    # def extra_context(self):
-    #     return {
-    #         'home': Pagina.objects.get(slug='home', activo=True),
-    #     }
+
+    results_per_page = 5
 
     def get_context_data(self, **kwargs):
         context = super(BusquedaView, self).get_context_data(**kwargs)
         context.update({
-            'home': Pagina.objects.get(slug='home', activo=True),
+            'con': context, 'home': Pagina.objects.get(slug='home', activo=True),
         })
         return context
 
 
 class SeccionView(BaseView):
-    template_name = "seccion.html"
+    template_name = 'pagina.html'
 
     def dispatch(self, request, *args, **kwargs):
         self.pagina = get_object_or_404(Pagina, slug=kwargs['seccion_slug'])
@@ -76,7 +74,7 @@ class HomeView(SeccionView):
 
 class ListaView(SeccionView):
 
-    template_name = "lista.html"
+    template_name = 'lista.html'
 
     def dispatch(self, request, *args, **kwargs):
         self.listado = {
@@ -92,7 +90,7 @@ class ListaView(SeccionView):
 
 class VideoView(BaseView):
 
-    template_name = "video.html"
+    template_name = 'video.html'
 
     def dispatch(self, request, *args, **kwargs):
         try:

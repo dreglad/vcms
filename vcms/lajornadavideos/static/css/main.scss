@@ -3,10 +3,9 @@
 @import "_variables.scss";
 @import "_mixins.scss";
 
-@import url(https://fonts.googleapis.com/css?family=Roboto+Condensed:700,400);
-@import url(https://fonts.googleapis.com/css?family=Roboto:400,300);
-@import url(https://fonts.googleapis.com/css?family=PT+Serif+Caption);
-@import url(https://fonts.googleapis.com/css?family=PT+Serif);
+
+@import "_fonts.scss";
+
 
 @font-face {
     font-family: 'icomoon';
@@ -54,10 +53,17 @@ body {
     }
 
     #middle-container {
-        @import "video_article.scss";
-        @import "playlist.scss";
+        @import "video_en_lista.scss";
+        @import "listados.scss";
         max-width: $maxWidth;
+
         padding: 0 1.3em;
+
+        @include media-breakpoint-down(sm){
+            padding: 8px;
+            max-width: none;
+            width: 100%;
+        }
 
         h1,h2 {
             letter-spacing: 0.07em;
@@ -67,16 +73,24 @@ body {
             text-transform: uppercase;
             color: $rojoColor;
             padding: 2rem 1rem 0.25em 1rem;
+            padding-left: 0.25rem;
+
+
+            @include media-breakpoint-down(sm){
+                text-align: center;
+            }
         }
 
         h2 {
             font-size: 24px;
-            padding: 2rem 1rem 0.25em 1rem;
+            padding: 2rem 1rem 0.25em 0;
+            padding-left: 0;
             a {
                 color: $rojoColor;
                 &:hover { text-decoration: underline; }
             }
         }
+
 
         section>div {
             margin-left: 1rem !important;
@@ -112,7 +126,7 @@ body {
 
 
 
-a.endless_more, .endless_loading {
+.endless_more, .endless_loading {
     font-size: 120%;
     padding: 0.5rem 0 3px 0;
     color: $rojoColor;

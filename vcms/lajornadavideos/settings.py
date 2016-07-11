@@ -8,7 +8,7 @@ BASE_BACKEND_URL = 'http://videosadmin-stg.jornada.com.mx/'
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-STORAGE_ROOT = os.path.abspath(os.path.join(BASE_DIR, 'storage'))
+STORAGE_ROOT = '/mnt/vcms_storage'
 TEMP_ROOT = os.path.join(STORAGE_ROOT, 'tmp')
 
 SECRET_KEY = 'd0^3t$7fwcp^6t!be^9u*1kqrysibzfi#58004@$u3@oiohshx'
@@ -64,6 +64,7 @@ def can_show_toolbar(request):
     if request.is_ajax():
         return False
     return bool(DEBUG)
+
 
 LOGGING = {
     'version': 1,
@@ -174,11 +175,13 @@ DATABASES = {
 #     },
 # }
 
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 12
+
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'elasticstack.backends.ConfigurableElasticSearchEngine',
         'URL': os.environ.get('HAYSTACK_URL', 'http://127.0.0.1:9200/'),
-        'INDEX_NAME': 'haystack',
+        'INDEX_NAME': 'vcms',
     },
 }
 

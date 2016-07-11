@@ -5,14 +5,65 @@ import random
 from django import template
 from django.utils.safestring import mark_safe
 
+from videos.models import Lista, Pagina, Video
+
 register = template.Library()
 
-@register.filter(name='clasificacion')
-def clasificacion(video, clasificador):
+
+@register.filter()
+def display_attr(obj, attr):
+    if hasattr(obj, 'get_display_attr'):
+        return obj.get_display_attr(attr)
+
+@register.assignment_tag()
+def get_display_attrs(obj):
+    attrs = (
+        'tema', 'layout', 'margen', 'mostrar_nombre', 'mostrar_descripcion',
+        'mostrar_maximo', 'mostrar_paginacion', 'texto_paginacion',
+        'mostrar_publicidad', 'slug',
+    )
+    return {k:v for k, v in [(attr, display_attr(obj, attr)) for attr in attrs]}
+
+
+@register.assignment_tag(takes_context=True)
+def get_thumb_geometry(context, video, default='640x360'):
+    large = '1280x720'
+    if context.get('importante'):
+        return large
+    return default
+
+
+@register.assignment_tag()
+def get_clasificacion(video, clasificador=None):
     try:
-        return video.listas.get(clasificador__slug=clasificador).slug
+        return video.get_clasificacion(clasificador)
+    except:
+        return None
+
+
+@register.filter()
+def clasificacion(video, clasificador=None):
+    try:
+        return video.get_clasificacion(clasificador)
     except video.listas.model.DoesNotExist:
         return None
+
+
+@register.filter(name='getattr')
+def object_attr(obj, attr):
+    if hasattr(obj, attr):
+        return getattr(obj, attr)
+
+
+@register.filter(name='lista_generica')
+def lista_generica(lista, nombre=None):
+    return {
+        'videos': {'all': [x.object for x in lista]},
+        'nombre': nombre,
+        'invertido': False,
+        'junto': False,
+    }
+
 
 @register.filter(name='pagina')
 def pagina(video, clasificador):

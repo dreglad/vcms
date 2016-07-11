@@ -169,7 +169,7 @@ class VideoSerializer(serializers.HyperlinkedModelSerializer):
             'original_width', 'original_height', 'resolucion', 'hls', 'archivo',
             'sprites', 'captions', 'imagen', 'thumbnail_100', 'thumbnail_250',
             'thumbnail_500', 'thumbnail_1000', 'titulo', 'resumen',
-            'descripcion', 'descripcion_plain', 'transcripcion',
+            'descripcion', 'descripcion_plain', 'meta_descripcion',
             'links', 'listas', 'dash', 'captions', 'paginas',
             'tags', 'observaciones')
 

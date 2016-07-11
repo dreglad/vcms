@@ -31,7 +31,7 @@
             <td title="{{ info.value }}">
               {{ info.value|date:"DATETIME_FORMAT" }}
             </td>
-          {% else %}{% if info.field.name == "sitios" %}
+          {% else %}{% if info.field.name == "listas" %}
             <td title="{{ info.value }}">
               {{ info.value.all|safeseq|join:", " }}
             </td>
@@ -50,7 +50,7 @@
           {% else %}
             <td title="{{ info.value|striptags }}">
               <div class="info-value">
-                {{ info.value|truncatewords_html:15|safe|striptags }}
+                {{ info.value|truncatewords_html:30|safe|striptags }}
               </div>
             </td>
           {% endif %}{% endif %}{% endif %}{% endif %}
@@ -58,10 +58,13 @@
           {% if info.field == 'duracion_iso' %}
             <th>Duración</th>
             <td>{{ info.value }}</td>
+          {% else %}{% if info.field == 'listas' %}
+            <th>pListas</th>
+            <td>{{ info.value.all }}</td>
           {% else %}
             <th>{{ info.field }}</th>
             <td><code>{{ info.value|safe }}</code></td>
-          {% endif %}
+          {% endif %}{% endif %}
         {% endif %}
       </tr>
     {% endif %}

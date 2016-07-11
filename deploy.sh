@@ -1,11 +1,11 @@
 # rsync to stging server (La Jornada)
 
-rsync --dry-run -avz --exclude "*.pyc" --exclude "vcms/storage" --exclude "*.mp4" --exclude "src/bin" . root@64.31.10.168:/vagrant
+rsync --dry-run -avz --exclude "*.pyc" . root@64.31.10.168:/vagrant
 
 echo 'Any key to proceed, or ctrl+c to cancel...'
 read confirmation
 
-rsync -avz --exclude "*.pyc" --exclude "vcms/storage" --exclude "*.mp4" --exclude "src/bin" . root@64.31.10.168:/vagrant
+rsync -avz --exclude "*.pyc" . root@64.31.10.168:/vagrant
 
 ssh root@64.31.10.168 /etc/init.d/uwsgi reload
 ssh root@64.31.10.168 /etc/init.d/memcached restart

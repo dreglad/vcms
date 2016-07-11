@@ -3,7 +3,7 @@
 {% load static from staticfiles %}
 {% load thumbnail %}
 {% load more_like_this %}
-{% load videos %}
+{% load videos_tags %}
 
 {% block title %}{{ video.titulo }} - La Jornada Videos{% endblock %}
 
@@ -36,16 +36,11 @@
 <script src="//vjs.zencdn.net/5.8.8/video.js"></script>
 {% endif %}{{ block.super }}{% endblock %}
 
-{% block compressed_bottom_script %}{{block.super}}{% if player == "videojs" %}
-<script src="{% static 'js/player/videojs.thumbnails.js' %}"></script>
-{% endif %}{% endblock %}
-
-
 {% block content %}
-<main id="video" class="fluid-container">
-  <article class="row">
+<main id="video">
+  <article>
 
-    <div class="col-lg-7">
+    <div class="col-lg-7 player-col">
       {% if player == "jwplayer" %}
         {% include "includes/player/jwplayer.html" %}
       {% else %}{% if player == "videojs" %}
@@ -63,7 +58,7 @@
               <a title="{{ link.titulo }}" href="{{ link.url }}"
                  target="{% if link.blank %}_blank{% endif %}">
             {% else %}{% if lista.pagina %}
-              <a title="{{ lista.pagina.titulo }}"
+              <a title="{{ lista.pagina.nombre }}"
                  href="/secciones/{{ lista.pagina.slug }}">
             {% else %}
               <a title="{{ lista.nombre }}"
@@ -126,6 +121,12 @@
     </div>
   </article>
 
+{% more_like_this video as similares limit 12 %}
+
+
+{% with lista=similares|lista_generica:"Similares" nombre=True %}
+    {% include "ajax_lista.html" %}
+{% endwith %}
 
 {% for lista in video.listas.all %}
     {% if lista.clasificador.slug != 'autor' and lista.videos.count %}
@@ -134,6 +135,7 @@
     {% endwith %}
     {% endif %}
 {% endfor %}
+
 
 
 </main>
@@ -168,4 +170,24 @@
 }
 </script>
 {% endthumbnail %}
+{% endblock %}
+
+
+{% block compressed_bottom_script %}{{block.super}}
+{% if player == "videojs" %}
+  <script src="{% static 'js/player/videojs.thumbnails.js' %}"></script>
+{% endif %}
+<script>
+  registerShorts({
+    VVVV: '/videos/video/{{ video.id }}/change/',
+    EEEE: '/videos/video/{{ video.id }}/change/#editorial',
+    LLLL: '/videos/video/{{ video.id }}/change/#links',
+    OOOO: '/videos/video/{{ video.id }}/change/#seo',
+    RRRR: '/videos/video/?listas__id__exact={{ video|clasificacion:'serie'|getattr:'id' }}',
+    UUUU: '/videos/video/?listas__id__exact={{ video|clasificacion:'autor'|getattr:'id' }}',
+    SSSS: '/videos/video/?listas__id__exact={{ video|clasificacion:'seccion'|getattr:'id' }}',
+    FFFF: '/videos/video/?listas__id__exact={{ video|clasificacion:'formato'|getattr:'id' }}',
+    PPPP: '/videos/pagina/{{ pagina.id }}/change/',
+  });
+</script>
 {% endblock %}

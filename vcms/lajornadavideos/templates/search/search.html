@@ -2,25 +2,115 @@
 
 {% block title %}Búsqueda - La Jornada Videos{% endblock %}
 
-{% block content %}
-<h1>Resultados de búsqueda</h1>
 
-<form action="." class="fluid-container">
+
+{% block content %}
+{% with videos=page_obj.object_list %}
+<section class="lista videos">
+<form action=".">
+  {% if query %}
+    <h2>Resultados de búsqueda: <em>{{ request.GET.q|truncatechars:"50" }}</em></h2>
+
+    <ol class="container-fluid endless_page_template">
+
+    {% if videos|length_is:"1" or listado.layout == "c100" %}
+
+      <li class="grid-sizer c100"></li>
+      {% with importante=True %}
+      {% for result in results %}
+        <li class="c100">{% include "includes/video_en_lista.html" with video=video.object %}</li>
+      {% endfor %}
+      {% endwith %}
+
+    {% else %}{% if videos|length_is:"2" or listado.layout == 'c50' %}
+
+      <li class="grid-sizer c25"></li>
+      {% with importante=True %}
+      {% for video in videos %}
+        <li class="c50">{% include "includes/video_en_lista.html" with video=video.object %}</li>
+      {% endfor %}
+      {% endwith %}
+
+    {% else %}{% if videos|length_is:"3" or listado.layout == 'c33' %}
+
+      <li class="grid-sizer c33"></li>
+      {% for video in videos %}
+        <li class="c33">{% include "includes/video_en_lista.html" with video=video.object %}</li>
+      {% endfor %}
+
+
+    {% else %}{% if videos|length_is:"5" or listado.layout == "5" %}
+      <li class="grid-sizer c25"></li>
+      {% for video in videos|slice:":1" %}
+        {% with importante=True %}
+        <li class="c50">{% include "includes/video_en_lista.html" with video=video.object %}</li>
+        {% endwith %}
+      {% endfor %}
+      {% for video in videos|slice:"1:" %}
+        <li class="c25">{% include "includes/video_en_lista.html" with video=video.object %}</li>
+      {% endfor %}
+
+
+    {% else %}{% if videos|length_is:"6" or listado.layout == "6" %}
+      <li class="grid-sizer c25"></li>
+      {% for video in videos|slice:":1" %}
+        {% with importante=True %}
+        <li class="c50">{% include "includes/video_en_lista.html" with video=video.object %}</li>
+        {% endwith %}
+      {% endfor %}
+      {% for video in videos|slice:"1:3" %}
+        <li class="c25">{% include "includes/video_en_lista.html" with video=video.object %}</li>
+      {% endfor %}
+      {% for video in videos|slice:"3:4" %}
+        {% with importante=True %}
+        <li class="c50">{% include "includes/video_en_lista.html" with video=video.object %}</li>
+        {% endwith %}
+      {% endfor %}
+      {% for video in videos|slice:"4:6" %}
+        <li class="c25">{% include "includes/video_en_lista.html" with video=video.object %}</li>
+      {% endfor %}
+      {% for video in videos|slice:"6:" %}
+        <li class="c25">{% include "includes/video_en_lista.html" with video=video.object %}</li>
+      {% endfor %}
+
+    {% else %}
+      <li class="grid-sizer c25"></li>
+      {% for video in videos %}
+        <li class="c25">{% include "includes/video_en_lista.html" with video=video.object %}</li>
+      {% endfor %}
+
+    {% endif %}{% endif %}{% endif %}{% endif %}{% endif %}
+    </ol>
+  {% endif %}
+
+  {% if page_obj.has_previous or page_obj.has_next %}
+      <div>
+        {% if page_obj.has_previous %}<a class="endless_loading" href="?q={{ query }}&amp;page={{ page_obj.previous_page_number }}">{% endif %}&laquo; anterior{% if page_obj.has_previous %}</a>{% endif %}
+        {# | #}
+        {% if page_obj.has_next %}<a class="endless_loading" href="?q={{ query }}&amp;page={{ page_obj.next_page_number }}">{% endif %}siguiente +{% if page_obj.has_next %}</a>{% endif %}
+      </div>
+    {% endif %}
+</form>
+</section>
+
+
+<!--
+<form action="." class="container-fluid">
    <!--<table>
     {{ form.as_table }}
     <tr>
       <td>&nbsp;</td>
       <td><input type="submit" value="Buscar"></td>
     </tr>
-  </table> -->
+  </table> 
   {% if query %}
     <h3><em>{{ request.GET.q }}</em></h3>
 
     <div class="row">
 
-    {% for result in page.object_list %}
+    {% for result in page_obj.object_list %}
       <div class="col-sm-6 col-xl-4">
-      {% include "includes/video_article.html" with video=result.object %}
+      {% include "includes/video_en_lista.html" with video=result.object %}
       </div>
     {% empty %}
       <div class="col-xs-12">
@@ -29,15 +119,17 @@
     {% endfor %}
     </div>
 
-    {% if page.has_previous or page.has_next %}
+    {% if page_obj.has_previous or page_obj.has_next %}
       <div>
-        {% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Anterior{% if page.has_previous %}</a>{% endif %}
-        |
-        {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Siguiente &raquo;{% if page.has_next %}</a>{% endif %}
+        {% if page_obj.has_previous %}<a class="endless_loading" href="?q={{ query }}&amp;page={{ page_obj.previous_page_number }}">{% endif %}&laquo; Anterior{% if page_obj.has_previous %}</a>{% endif %}
+        {# | #}
+        {% if page_obj.has_next %}<a class="endless_loading" href="?q={{ query }}&amp;page={{ page_obj.next_page_number }}">{% endif %}Siguiente{% if page_obj.has_next %}</a>{% endif %}
       </div>
     {% endif %}
   {% else %}
     {# Show some example queries to run, maybe query syntax, something else? #}
   {% endif %}
-</form>
+</form> -->
+
+{% endwith %}
 {% endblock %}

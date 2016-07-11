@@ -20,7 +20,7 @@
                     url = qs('_popup');
                 $.ajax({
                     url: url,
-                    data: { 'video_id': id, 'original_callback': url }
+                    data: { 'video_id': id }
                 })
                 window.close();
             }

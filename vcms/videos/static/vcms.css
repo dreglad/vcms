@@ -16,12 +16,29 @@ div.progress .bar {
 }
 
 td.field-video {
-    padding: 4px !important;
+    /*padding: 4px !important;*/
 }
 
 td.field-video img.procesando {
   /* placeholder img */
   opacity: 0.8;
+}
+
+.model-lista .results tbody tr > th,
+.model-lista .results tbody tr > td {
+    padding: 10px;
+}
+
+.column-activo {
+    width: 35px;
+}
+
+.field-icono_ {
+    height: 35px;
+    padding: 2px !important;
+}
+.column-icono_ {
+    width: 35px;
 }
 
 
@@ -31,23 +48,17 @@ a.related-lookup {
     margin-left: 5px !important;
 }
 
-.inline-related .field-lista {
-    width: 100%;
-}
 .inline-related .field-lista strong {
-    white-space: nowrap;
-    display: inline-block;
-    padding:  0.3em 0;
-    font-size: 110%;
 }
 
 .vForeignKeyRawIdAdminField {
     max-width: 30px;
 }
 
+
 @media only screen and (max-width: 990px) {
     #suit-left {
-      display: none;
+      /*display: none;*/
     }
     #container .two-columns {
       padding: 0 30px 0 0 !important;
@@ -65,6 +76,61 @@ a.related-lookup {
 .playlist-player-wrap {
   width: 320px;
 }
+
+
+/*
+
+.dynamic-listas_en_pagina select,
+.dynamic-listas_en_pagina input {
+    max-width: 90px;
+}
+
+.dynamic-listas_en_pagina .field-lista input {
+    max-width: 30px;
+}*/
+
+.dynamic-listas_en_pagina a.video {
+    border: 1px solid grey;
+}
+
+.dynamic-videos_en_pagina label.inline,
+.dynamic-listas_en_pagina label.inline,
+.suit-tab-display.with-legendq label.inline {
+    min-width: 110px;
+}
+
+.dynamic-videos_en_pagina .multi-field-controls select {
+    min-width: 90px;
+}
+
+.dynamic-listas_en_pagina .field-lista input, 
+.dynamic-listas_en_pagina  a.related-lookup {
+    display: none;
+}
+
+.dynamic-videos_en_pagina .field-video_ .titulo {
+    line-height: 1.2em;
+    /*font-weight: bold;*/
+    font-size: 1.1em;
+    padding: 4px 0;
+}
+
+.dynamic-listas_en_pagina.last-related .field-lista input,
+.dynamic-listas_en_pagina.last-related a.related-lookup {
+    display: inline-block;
+}
+
+
+.dynamic-videos_en_pagina:not(.last-related) .field-video {
+    display: none;
+}
+
+
+.dynamic-videos_en_pagina.has_original .field-video input,
+.dynamic-videos_en_pagina.has_original a.related-lookup {
+    display: none;
+}
+
 
 
 .box-video {
@@ -206,30 +272,6 @@ table.info tr.info-descripcion .info-value {
     padding-left: 150px;
 }
 
-/*#enlistado-group .vForeignKeyRawIdAdminField {
-  width: 30px;
-}*/
-
-#enlistado-group .dynamic-enlistado {
-
-}
-
-
-.inline-related.tabular .field-num_videos select {
-    max-width: 120px;
-}
-
-
-.inline-related.tabular .field-layout select {
-    max-width: 100px;
-}
-
-.inline-related.tabular .field-nombre input {
-    max-width: 100px;
-}
-/*#enlistado-group .field-video {
-    padding: 1em !important;
-}*/
 
 .upload_button {
  /* background: blue; */

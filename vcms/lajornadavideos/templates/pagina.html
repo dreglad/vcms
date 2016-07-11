@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load videos_tags %}
+
+{% block title %}{{ pagina.nombre }} - La Jornada Videos{% endblock %}
+
+
+{% block content %}
+{% get_display_attrs display_obj as display_pagina %}
+
+<div class="pagina tema-{{ display_pagina.tema }} margen-{{ display_pagina.margen }}">
+
+  {% with videos=pagina.videos_en_pagina.all display=display_pagina nombre=pagina.nombre descripcion=pagina.descripcion %}
+  {% include "includes/lista.html" %}
+  {% endwith %}
+
+  {% for listado in pagina.listas_en_pagina.all %}
+    {% get_display_attrs listado as display %}
+    {% with videos=listado.lista.videos.publicos nombre=listado.nombre|default:listado.lista.nombre_plural|default:listado.lista.nombre descripcion=listado.descripcion|default:listado.lista.descripcion %}
+    {% include "includes/lista.html" %}
+    {% endwith %}
+  {% endfor %}
+
+</div>
+{% endblock %}
+
+
+{% block compressed_bottom_script %}{{block.super}}
+<script>
+  registerShorts({
+    PPPP: '/videos/pagina/{{ pagina.id|default:"=None" }}/change/',
+    CCCC: '/videos/pagina/{{ pagina.id|default:"=None" }}/change/#display',
+  });
+</script>
+{% endblock %}

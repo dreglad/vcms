@@ -1,29 +1,41 @@
 {% load thumbnail %}
-{% load videos %}
+{% load videos_tags %}
 {% load static from staticfiles %}
+
+{% with video=video.video %}
 
 <article class="video video-{{ video.uuid }}
                 {% if listado.invertido or pagina.invertido %}invertido{% else %}noinvertido{% endif %}
                 {% if listado.junto or pagina.junto %}junto{% endif %}">
   <a href="{{ video.url }}">
     <figure>
-      {% thumbnail video.imagen.file size|default:"640x360" crop="center" upscale=True as im %}
+      {% get_thumb_geometry video "640x360" as geometry %}
+      {% thumbnail video.imagen.file size|default:geometry crop="center" upscale=True as im %}
       <img class="img-fluid lazy" data-original="{{ im.url }}" alt="{{ video.titulo }}"
             title="{{ video.titulo }}" src="{% static 'img/lazy.jpg' %}">
       {% endthumbnail %}
+      <span class="icon fa fa-play play" aria-hidden="true"></span>
       <figcaption>
-      {% if importante %}
+        {% if importante %}
           <span class="descripcion solo">
-              {{ video.descripcion|truncatewords:"50"}}
+            {% if video.descripcion|length < 180 %}
+              {{ video.descripcion|breaksentence }}
+            {% else %}
+              {{ video.descripcion|truncatewords:200 }}
+            {% endif %}
           </span>
         {% endif %}
         <span class="titulo">
-          <span class="icon fa fa-play" aria-hidden="true"></span> {{ video.titulo|truncatewords:20|breaksentence }}
+          {{ video.titulo|truncatewords:20|breaksentence }}
         </span>
         <div class="detalle">
           {# <span class="icon fa fa-youtube-play" aria-hidden="true"></span> #}
           <span class="fecha">{{ video.fecha|date:"N j, Y" }}</span>
           <span class="duracion">{{ video.duracion|duration }}</span>
+          <span class="serie">
+            {% get_clasificacion video 'serie' as serie %}
+            {% if serie %}{{ serie.nombre|truncatewords:"5" }}{% endif %}
+          </span>
         </div>
       </figcaption>
       {# {% if listado.invertido or pagina.invertido %} #}
@@ -41,3 +53,5 @@
     </figure>
   </a>
 </article>
+
+{% endwith %}

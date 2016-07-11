@@ -7,12 +7,29 @@
 main#video {
     margin-top: 1rem;
 
-    .player-wrap {
-        -webkit-box-shadow: rgba(0,0,0,0.4) 0 0 16px;
-        box-shadow: rgba(0,0,0,0.4) 0 0 16px;
-        margin-bottom: 20px;
+    @include media-breakpoint-down(sm){
+        margin-top: 0;
     }
 
+    article {
+        @include make-row(20px);
+        margin: 0;
+        padding: 0;
+    }
+
+    .player-col {
+        @include media-breakpoint-down(sm){
+            margin: 0;
+            padding: 0;
+        }
+        .player-wrap {
+            -webkit-box-shadow: rgba(0,0,0,0.4) 0 0 16px;
+            box-shadow: rgba(0,0,0,0.4) 0 0 6px;
+            margin-bottom: 20px;
+        }
+    }
+
+    
     .fa {
         color: $azulColor;
     }
@@ -20,11 +37,13 @@ main#video {
     h1 {
         // color: $fontColor;
         color: $azulColor;
-        font-family: 'PT Serif Caption', serif;
-        font-weight: 400;
+        font-family: 'PT Serif', serif;
+        font-weight: 700;
         text-transform: none;
         font-size: 26px;
         line-height: 125%;
+        text-align: left;
+
     }
 
     div.compartir {
@@ -62,6 +81,11 @@ main#video {
         }    
     }
 
+
+    h1 {
+        padding: 1rem 0;
+    }
+
     
 
     .sub-titulo {
@@ -79,6 +103,13 @@ main#video {
             }
             &.fecha {
             }
+        }
+    }
+
+    .descripcion {
+        @include media-breakpoint-down(sm) {
+            text-align: justify;
+            text-justify: inter-word;
         }
     }
 

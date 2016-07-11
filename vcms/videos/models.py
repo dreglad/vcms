@@ -33,14 +33,6 @@ ESTADO_CHOICES = Choices(
     ('publicado', u'Publicado'),
 )
 
-LISTA_LAYOUT_CHOICES = Choices(
-    ('auto', u'Automático'),
-    ('c100', u'1 columna'),
-    ('c50', u'1 o 2 columnas'),
-    ('c33', u'Hasta 3 columnas'),
-    ('c25', u'Hasta 4 columnas'),
-)
-
 ORIGEN_CHOICES = Choices(
     ('local', u'Subir archivo de video'),
     ('externo', u'Importar video desde un sitio web'),
@@ -133,6 +125,89 @@ class ModelBase(models.Model):
         get_latest_by = "fecha_creacion"
 
 
+MARGEN_CHOICES = (
+    ('', u'Automático'),
+    ('0', u'Sin margen'),
+    ('1px', u'1 pixel'),
+    ('0.5rem', u'1/2 rem'),
+    ('1rem', u'1 rem'),
+    ('2rem', u'2 rem'),
+    ('5%', u'5%'),
+    ('10%', u'10%'),
+    ('30%', u'30%'),
+    ('50%', u'50%'),
+)
+
+PLANTILLA_CHOICES = (
+    (None, u'Automático'),
+    ('default', u'Cuadros'),
+    ('invertido', u'Cuadros invertidos'),
+    ('carrusel', u'Carrusel'),
+)
+
+ACTIVO_CHOICES = (
+    (None, u'Automático'),
+    (True, u'Sí'),
+    (False, u'No'),
+)
+
+MOSTRAR_MAXIMO_CHOICES = (
+    (None, u'Automático'),
+    (1, u'1'), (2, u'2'), (3, u'3'), (4, u'4'), (5, u'5'), (6, u'6'), (7, u'7'),
+    (8, u'8'), (9, u'9'), (10, u'10'), (12, u'12'), (18, u'18'), (24, u'24'),
+    (36, u'36'), (48, u'48'),
+)
+
+LAYOUT_CHOICES = Choices(
+    (None, u'Automático'),
+    ('c100', u'1 columna'),
+    ('c50', u'2 columnas'),
+    ('c33', u'3 columnas'),
+    ('c25', u'4 columnas'),
+)
+
+class DisplayableMixin(models.Model):
+    mostrar_nombre = models.NullBooleanField(
+        choices=ACTIVO_CHOICES, null=True)
+    mostrar_maximo = models.PositiveSmallIntegerField(
+        u'mostrar máximo', choices=MOSTRAR_MAXIMO_CHOICES, default=0, null=True,
+        blank=True)
+    mostrar_descripcion = models.NullBooleanField(
+        u'mostrar descripción', choices=ACTIVO_CHOICES, null=True)
+    mostrar_paginacion = models.NullBooleanField(
+        u'mostrar paginacón', choices=ACTIVO_CHOICES, null=True)
+    texto_paginacion = models.CharField(
+        u'texto de paginación', max_length=64, blank=True,
+        help_text=u'Default: "mostrar más"')
+    tema = models.CharField(
+        max_length=64, choices=PLANTILLA_CHOICES, null=True, blank=True)
+    margen = models.CharField(
+        max_length=64, default=MARGEN_CHOICES[0][0], choices=MARGEN_CHOICES,
+        blank=True)
+    layout = models.CharField(
+        max_length=64, choices=LAYOUT_CHOICES, null=True, blank=True)
+    mostrar_publicidad = models.NullBooleanField(
+        u'mostrar publicidad', choices=ACTIVO_CHOICES, null=True)
+
+    def get_display_parent(self):
+        if self._meta.model_name != Plataforma._meta.model_name:
+            return Plataforma.objects.filter(tipo='web').latest('fecha_creacion')
+
+    def get_display_attr(self, attr):
+        if hasattr(self, attr):
+            val = getattr(self, attr, None)
+            if val is None or (not val and attr in ('nombre', 'descripcion', 'texto_paginacion')):
+                parent = self.get_display_parent()
+                if parent:
+                    val = parent.get_display_attr(attr)
+            return val
+
+    css = models.TextField(u'CSS', blank=True)
+
+    class Meta:
+        abstract = True
+
+
 class SortableMixin(models.Model):
     """Base sortable Model"""
     orden = models.PositiveIntegerField(db_index=True)
@@ -154,6 +229,9 @@ class NamedMixin(models.Model):
     slug = AutoSlugField(populate_from='nombre', always_update=True)
     nombre = models.CharField(max_length=255, blank=True)
     descripcion = models.TextField(u'descripción', blank=True)
+    meta_descripcion = models.TextField(u'meta descripción', blank=True)
+    tags = TaggableManager(u'tags', blank=True,
+        help_text=u'Palabras o frases clave separadas por comas')
 
     def __unicode__(self):
         return u'%s' % self.nombre
@@ -185,27 +263,24 @@ class Filtro(models.Model):
         choices_name='OPERADOR', default=OPERADOR.igual, help_text=u'')
 
 
-class ListaEnPagina(ModelBase, SortableMixin):
-    nombre = models.CharField(max_length=255, blank=True)
+class ListaEnPagina(ModelBase, SortableMixin, DisplayableMixin):
+    nombre = models.CharField(
+        max_length=255, blank=True,
+        help_text=u'Opcional, si se deja vacío se usará el nombre de la lista')
     descripcion = models.TextField(u'descripción', blank=True)
     lista = models.ForeignKey('Lista', related_name='listas_en_pagina')
     pagina =  models.ForeignKey('Pagina', related_name='listas_en_pagina')
-    mostrar_nombre = models.BooleanField(default=True, verbose_name='nom.')
-    mostrar_descripcion = models.BooleanField(u'desc.', default=False)
-    mostrar_paginacion = models.BooleanField(u'pág.', default=True)
-    NUM_VIDEOS = NUM_VIDEOS_CHOICES
-    num_videos = models.PositiveIntegerField(
-        u'núm. de videos', choices=NUM_VIDEOS, default=0)
-    LAYOUT = LISTA_LAYOUT_CHOICES
-    layout = StatusField(
-        choices_name='LAYOUT', default=LAYOUT.auto, help_text=u'')
-    invertido = models.BooleanField(default=False)
-    junto = models.BooleanField(default=False)
+
+    def get_display_parent(self):
+        return self.pagina
+
+    def slug(self):
+        return self.lista.slug
 
     def videos_recientes(self):
-        videos = self.lista.videos.all()
-        if self.num_videos:
-            return videos[:self.num_videos]
+        videos = self.lista.videos.publicos()
+        if self.mostrar_maximo:
+            return videos[:self.mostrar_maximo]
         return videos
 
     class Meta:
@@ -213,48 +288,28 @@ class ListaEnPagina(ModelBase, SortableMixin):
         unique_together = (("lista", "pagina"),)
 
 
-class VideoEnPagina(ModelBase, SortableMixin):
+class VideoEnPagina(ModelBase, SortableMixin, DisplayableMixin):
     """ManyToMany relation's 'thtough' class between Video and Pagina"""
     video = models.ForeignKey(
         'Video', models.CASCADE, related_name='videos_en_pagina')
     pagina = models.ForeignKey(
         'Pagina', models.CASCADE, verbose_name=u'página',
         related_name='videos_en_pagina')
-    invertido = models.BooleanField(default=False)
+
+    def get_display_parent(self):
+        return self.pagina
+
+    def slug(self):
+        return self.pagina.slug
+
+    def get_clasificador(self, clasificador):
+        return self.video.get_clasificador(clasificador)
 
     class Meta:
         ordering = ['orden']
         verbose_name = u'vdeo en página'
         verbose_name_plural = u'videos en página'
         unique_together = (("video", "pagina"),)
-
-
-class Pagina(MPTTModel, SortableMixin, TitledMixin, ActivableMixin):
-    parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True,
-                            verbose_name=u'padre')
-    mostrar_en_menu = models.BooleanField(default=False, db_index=True)
-    mostrar_titulo = models.BooleanField(default=True)
-    mostrar_descripcion = models.BooleanField(default=True)
-    listas = models.ManyToManyField(u'Lista', related_name='paginas', through='ListaEnPagina')
-    videos = models.ManyToManyField(u'Video', related_name='paginas', through='VideoEnPagina')
-    invertido = models.BooleanField(default=False)
-    junto = models.BooleanField(default=False)
-
-    def get_absolute_url(self):
-        return 'http://videos-stg.jornada.com.mx/secciones/%s?nc=%s' % (self.slug, uuid.uuid4())
-
-    class MPTTMeta:
-        order_insertion_by = ['orden']
-
-    # It is required to rebuild tree after save, when using order for mptt-tree
-    def save(self, *args, **kwargs):
-        super(Pagina, self).save(*args, **kwargs)
-        Pagina.objects.rebuild()
-
-    class Meta:
-        verbose_name = u'página'
-        verbose_name_plural = u'páginas'
-
 
 
 class Clasificador(ModelBase, NamedMixin):
@@ -265,9 +320,19 @@ class Clasificador(ModelBase, NamedMixin):
         verbose_name_plural = u'clasificadores'
 
 
-class VideoClasificado(models.Model):
-    video = models.ForeignKey('Video')
-    clasificador = models.ForeignKey('Clasificador')
+class Link(ModelBase):
+    url = models.URLField(u'URL', db_index=True)
+    titulo = models.CharField(u'título', max_length=255, blank=True)
+    blank = models.BooleanField(u'nuevo tab', default=False,
+                                help_text=u'Abrir en una nuevva ventana/tab')
+    TIPO = LINK_TIPO_CHOICES
+    tipo = StatusField(choices_name='TIPO', default=TIPO.auto)
+
+    def __unicode__(self):
+        if self.titulo:
+            return u'%s (%s)' % (self.titulo, self.url)
+        else:
+            return u'%s' % self.url
 
 
 class ListaQuerySet(models.query.QuerySet):
@@ -284,6 +349,7 @@ class ListaQuerySet(models.query.QuerySet):
         else:
             return listas
 
+
 class Lista(ModelBase, NamedMixin, ActivableMixin):
     """Base class for playlist-like models"""
     nombre_plural = models.CharField(max_length=255, blank=True)
@@ -292,7 +358,6 @@ class Lista(ModelBase, NamedMixin, ActivableMixin):
         'Pagina', related_name='lista_principal', null=True, blank=True,
         help_text=u'Página dedicada a mostrar contenido sobre esta lista')
     youtube_playlist = models.CharField(max_length=128, blank=True)
-    tags = TaggableManager(u'tags', blank=True)
     links = models.ManyToManyField(
         'Link', blank=True, related_name='%(class)ss')
     imagen = SorlImageField(
@@ -330,42 +395,47 @@ class Lista(ModelBase, NamedMixin, ActivableMixin):
         ordering = ['clasificador', 'nombre', '-fecha_creacion']
 
 
+class Pagina(MPTTModel, SortableMixin, NamedMixin, ActivableMixin, DisplayableMixin):
+    parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True,
+                            verbose_name=u'padre')
+    mostrar_en_menu = models.BooleanField(default=False, db_index=True)
+    listas = models.ManyToManyField(u'Lista', related_name='paginas', through='ListaEnPagina')
+    videos = models.ManyToManyField(
+        u'Video', related_name='paginas', through='VideoEnPagina',
+        verbose_name='videos destacados')
 
+    class MPTTMeta:
+        order_insertion_by = ['orden']
 
-class Autor(Lista):
+    def get_absolute_url(self):
+        return 'http://videos-stg.jornada.com.mx/secciones/%s?nc=%s' % (self.slug, uuid.uuid4())
+
+    # It is required to rebuild tree after save, when using order for mptt-tree
+    def save(self, *args, **kwargs):
+        super(Pagina, self).save(*args, **kwargs)
+        Pagina.objects.rebuild()
+
     class Meta:
-        verbose_name_plural = u'autores'
+        verbose_name = u'página'
+        verbose_name_plural = u'páginas'
 
 
-class Plataforma(ModelBase, SortableMixin, NamedMixin):
+class Plataforma(ModelBase, SortableMixin, NamedMixin, DisplayableMixin):
     TIPO = PLATAFORMA_TIPO_CHOICES
     tipo = StatusField(choices_name='TIPO')
     api_key = models.CharField(max_length=32, blank=True, db_index=True)
-    usar_publicidad = models.BooleanField(default=True, db_index=True)
+    link = models.ForeignKey(
+        'Link', blank=True, null=True, related_name='plataformas')
 
     def __unicode__(self):
         return u'[%s] %s' % (str(self.tipo).upper(), self.nombre)
 
+    def get_absolute_url(self):
+        if self.link:
+            return self.link.url
+
     class Meta:
         ordering = ['pk']
-
-
-
-class Link(ModelBase):
-    url = models.URLField(u'URL', db_index=True)
-    titulo = models.CharField(u'título', max_length=255, blank=True)
-    blank = models.BooleanField(u'nuevo tab', default=False,
-                                help_text=u'Abrir en una nuevva ventana/tab')
-    TIPO = LINK_TIPO_CHOICES
-    tipo = StatusField(choices_name='TIPO', default=TIPO.auto)
-
-    def __unicode__(self):
-        if self.titulo:
-            return u'%s (%s)' % (self.titulo, self.url)
-        else:
-            return u'%s' % self.url
-
-
 
 
 class VideoQuerySet(models.query.QuerySet):
@@ -375,12 +445,18 @@ class VideoQuerySet(models.query.QuerySet):
     def publicos(self):
         return self.filter(
                 #procesamiento=Video.PROCESAMIENTO.listo,
-                #estado=Video.ESTADO.publicado,
+                estado=Video.ESTADO.publicado,
                 fecha__lte=datetime.now()) \
             .select_related('territorio', 'pais').prefetch_related('listas')
 
+    def clasificados(self, lista):
+        if isinstance(lista, Lista):
+            return self.filter(listas=lista)
+        elif isinstance(lista, str):
+            return self.filter(listas__slug=lista)
 
-class Video(ModelBase, TitledMixin):
+
+class Video(ModelBase, TitledMixin, DisplayableMixin):
     # Estado
     ESTADO = ESTADO_CHOICES
     estado = StatusField(choices_name='ESTADO',
@@ -437,7 +513,7 @@ class Video(ModelBase, TitledMixin):
     # editorial
     fecha = models.DateTimeField(db_index=True, default=timezone.now)
     resumen = models.TextField(blank=True)
-    transcripcion = models.TextField(u'transcripción', blank=True)
+    metadescripcion = models.TextField(u'transcripción', blank=True)
     observaciones = models.TextField(blank=True)
 
     # ManyToMany
@@ -475,9 +551,27 @@ class Video(ModelBase, TitledMixin):
     def get_admin_form_tabs(self):
         return GET_VIDEO_TABS(self)
 
+    def get_clasificacion(self, clasificador):
+        if self.listas:
+            try:
+                if not isinstance(clasificador, Clasificador):
+                    clasificador = Clasificador.objects.get(slug=clasificador)
+                clasificacion = self.listas.filter(clasificador=clasificador)
+                if len(clasificacion) == 1:
+                    return clasificacion[0]
+                elif len(clasificacion) > 1:
+                    return clasificacion
+            except Clasificador.DoesNotExist:
+                pass
+
     '''
     Properties
     '''
+
+    @property
+    def video(self):
+        return self
+    
     @property
     def uuid(self):
         """

@@ -3,7 +3,7 @@
 vcms - lajornadavideos settings
 """
 
-DEBUG = True
+DEBUG = False
 
 PROJECT = 'vcms'
 SITE_NAME = 'Videos La Jornada'
@@ -20,6 +20,7 @@ LANGUAGES = ['es',]
 
 # -*- coding: utf-8 -*- #
 SUIT_CONFIG = {
+    'CONFIRM_UNSAVED_CHANGES': False,
     'MENU': (
         {'label': u'Contenido', 'icon': 'icon-film',
          'app': 'videos', 'models': ('video','pagina', 'link')},
@@ -32,8 +33,21 @@ SUIT_CONFIG = {
 
         '-',
 
-         {'label': 'Cola de trabajos', 'icon': 'icon-tasks',
-         'url': '/django-rq/' }
+        {'label': 'Autores', 'icon': 'icon-tasks',
+         'url': '/videos/lista/?q=&clasificador=autor' },
+        {'label': 'Formatos', 'icon': 'icon-tasks',
+         'url': '/videos/lista/?q=&clasificador=formato' },
+        {'label': 'Series', 'icon': 'icon-tasks',
+         'url': '/videos/lista/?q=&clasificador=serie' },
+        {'label': 'Secciones', 'icon': 'icon-tasks',
+         'url': '/videos/lista/?q=&clasificador=seccion' },
+
+         '-',
+         '-',
+         '-',
+
+        {'label': 'Cola de trabajos', 'icon': 'icon-tasks',
+         'url': '/django-rq/' },
 
         #{'label': 'Support', 'icon':'icon-question-sign', 'url': '/support/'},
     ),

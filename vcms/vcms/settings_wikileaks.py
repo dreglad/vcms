@@ -3,7 +3,6 @@
 vcms - wikileaks settings
 """
 import os
-from .menu import *
 
 DEBUG = True
 
