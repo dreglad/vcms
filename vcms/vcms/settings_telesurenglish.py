@@ -18,7 +18,6 @@ FRONTEND_URL = 'http://telesurenglish.openmultimedia.biz'
 LANGUAGE_CODE = 'en'
 LANGUAGES = ['en',]
 
-# -*- coding: utf-8 -*- #
 SUIT_CONFIG = {
     'MENU': (
         {'label': u'Contents', 'icon': 'icon-film',

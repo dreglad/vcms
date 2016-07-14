@@ -33,34 +33,50 @@
             </td>
           {% else %}{% if info.field.name == "listas" %}
             <td title="{{ info.value }}">
-              {{ info.value.all|safeseq|join:", " }}
+              {% for lista in info.value.all %}
+                <span class="label label-info">{{ lista.clasificador.nombre }}: <big>{{ lista.nombre }}</big></span>
+              {% endfor %}
             </td>
           {% else %}{% if info.field.name == "titulo" %}
             {% if video.estado == 'publicado' %}
               <td title="{{ info.value }}">
                 <a target="_blank" href="{{ video.get_absolute_url }}">
-                  {{ info.value|truncatewords:15 }}
+                  {{ info.value|truncatewords:20 }}
                 </a>
               </td>
             {% else %}
               <td title="{{ info.value }}">
-                {{ info.value|truncatewords:15 }}
+                {{ info.value|truncatewords:20 }}
               </td>
             {% endif %}
           {% else %}
-            <td title="{{ info.value|striptags }}">
-              <div class="info-value">
-                {{ info.value|truncatewords_html:30|safe|striptags }}
-              </div>
-            </td>
+            {% if info.field.name == 'tags' %}
+              <td title="">
+                <div class="info-value">
+                  {% for tag in info.value.all %}
+                      <span class="label">{{ tag }}</span>
+                  {% endfor %}
+                </div>
+              </td>
+            {% else %}
+              <td title="{{ info.value|striptags }}">
+                <div class="info-value">
+                  {{ info.value|truncatewords_html:40|safe|striptags }}
+                </div>
+              </td>
+            {% endif %}
           {% endif %}{% endif %}{% endif %}{% endif %}
         {% else %}
           {% if info.field == 'duracion_iso' %}
             <th>Duración</th>
             <td>{{ info.value }}</td>
           {% else %}{% if info.field == 'listas' %}
-            <th>pListas</th>
-            <td>{{ info.value.all }}</td>
+            <th>Listas</th>
+            <td>
+              {% for lista in info.value.all %}
+                <span class="label label-primary">{{ lista.clasificador.nombre }}: <strong>{{ lista.nombre }}</strong>strong></span>
+              {% endfor %}
+            </td>
           {% else %}
             <th>{{ info.field }}</th>
             <td><code>{{ info.value|safe }}</code></td>

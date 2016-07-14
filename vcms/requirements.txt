@@ -2,6 +2,7 @@ django>=1.9
 django-el-pagination
 Pillow
 sorl-thumbnail
+django-analytical
 MySQL-python
 django-mptt
 django-rq

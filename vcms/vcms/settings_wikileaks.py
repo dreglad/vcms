@@ -19,7 +19,6 @@ FRONTEND_URL = None
 LANGUAGE_CODE = 'es'
 LANGUAGES = ['es',]
 
-# -*- coding: utf-8 -*- #
 SUIT_CONFIG = {
     'MENU': (
         {'label': u'Contenido', 'icon': 'icon-film',

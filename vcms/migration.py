@@ -5,6 +5,7 @@ import re
 import shutil
 
 from isodate import parse_time
+from taggit.utils import parse_tags
 
 from videos.models import *
 from vcms.video_ops import get_video_stream_info
@@ -13,7 +14,8 @@ SRC_ROOT = '/root/videos/tvstorage/'
 DST_ROOT = '/mnt/vcms_storage/media/'
 
 MODIFY_FS = True
-USE_EXISTING_OPTS = True
+ONLY_IMAGES = True
+USE_EXISTING_OPTS = False
 DELETE_ALL_FIRST = True
 VIDEOS_MAX = -1
 # state
@@ -21,14 +23,21 @@ found = {}
 
 CIUDADES = [u'Ciudad de México', u'Estado de México']
 
-def new_descripcion(clip):
+
+def touch(fname, times=None):
+    fhandle = open(fname, 'a')
+    try:
+        os.utime(fname, times)
+    finally:
+        fhandle.close()
+
+
+
+def new_descripcion(clip, video):
     global found
     d = clip['descripcion'].strip()
 
     # strip date
-    d = re.sub(r'\d{1,2}\s+de\s+.+\s+de\s+201\d\.*\s*', '', d).strip().strip(',')
-
-    # city
     for ciudad in CIUDADES:
         ciudad_re = r'^\s*' + ciudad + r'[,\.]\s+(.+)$'
         m = re.match(ciudad_re, d, re.UNICODE)
@@ -37,7 +46,22 @@ def new_descripcion(clip):
             d = m.group(1)
             found['ciudad'] = ciudad
 
-    found['descripcion'] = d
+    m = re.match(r'([^\d\s,.]*)\,*\s*\d{1,2}\s*(de|/)\s*(\d{1,2}|[^\s]+)\s*(de|/)\s*201\d\s*[.,]*\s*(.+)', d)
+    if m:
+        print "\n\n"
+        print 'titulo: %s ' % clip['titulo']
+        print 'antes: %s' % d
+        d = m.group(5)
+        print 'despues: %s' % d
+        video.ciudad = m.group(1)
+        print 'ciudad: %s' % video.ciudad
+        print "\n\n"
+
+    if not video.ciudad:
+        if u'ciudad de México' in clip['tags'] or 'CDMX' in clip['tags']:
+            video.ciudad = u"Ciudad de México"
+
+    video.descripcion = d
     return found.get('descripcion')
 
 def new_ciudad(clip):
@@ -57,8 +81,10 @@ TIPO_VIDEOBLOG = Lista.objects.get(clasificador=C_FORMATO, slug='videoblog')
 TIPO_CLIMA = Lista.objects.get(clasificador=C_SERIE, slug='pronosticos-del-tiempo')
 TIPO_VIDEOCHAT = Lista.objects.get(clasificador=C_FORMATO, slug='videochat')
 TIPOS_DIRECTOS = {
-    1: TIPO_NOTICIA, 2: TIPO_ENTREVISTA, 3: TIPO_REPORTAJE
+    2: TIPO_ENTREVISTA, 3: TIPO_REPORTAJE
 }
+SERIE_DOSIS_CIENCIA = Lista.objects.get(clasificador=C_SERIE, slug='dosis-de-ciencia')
+
 def new_tipo(clip):
     if clip['categoria'] == 16:
         return TIPO_VIDEOBLOG
@@ -73,11 +99,7 @@ def new_tipo(clip):
 AUTOR_LAJORNADA = Lista.objects.get(clasificador=C_AUTOR, slug='la-jornada')
 AUTOR_AP = Lista.objects.get(clasificador=C_AUTOR, slug='ap')
 AUTOR_CONAGUA = Lista.objects.get(clasificador=C_AUTOR, slug='conagua')
-def new_autor(clip):
-    if clip['tipo'] == 4:
-        return AUTOR_AP
-    elif new_tipo(clip) == TIPO_CLIMA:
-        return AUTOR_LAJORNADA
+AUTOR_DGDC = Lista.objects.get(clasificador=C_AUTOR, slug='dgdc-unam')
 
 def new_duracion(clip):
     t = parse_time(clip['duracion'])
@@ -97,16 +119,23 @@ CATEGORIAS_DIRECTAS = {
     10: Lista.objects.get(clasificador=C_SECCION, slug='espectaculos'),
     11: Lista.objects.get(clasificador=C_SECCION, slug='deportes'),
 }
+
+
 def new_categoria(clip):
     if clip['categoria'] in CATEGORIAS_DIRECTAS:
         return CATEGORIAS_DIRECTAS[clip['categoria']]
-    else:
-        return CATEGORIAS_DIRECTAS[1]
 
 
-def new_serie(clip):
+def new_serie(clip, video):
     if 'tico del tiempo' in clip['titulo'].lower() or 'tico del clima' in clip['titulo'].lower():
-       return TIPO_CLIMA
+       video.listas.add(TIPO_CLIMA)
+       video.listas.add(AUTOR_CONAGUA)
+
+    elif 'dosis de ciencia' in clip['descripcion'].lower() or 'dosis de ciencia' in clip['titulo'].lower():
+        video.listas.add(SERIE_DOSIS_CIENCIA)
+        video.listas.add(AUTOR_DGDC)
+        video.listas.add(TIPO_VIDEOBLOG)
+        video.listas.add(CATEGORIAS_DIRECTAS[8]) # ciencia
 
 def migrar():
     global found
@@ -115,6 +144,7 @@ def migrar():
     with open('jsondump', 'r') as f:
         dump = json.loads(f.read())
     youtube_clips = []
+    micrositio_clips = []
     file_mapping = []
     num = 0
     for obj in dump:
@@ -125,47 +155,59 @@ def migrar():
             if clip['ciudad']:
                 # de YT,  guardar
                 youtube_clips.append(obj)
+            elif clip['micrositio']:
+                micrositio_clips.append(obj)
             else:
                 found = {}
                 ## CLIP PROPIO
                 video = Video(
                     titulo=clip['titulo'],
-                    descripcion=new_descripcion(clip),
                     ciudad=new_ciudad(clip),
                     duracion = new_duracion(clip),
                     fecha = clip['fecha'],
-                    observaciones = json.dumps(obj),
-                    procesamiento='listo'
+                    custom_metadata = json.dumps(clip),
+                    viejo_slug = clip['slug'],
+                    procesamiento='listo',
+                    estado = 'publicado'
                 )
                 video.save()
+                descripcion=new_descripcion(clip, video),
                 if new_tipo(clip):
                     video.listas.add(new_tipo(clip))
-                if new_autor(clip):
-                    video.listas.add(new_autor(clip))
+                # if new_autor(clip):
+                #     video.listas.add(new_autor(clip))
                 if new_categoria(clip):
                     video.listas.add(new_categoria(clip))
-                if new_serie(clip):
-                    video.listas.add(new_serie(clip))
-                video.tags = clip['tags']
+
+                new_serie(clip, video)
+
+                nuevos_tags = parse_tags(clip['tags'])
+                print 'tags anteriores: %s' % clip['tags']
+                print 'nuevos tags: %s' % nuevos_tags
+                try:
+                    video.tags.set(*nuevos_tags)
+                except:
+                    print "ERROR CON TAGS!!!!"
                 video.save()
                 # copiar video
                 new_archivo = 'videos/%s.mp4' % video.uuid
                 if MODIFY_FS:
-                    try:
-                        shutil.move(os.path.join(SRC_ROOT, clip['archivo']),
-                                os.path.join(DST_ROOT, new_archivo)
-                                )
-                        file_mapping.append((os.path.join(SRC_ROOT, clip['archivo']),
-                                os.path.join(DST_ROOT, new_archivo))
-                                )
-                    except IOError:
-                        print "Error al copiar, borrando video"
-                        video.delete()
-                        continue
+                    src = os.path.join(SRC_ROOT, clip['archivo'])
+                    dst = os.path.join(DST_ROOT, new_archivo)
+                    if ONLY_IMAGES:
+                        touch(dst)
+                    else:
+                        try:
+                            shutil.move(src, dst)
+                            file_mapping.append(src, dst)
+                        except IOError:
+                            print "Error al copiar, borrando video"
+                            video.delete()
+                            continue
                 #copiar imagen
                 new_imagen = 'images/%s.jpg' % video.uuid
                 if MODIFY_FS:
-                    shutil.move(os.path.join(SRC_ROOT, clip['imagen']),
+                    shutil.copy(os.path.join(SRC_ROOT, clip['imagen']),
                                 os.path.join(DST_ROOT, new_imagen))
                 file_mapping.append((os.path.join(SRC_ROOT, clip['imagen']),
                                      os.path.join(DST_ROOT, new_imagen)))
@@ -187,6 +229,8 @@ def migrar():
 
     with open('outout-youtube.json', 'w') as f:
         f.write(json.dumps(youtube_clips))
+    with open('outout-micrositios.json', 'w') as f:
+        f.write(json.dumps(micrositio_clips))
     with open('output-files.json', 'w') as f:
         f.write(json.dumps(file_mapping))
 

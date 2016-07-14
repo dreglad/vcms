@@ -18,6 +18,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['videos-stg.jornada.com.mx']
 
+GOOGLE_ANALYTICS_PROPERTY_ID = 'UA-80731325-1'
 
 # Application definition
 INSTALLED_APPS = [
@@ -27,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
 
+    'analytical',
     'compressor',
     'el_pagination',
     'crispy_forms',
@@ -59,7 +61,7 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 def can_show_toolbar(request):
-    return False
+    #return False
     return True
     if request.is_ajax():
         return False

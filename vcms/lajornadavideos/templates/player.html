@@ -1,0 +1,43 @@
+{% load thumbnail %}
+{% thumbnail video.imagen.file "640" as im %}
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+<title>{{ video.titulo }} - La Jornada Videos</title>
+<style type="text/css">
+  body { padding:0; margin:0; }
+</style>
+
+</head>
+
+
+<body>
+
+<div id="player"></div>
+<script>
+  jwplayer("video").setup({
+    sources: [
+        {% if video.hls %}{ file: "{{ video.hls.url }}" },{% endif %}
+        { file: "{{ video.archivo.url }}" }
+    ],
+    {% if video.sprites %}
+    tracks: [{ file: "{{ video.sprites.url }}", kind: "thumbnails"}],
+    {% endif %}
+    image: "{{ im.url }}",
+    width: "100%",
+    //ga: {}
+    aspectratio:"{{ video.original_width }}:{{ video.original_height }}"
+  });
+</script>
+<noscript>
+  <video title="{{ video.titulo }}" poster="{{ im.url }}">
+    {% if video.archivo %}<source src="{{ video.archivo.url }}" type="video/mp4">{% endif %}
+  </video>
+</noscript>
+
+</body>
+</html>
+{% endthumbnail %}

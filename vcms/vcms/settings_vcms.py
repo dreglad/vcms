@@ -18,7 +18,6 @@ FRONTEND_URL = 'http://videos-stg.jornada.com.mx/'
 LANGUAGE_CODE = 'es'
 LANGUAGES = ['es',]
 
-# -*- coding: utf-8 -*- #
 SUIT_CONFIG = {
     'CONFIRM_UNSAVED_CHANGES': False,
     'MENU': (

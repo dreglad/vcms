@@ -80,43 +80,17 @@ FIELDS_LISTA = FIELDS_BASE + (
 )
 
 
+class LinkSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Link
+        exclude = ('usuario_creacion', 'usuario_modificacion')
+
+
 class PlataformaSerializer(serializers.HyperlinkedModelSerializer):
+    link = LinkSerializer()
     class Meta:
         model = Plataforma
-        fields = FIELDS_BASE + (
-            'tipo', 'nombre', 'descripcion', 'usar_publicidad',
-        )
-
-class LinkSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Link
         exclude = ('usuario_creacion', 'usuario_modificacion')
-        # fields = FIELDS_BASE + (
-        #     'nombre', 'logo', 'usar_logo', 'icono', 'url', 'usar_url', 'icono',
-        #     'cortinilla_inicio', 'usar_cortinilla_inicio', 'cortinilla_final',
-        #     'usar_cortinilla_final',
-        # )
-
-
-class LinkSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Link
-        exclude = ('usuario_creacion', 'usuario_modificacion')
-        # fields = FIELDS_BASE + (
-        #     'nombre', 'logo', 'usar_logo', 'icono', 'url', 'usar_url', 'icono',
-        #     'cortinilla_inicio', 'usar_cortinilla_inicio', 'cortinilla_final',
-        #     'usar_cortinilla_final',
-        # )
-
-class ListaSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Lista
-        exclude = ('usuario_creacion', 'usuario_modificacion')
-        # fields = FIELDS_BASE + (
-        #     'nombre', 'logo', 'usar_logo', 'icono', 'url', 'usar_url', 'icono',
-        #     'cortinilla_inicio', 'usar_cortinilla_inicio', 'cortinilla_final',
-        #     'usar_cortinilla_final',
-        # )
 
 
 class ClasificadorSerializer(serializers.HyperlinkedModelSerializer):
@@ -126,52 +100,85 @@ class ClasificadorSerializer(serializers.HyperlinkedModelSerializer):
         # fields = FIELDS_BASE + ('nombre',)
 
 
+class ListaSerializer(serializers.HyperlinkedModelSerializer):
+    links = LinkSerializer(many=True)
+    clasificador = ClasificadorSerializer()
+
+    class Meta:
+        model = Lista
+        exclude = ('usuario_creacion', 'usuario_modificacion')
 
 
 class PaginaSerializer(serializers.HyperlinkedModelSerializer):
+    listas = ListaSerializer(many=True)
     # tags = TagsField(read_only=True)
     class Meta:
         model = Pagina
         #exclude = ('usuario_creacion', 'usuario_modificacion')
 
 
-# class TipoSerializer(serializers.HyperlinkedModelSerializer):
-#     class Meta:
-#         model = Tipo
-#         fields = FIELDS_BASE + ('nombre', 'nombre_plural', 'descripcion',
-#                                 'descripcion_plain')
-
-
-# class SerieSerializer(serializers.HyperlinkedModelSerializer):
-#     tags = TagsField(read_only=True)
-#
-#     class Meta:
-#         model = Serie
-#         fields = FIELDS_LISTA + ('imagen', 'autor', 'categoria',)
-
-
 class VideoSerializer(serializers.HyperlinkedModelSerializer):
+    listas = ListaSerializer(many=True)
+    links = LinkSerializer(many=True)
     tags = TagsField(read_only=True)
-    thumbnail_100 = HyperlinkedSorlImageField('100', source='imagen',
-                                              read_only=True)
-    thumbnail_250 = HyperlinkedSorlImageField('250', source='imagen',
-                                              read_only=True)
-    thumbnail_500 = HyperlinkedSorlImageField('500', source='imagen',
-                                              read_only=True)
-    thumbnail_1000 = HyperlinkedSorlImageField('1000', source='imagen',
-                                               read_only=True)
+
+    thumbnail_120 = HyperlinkedSorlImageField(
+        '120', source='imagen', read_only=True)
+    thumbnail_360 = HyperlinkedSorlImageField(
+        '360', source='imagen', read_only=True)
+    thumbnail_640 = HyperlinkedSorlImageField(
+        '640', source='imagen', read_only=True)
+    thumbnail_1280 = HyperlinkedSorlImageField(
+        '1280', source='imagen', read_only=True)
+
+    thumbnail_120x67 = HyperlinkedSorlImageField(
+       '120x67', source='imagen', read_only=True)
+    thumbnail_360_202 = HyperlinkedSorlImageField(
+       '360x202', source='imagen', read_only=True)
+    thumbnail_640x360 = HyperlinkedSorlImageField(
+       '640x360', source='imagen', read_only=True)
+    thumbnail_1280x720 = HyperlinkedSorlImageField(
+       '1280x720', source='imagen', read_only=True)
+
     url = URLField(source='get_absolute_url')
+
 
     class Meta:
         model = Video
-        fields = FIELDS_BASE + ('estado', 'procesamiento', 'slug', 'fecha',
-            'url', 'origen', 'origen_url', 'youtube_id', 'duracion',
-            'original_width', 'original_height', 'resolucion', 'hls', 'archivo',
-            'sprites', 'captions', 'imagen', 'thumbnail_100', 'thumbnail_250',
-            'thumbnail_500', 'thumbnail_1000', 'titulo', 'resumen',
-            'descripcion', 'descripcion_plain', 'meta_descripcion',
-            'links', 'listas', 'dash', 'captions', 'paginas',
-            'tags', 'observaciones')
+        fields = FIELDS_BASE + (
+            # status
+            'estado', 'procesamiento', 'fecha', 'status_path', 
+            'procesamiento_status',
+
+            # editorial
+            'titulo', 'descripcion', 'descripcion_plain', 'ciudad',
+            'fecha_publicacion',
+
+            # source
+            'origen', 'origen_url', 'youtube_id',
+
+            # stream
+            'duracion', 'duracion_iso', 'horas', 'minutos', 'segundos',
+            'resolucion', 'original_width', 'original_height',
+
+            # frontend
+            'url', 'player',
+
+            # relations
+            'listas', 'links', 'paginas', 
+
+            # files
+            'archivo', 'hls', 'dash', 'sprites', 'captions', 
+
+            # meta
+            'tags', 'meta_descripcion', 'observaciones', 'custom_metadata',
+            'viejo_slug',
+
+            # thumbnails
+            'thumbnail_120', 'thumbnail_360', 'thumbnail_360',  'thumbnail_640',
+            'thumbnail_1280', 'thumbnail_120x67', 'thumbnail_360_202',
+            'thumbnail_640x360', 'thumbnail_1280x720',
+        )
 
 
 """
@@ -232,9 +239,10 @@ class ClasificadorViewSet(ViewSetBase):
         return {'request': self.request}
 
 class VideoViewSet(ViewSetBase):
-    queryset = Video.objects.all()
+    queryset = Video.objects.all().prefetch_related('listas', 'paginas', 'links', 'tags')
     serializer_class = VideoSerializer
-    filter_fields = ('id', 'slug', 'listas', 'estado', 'procesamiento', )
+    filter_fields = ('id', 'slug', 'listas', 'estado', 'procesamiento',
+                     'custom_metadata', 'viejo_slug')
 
     def get_serializer_context(self):
         return {'request': self.request}

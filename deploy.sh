@@ -14,4 +14,7 @@ ssh root@64.31.10.168 python /vagrant/vcms/manage_vcms.py collectstatic --noinpu
 ssh root@64.31.10.168 python /vagrant/vcms/manage_vcms_wikileaks.py collectstatic --noinput
 ssh root@64.31.10.168 python /vagrant/vcms/manage_vcms_ciencias.py collectstatic --noinput
 ssh root@64.31.10.168 python /vagrant/vcms/manage_vcms_telesurenglish.py collectstatic --noinput
+ssh root@64.31.10.168 python /vagrant/vcms/manage_vcms_ojarasca.py collectstatic --noinput
+ssh root@64.31.10.168 python /vagrant/vcms/manage_vcms_semanal.py collectstatic --noinput
+ssh root@64.31.10.168 python /vagrant/vcms/manage_vcms_letraese.py collectstatic --noinput
 

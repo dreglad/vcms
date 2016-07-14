@@ -59,11 +59,15 @@ REPRODUCCION_CHOICES = Choices(
 )
 
 OPERADOR_CHOICES = Choices(
-    ('igual', u'Es igual a'),
-    ('diferente', u'Es diferente a'),
-    ('notnull', u'No está vacío'),
+    ('exact', u'Es igual a'),
+    ('not_exact', u'Es diferente a'),
+    ('not_null', u'No está vacío'),
     ('null', u'Está vacío'),
-    ('contains', u'Contiene el texto'),
+    ('icontains', u'Contiene el texto'),
+    ('lt', u'Es menor que'),
+    ('lte', u'Es menor o igual que'),
+    ('gt', u'Es mayor que'),
+    ('gte', u'Es mayor o igual que'),
 )
 
 LINK_TIPO_CHOICES = Choices(
@@ -255,12 +259,13 @@ class TitledMixin(models.Model):
 
 class Filtro(models.Model):
     pagina = models.ForeignKey('Pagina')
+    OPERADOR = OPERADOR_CHOICES
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
     OPERADOR = OPERADOR_CHOICES
     operador = StatusField(
-        choices_name='OPERADOR', default=OPERADOR.igual, help_text=u'')
+        choices_name='OPERADOR', default=OPERADOR.exact, help_text=u'')
 
 
 class ListaEnPagina(ModelBase, SortableMixin, DisplayableMixin):
@@ -398,7 +403,7 @@ class Lista(ModelBase, NamedMixin, ActivableMixin):
 class Pagina(MPTTModel, SortableMixin, NamedMixin, ActivableMixin, DisplayableMixin):
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True,
                             verbose_name=u'padre')
-    mostrar_en_menu = models.BooleanField(default=False, db_index=True)
+    mostrar_en_menu = models.BooleanField(default=True, db_index=True)
     listas = models.ManyToManyField(u'Lista', related_name='paginas', through='ListaEnPagina')
     videos = models.ManyToManyField(
         u'Video', related_name='paginas', through='VideoEnPagina',
@@ -445,7 +450,7 @@ class VideoQuerySet(models.query.QuerySet):
     def publicos(self):
         return self.filter(
                 #procesamiento=Video.PROCESAMIENTO.listo,
-                estado=Video.ESTADO.publicado,
+                # estado=Video.ESTADO.publicado,
                 fecha__lte=datetime.now()) \
             .select_related('territorio', 'pais').prefetch_related('listas')
 
@@ -508,12 +513,14 @@ class Video(ModelBase, TitledMixin, DisplayableMixin):
     original_width = models.PositiveIntegerField(null=True, blank=True)
     original_height = models.PositiveIntegerField(null=True, blank=True)
     original_metadata = JSONField(null=True, blank=True)
+    custom_metadata = JSONField(null=True, blank=True)
+    viejo_slug = models.CharField(max_length=255, blank=True, db_index=True)
     fps = models.FloatField(blank=True, null=True, default=0, editable=False)
 
     # editorial
     fecha = models.DateTimeField(db_index=True, default=timezone.now)
     resumen = models.TextField(blank=True)
-    metadescripcion = models.TextField(u'transcripción', blank=True)
+    meta_descripcion = models.TextField(u'transcripción', blank=True)
     observaciones = models.TextField(blank=True)
 
     # ManyToMany
@@ -571,6 +578,10 @@ class Video(ModelBase, TitledMixin, DisplayableMixin):
     @property
     def video(self):
         return self
+
+    @property
+    def player(self):
+        return 'http://videos-stg.jornada.com.mx/player/%s.html' % self.uuid
     
     @property
     def uuid(self):
@@ -595,6 +606,9 @@ class Video(ModelBase, TitledMixin, DisplayableMixin):
 
     @property
     def procesamiento_status(self):
+        if self.procesamiento != self.PROCESAMIENTO.procesando:
+            return
+
         from subprocess import check_output, CalledProcessError
 
         status = { 'status': None }

@@ -4,7 +4,7 @@ import datetime
 from elasticstack.fields import CharField
 from haystack import indexes
 
-from .models import Video
+from .models import Video, Lista
 
 
 class VideoIndex(indexes.SearchIndex, indexes.Indexable):
@@ -38,7 +38,8 @@ class VideoIndex(indexes.SearchIndex, indexes.Indexable):
 
     def prepare_formato(self, obj):
         lista = obj.get_clasificacion('formato')
-        if lista: return lista.nombre
+        if lista and isinstance(lista, Lista):
+            return lista.nombre
 
     def prepare_tags(self, obj):
         total_tags = set([tag.name for tag in obj.tags.all()])

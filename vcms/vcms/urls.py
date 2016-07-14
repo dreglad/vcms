@@ -41,7 +41,7 @@ urlpatterns = [
 
 
 def can_show_toolbar(request):
-    return False
+    return True
 
 
 if settings.DEBUG:

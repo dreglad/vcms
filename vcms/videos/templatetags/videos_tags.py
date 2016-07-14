@@ -58,11 +58,13 @@ def object_attr(obj, attr):
 @register.filter(name='lista_generica')
 def lista_generica(lista, nombre=None):
     return {
-        'videos': {'all': [x.object for x in lista]},
+        'videos': {'publicos': [x.object for x in lista]},
         'nombre': nombre,
-        'invertido': False,
-        'junto': False,
     }
+
+@register.filter()
+def result_list(results):
+    return [x.object for x in results]
 
 
 @register.filter(name='pagina')

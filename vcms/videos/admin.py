@@ -59,7 +59,7 @@ DESCRIPCION_REDACTOR_OPTIONS = {
     'pasteImages': False,
     'pasteBlock': [],
     'pasteInline': ['strong', 'b', 'i', 'em'],
-    'minHeight': 200,
+    'minHeight': 320,
 }
 DESCRIPCIONCORTA_REDACTOR_OPTIONS = {
     'buttons': ['bold', 'italic', 'deleted', 'horizontalrule', 'lists',],
@@ -177,12 +177,15 @@ class ModelAdminBase(admin.ModelAdmin):
         return None
 
     def formfield_for_dbfield(self, db_field, **kwargs):
-        if db_field.name in ('descripcion',):
-             kwargs['widget'] = RedactorWidget(
-                 editor_options=DESCRIPCIONCORTA_REDACTOR_OPTIONS)
-        elif db_field.name in ('meta_descripcion',):
-             kwargs['widget'] = AutosizedTextarea(
-                attrs={'rows': 3, 'class': 'input-block-level'})
+        if not 'widget' in kwargs:
+            if db_field.name in ('descripcion'):
+                 kwargs['widget'] = RedactorWidget(
+                     editor_options=DESCRIPCIONCORTA_REDACTOR_OPTIONS)
+            elif db_field.name in ('meta_descripcion',):
+                 kwargs['widget'] = AutosizedTextarea(
+                    attrs={'rows': 3, 'class': 'input-block-level'})
+            elif db_field.name in ('tags',):
+                 kwargs['widget'] =  Select2TagWidget()
         return super(ModelAdminBase, self).formfield_for_dbfield(db_field,
                                                                  **kwargs)
 
@@ -256,7 +259,7 @@ class VideoChangeForm(ModelForm):
                 'onchange': "$('button[name=_save]).removeAttr('disabled')')",
                 'type': "filepicker-dragdrop",
                 }),
-            #'tags': Select2TagWidget,
+            'tags': Select2TagWidget,
             'sprites': AdminImageWidget,
             'metadescripcion': AutosizedTextarea(attrs={
                 'rows': 6, 'class': 'input-block-level'}),
@@ -283,7 +286,7 @@ class VideoAdmin(VersionAdmin, ModelAdminBase, AdminImageMixin):
         # ('territorio', admin.RelatedOnlyFieldListFilter),
     )
     date_hierarchy = 'fecha'
-    search_fields = ('titulo', 'descripcion', 'metadescripcion', 'observaciones')
+    search_fields = ('titulo', 'descripcion', 'meta_descripcion', 'observaciones')
     #list_select_related = ('listas',)
 
     readonly_fields = ['origen', 'origen_url', 'archivo_original', 'duracion',
@@ -292,8 +295,8 @@ class VideoAdmin(VersionAdmin, ModelAdminBase, AdminImageMixin):
                        'archivo']
     readonly_fields_new = []
 
-    info_fields = ( 'fecha', 'titulo', 'descripcion', 'duracion_iso',
-                    'pais', 'territorio', 'ciudad', 'listas', 'estado')
+    info_fields = ( 'fecha', 'titulo', 'descripcion', 'estado', 'duracion_iso',
+                    'pais', 'territorio', 'ciudad', 'listas', 'tags')
     info_fields_procesando = ('origen_url', 'duracion_iso',
                               'fecha_creacion')
     info_fields_error = ('fecha_creacion', 'origen', 'procesamiento_status',
@@ -397,11 +400,7 @@ class VideoAdmin(VersionAdmin, ModelAdminBase, AdminImageMixin):
         }),
         (u'SEO', {
              'classes': ('suit-tab', 'suit-tab-seo'),
-             'fields': ['tags', 'meta_descripcion']
-        }),
-        (u'Políticas de reproducción', {
-            'classes': ('suit-tab', 'suit-tab-general'),
-            'fields': ['reproduccion'],
+             'fields': ['tags', 'meta_descripcion', 'reproduccion', 'custom_metadata' ]
         }),
     ]
 
@@ -415,6 +414,17 @@ class VideoAdmin(VersionAdmin, ModelAdminBase, AdminImageMixin):
             obj.procesamiento = Video.PROCESAMIENTO.nuevo
         obj.save()
 
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        if db_field.name in ('descripcion',):
+             kwargs['widget'] = RedactorWidget(
+                 editor_options=DESCRIPCION_REDACTOR_OPTIONS)
+        return super(VideoAdmin, self).formfield_for_dbfield(db_field,
+                                                                 **kwargs)
+
+    def get_queryset(self, request):
+        videos = super(VideoAdmin, self).get_queryset(request)
+        videos = videos.prefetch_related('listas', 'tags')
+        return videos
 
     # def save_formset(self, request, form, formset, change):
     #     instances = formset.save(commit=False)
@@ -770,6 +780,11 @@ class PaginaAdmin(MPTTModelAdmin, SortableModelAdmin, ModelAdminBase):
         }),
         DISPLAYABLE_FIELDSET,
     ]
+
+    def get_queryset(self, request):
+        paginas = super(PaginaAdmin, self).get_queryset(request)
+        paginas = paginas.prefetch_related('videos_en_pagina', 'listas', 'tags')
+        return paginas
 
     def get_video_tabs(self, obj=None):
         return self.suit_form_tabs

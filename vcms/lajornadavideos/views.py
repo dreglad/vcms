@@ -114,7 +114,6 @@ class VideoView(BaseView):
         context.update({
             'player': self.player,
             'video': self.video,
-            'relacionados': Video.objects.publicos()[:24],
         })
         return context
 

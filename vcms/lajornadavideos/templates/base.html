@@ -1,10 +1,11 @@
 {% load compress %}
 {% load static from staticfiles %}
-
+{% load analytical %}
 <!DOCTYPE html>
 <html itemscope itemtype="http://schema.org/WebPage">
 
 <head>
+{% analytical_head_top %}
 <meta NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
 <meta charset="utf-8">
 <meta content="width=device-width, maximum-scale=1, shrink-to-fit=no, user-scalable=no" name="viewport">
@@ -68,11 +69,11 @@
   </script>
 {% endblock %}
 
-{% include "includes/analytics.html" %}
+{% analytical_head_bottom %}
 </head>
 
 <body>
-
+{% analytical_body_top %}
 <div class="container-fluid" id="top-container">  
   {% block busqueda %}{% include "includes/busqueda_form.html" %}{% endblock %}
   {% block header %}{% include "includes/header.html" %}{% endblock %}
@@ -104,5 +105,6 @@
 {% endblock %}{% endcompress %}
 {% endblock %}
 
+{% analytical_body_bottom %}
 </body>
 </html>
