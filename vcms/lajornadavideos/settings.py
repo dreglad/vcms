@@ -3,12 +3,12 @@
 """
 import os
 
-BASE_URL = 'http://videos-stg.jornada.com.mx/'
-BASE_BACKEND_URL = 'http://videosadmin-stg.jornada.com.mx/'
+BASE_URL = 'http://videos-dev.jornada.com.mx/'
+BASE_BACKEND_URL = 'http://videosadmin-dev.jornada.com.mx/'
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-STORAGE_ROOT = '/mnt/vcms_storage'
+STORAGE_ROOT = '/mnt/lajornadavideos_storage'
 TEMP_ROOT = os.path.join(STORAGE_ROOT, 'tmp')
 
 SECRET_KEY = 'd0^3t$7fwcp^6t!be^9u*1kqrysibzfi#58004@$u3@oiohshx'
@@ -16,7 +16,7 @@ SECRET_KEY = 'd0^3t$7fwcp^6t!be^9u*1kqrysibzfi#58004@$u3@oiohshx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['videos-stg.jornada.com.mx']
+ALLOWED_HOSTS = ['videos-stg.jornada.com.mx', 'videos-dev.jornada.com.mx']
 
 GOOGLE_ANALYTICS_PROPERTY_ID = 'UA-80731325-1'
 
@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'haystack',
     'locality',
     'mptt',
-    'gm2m',
     'rest_framework',
     'sorl.thumbnail',
     'taggit',
@@ -52,6 +51,14 @@ CACHES = {
         'LOCATION': '127.0.0.1:11211',
     }
 }
+
+
+X_FRAME_OPTIONS = (
+    'ALLOW-FROM http://www.jornada.unam.mx/ https://editonline.jornada.com.mx/ '
+    'http://ojarasca.jornada.com.mx/ http://semanal.jornada.com.mx/ '
+    'http://letraese.jornada.com.mx/ http://ciencias.jornada.com.mx/ '
+    'http://wikileaks.jornada.com.mx/ http://staging.jornada.com.mx/'
+)
 
 
 CACHE_MIDDLEWARE_ALIAS = 'default'
@@ -89,14 +96,14 @@ LOGGING = {
             'level': 'ERROR',
             'formatter': 'simple',
             'class': 'logging.FileHandler',
-            'filename': '/var/log/lajornadavideos_error.log',
+            'filename': '/var/log/lajornadavideos/error.log',
         },
         'file_debug': {
             'level': 'DEBUG',
             'formatter': 'verbose',
             'filters': ['require_debug_true'],
             'class': 'logging.FileHandler',
-            'filename': '/var/log/lajornadavideos_debug.log',
+            'filename': '/var/log/lajornadavideos/debug.log',
         },
     },
     'loggers': {
@@ -114,7 +121,7 @@ LOGGING = {
 }
 
 MIDDLEWARE_CLASSES = [
-    'django.middleware.cache.UpdateCacheMiddleware',
+    #'django.middleware.cache.UpdateCacheMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     #'django.contrib.sessions.middleware.SessionMiddleware',
@@ -181,9 +188,10 @@ HAYSTACK_SEARCH_RESULTS_PER_PAGE = 12
 
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'elasticstack.backends.ConfigurableElasticSearchEngine',
-        'URL': os.environ.get('HAYSTACK_URL', 'http://127.0.0.1:9200/'),
-        'INDEX_NAME': 'vcms',
+        'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
+        #'URL': 'http://127.0.0.1:8983/solr'
+        # ...or for multicore...
+         'URL': 'http://127.0.0.1:8983/solr/mysite',
     },
 }
 
