@@ -1,6 +1,14 @@
 ---
 - hosts: default
+  vars:
+    - vcms_apps:
+      - lajornadavideos
+      - ciencias
+      - wikileaks
+
   tasks:
+    - name: Set hostname
+      hostname: name=vcm-dev
     - name: Update all packages to latest version
       apt: update_cache=yes upgrade=dist
 
@@ -18,8 +26,12 @@
       with_items:
         - python-virtualenv
         - python3-pip
+        - python-memcache
         - redis-server
         - libjpeg-dev
+        - git
+        - solr-jetty
+        - pysolr
         - python-dev
         - libyaml-dev
         - imagemagick
@@ -56,77 +68,89 @@
     - name: Create storage directories
       file: path={{ item }} state=directory mode=0777 follow=True
       with_items:
-        - /storage
-        - /storage/static
-        - /storage/clips
-        - /storage/images
-        - /storage/temp
-        - /storage/temp/status
-        - /storage/hls
-        - /var/log/video
+        - /mnt/lajornadavideos_storage/media/hls
+        - /mnt/lajornadavideos_storage/media/dash
+        - /mnt/lajornadavideos_storage/media/original
+        - /mnt/lajornadavideos_storage/media/images
+        - /mnt/lajornadavideos_storage/media/sprites
+        - /mnt/lajornadavideos_storage/media/videos
+        - /mnt/lajornadavideos_storage/static/lajornadavideos
+        - /mnt/lajornadavideos_storage/static/vcms
+        - /mnt/lajornadavideos_storage/tmp/img
+        - /mnt/lajornadavideos_storage/tmp/mp4
+        - /mnt/lajornadavideos_storage/tmp/original
+        - /mnt/lajornadavideos_storage/tmp/status
+        - /var/log/vcms
+        - /var/log/lajornadavideos
 
-#    - name: Install video python requirements
-#      pip: requirements=/vagrant/video_site/requirements.txt state=latest
+    - name: Copy  web server configuration file
+      copy: src=etc/nginx.conf dest=/etc/nginx.conf
+      notify:
+        - restart nginx
 
-    - name: Create database
-      mysql_db: name=vcms login_user=root login_password=pass state=present
+    - name: Install vcms python requirements
+      pip: requirements=/vagrant/vcms/vcms/requirements.txt state=latest
+
+    - name: Create databases
+      mysql_db: name={{ item }} login_user=root login_password=pass state=present
       register: database
+      with_items: {{ vcms_apps }}
 
-    - name: Migrate database
-      django_manage: command=migrate app_path=/vagrant/vcms
+    - name: Migrate databases
+      django_manage: command=migrate app_path=/vagrant/vcms settings=vcms.settings_{{ item }}
+      with_items: {{ vcms_apps }}
 
 #    - name: Load video fixtures data
 #      django_manage: command=loaddata app_path=/vagrant/video_site fixtures='lajornada/users lajornada/tipo_clips lajornada/tipo_programas lajornada/categorias paises lajornada/programas lajornada/corresponsales lajornada/servicios'
 #      when: database.changed
 
-    - name: Collect video static files
-      django_manage: command=collectstatic app_path=/vagrant/vcms
+    - name: Collect vcms static files
+      django_manage: command=collectstatic app_path=/vagrant/vcms settings=vcms.settings_{{ item }}
+      with_items: {{ vcms_apps }}
 
-    - name: Add supervisor upstart script
-      copy: src=etc/upstart-supervisor.conf dest=/etc/init/supervisor.conf
+    # - name: Add supervisor upstart script
+    #   copy: src=etc/upstart-supervisor.conf dest=/etc/init/supervisor.conf
+    #   notify:
+    #     - reload upstart configuration
+
+    - name: Copy uWSGI vcms applicaiton configuration file
+      copy: src=etc/uwsgi-vcms_lajornadavideos.ini dest=/etc/uwsgi/apps-enabled/vcms_lajornadavideos.ini
       notify:
-        - reload upstart configuration
+        - restart uwsgi
 
-    # - name: Copy uWSGI video applicaiton configuration file
-    #   copy: src=etc/uwsgi-video.ini dest=/etc/uwsgi/apps-enabled/vcms.ini
-    #   notify:
-    #     - restart uwsgi
+    - name: Copy vcms web server configuration file
+      copy: src=etc/nginx-vcms_lajornadavideos.conf dest=/etc/nginx/conf.d/vcms_lajornadavideos.conf
+      notify:
+        - restart nginx
 
-    # - name: Copy web server main configuration file
-    #   copy: src=etc/nginx.conf dest=/etc/nginx/video.conf
-    #   notify:
-    #     - restart nginx
 
-    # - name: Copy web server video site configuration file
-    #   copy: src=etc/nginx-video.conf dest=/etc/nginx/conf.d/video.conf
-    #   notify:
-    #     - restart nginx
+    - name: Install lajornadavideos python requirements
+      pip: requirements=/vagrant/vcms/lajornadavideos/requirements.txt state=latest
 
-    # LaJornada
-    # - name: Install lajornada python requirements
-    #   pip: requirements=/vagrant/lajornada_site/requirements.txt state=latest
+    - name: Collect lajornadavideos static files
+      django_manage: command=collectstatic app_path=/vagrant/vcms settings=lajornadavideos.settings
 
-    # - name: Collect lajornada static files
-    #   django_manage: command=collectstatic app_path=/vagrant/video_site
 
-    # - name: Copy uWSGI lajornada applicaiton configuration file
-    #   copy: src=etc/uwsgi-lajornada.ini dest=/etc/uwsgi/apps-enabled/lajornada.ini
-    #   notify:
-    #     - restart uwsgi
+    - name: Copy uWSGI lajornadavideos applicaiton configuration file
+      copy: src=etc/uwsgi-lajornadavideos.ini dest=/etc/uwsgi/apps-enabled/lajornadavideos.ini
+      notify:
+        - restart uwsgi
 
-    # - name: Copy web server lajornada site configuration file
-    #   copy: src=etc/nginx-lajornada.conf dest=/etc/nginx/conf.d/lajornada.conf
-    #   notify:
-    #     - restart nginx
 
-    # - name: Ensure uWSGI is running
-    #   service: name=uwsgi state=started
+    - name: Copy web server lajornada site configuration file
+      copy: src=etc/nginx-lajornadavideos.conf dest=/etc/nginx/conf.d/lajornadavideos.conf
+      notify:
+        - restart nginx
 
-    # - name: Ensure NGINX is running
-    #   service: name=nginx state=started
+    - name: Ensure uWSGI is running
+      service: name=uwsgi state=started
+
+    - name: Ensure NGINX is running
+      service: name=nginx state=started
 
     # - name: Ensure supervisor is running
     #   service: name=supervisor state=started
+
 
   handlers:
     - name: restart nginx

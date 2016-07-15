@@ -22,16 +22,11 @@ Vagrant.configure(2) do |config|
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
-  # config.vm.network "private_network", ip: "10.0.4.4"
 
   # config.vm.network "private_network", ip: "192.168.6.88"
-
   # config.vm.network "private_network", ip: "192.168.6.88"
 
-  config.vm.network "forwarded_port", guest: 8000, host: 8080
-
-  config.vm.network "public_network"
-
+  config.vm.network "private_network", ip: "10.11.12.13"
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
@@ -77,20 +72,19 @@ Vagrant.configure(2) do |config|
   # config.vm.provision "shell", inline: <<-SHELL
   #   sudo apt-get update
   #   sudo apt-get install -y apache2
+  # SHELL
 
   # Ansible provisioning
-  config.vm.provision "ansible", run: "once" do |ansible|
+  config.vm.provision "ansible", run: "always" do |ansible|
     ansible.playbook = "provisioning/playbook.yml"
     ansible.sudo = true
   end
 
-  # Startup (dependant on /vagrant share)
-  config.vm.provision "shell", run: "always", inline: <<-SHELL
-    if [[ $(status supervisor) != *running* ]]; then
-        start supervisor
-    fi
-    if [[ $(/etc/init.d/uwsgi status video) == *not\\ running* ]]; then
-        /etc/init.d/uwsgi start
-    fi
-  SHELL
+  # # Startup (dependant on /vagrant share)
+  # config.vm.provision "shell", run: "oncse", inline: <<-SHELL
+  #   apt-get update
+  #   apt-get -y dist-upgrade
+  #   apt-get -y install python python-pip bash-completion build-essential python-dev
+  #   pip install --upgrade ansible
+  # SHELL
 end
