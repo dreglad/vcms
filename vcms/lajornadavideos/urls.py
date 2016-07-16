@@ -4,7 +4,9 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.views.decorators.cache import cache_page
 
-from .views import BusquedaView, SeccionView, HomeView, ListaView, VideoView, crossdomain
+from .views import \
+    BusquedaView, SeccionView, HomeView, ListaView, VideoView, \
+    PlayerView, crossdomain, WebPlayerView
 
 urlpatterns = [
     url(r'^$', cache_page(30)(HomeView.as_view()),
@@ -18,6 +20,14 @@ urlpatterns = [
     url(r'^video/(?P<video_uuid>\d+)/(?P<video_slug>.+)/$',
         cache_page(60)(VideoView.as_view()),
         name='video'),
+    url(r'^pplayer/(?P<video_uuid>\d+)/(?P<video_slug>.+)/$',
+        cache_page(60)(PlayerView.as_view()),
+        name='video_player'),
+
+
+    url(r'^player/(?P<video_uuid>\d+)/(?P<video_slug>.+)/$',
+        cache_page(60)(WebPlayerView.as_view()),
+        name='web_player'),
 
     url(r'^busqueda/', BusquedaView.as_view(), name='haystack_search'),
 

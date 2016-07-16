@@ -87,9 +87,63 @@ class ListaView(SeccionView):
         return super(SeccionView, self).dispatch(request, *args, **kwargs)
 
 
+class PlayerView(BaseView):
+    template_name= 'player.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            video_pk = int(kwargs['video_uuid'].split('0', 1)[1])
+            self.video = Video.objects.publicos().get(pk=video_pk)
+        except (ValueError, IndexError, Video.DoesNotExist):
+            raise Http404("Video inexistente")
+
+        if self.video.uuid != kwargs['video_uuid']:
+            raise Http404("Video inexistente")
+        if self.video.slug != kwargs['video_slug']:
+            return redirect(video, permanent=True)
+
+        self.player = request.GET.get('player', 'jwplayer')
+
+    def get_context_data(self, **kwargs):
+        context = super(PlayerView, self).get_context_data(**kwargs)
+
+        context.update({
+            'player': self.player,
+            'video': self.video,
+        })
+        return context
+
+
+
+class WebPlayerView(BaseView):
+    template_name = 'player.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            video_pk = int(kwargs['video_uuid'].split('0', 1)[1])
+            self.video = Video.objects.publicos().get(pk=video_pk)
+        except (ValueError, IndexError, Video.DoesNotExist):
+            raise Http404("Video inexistente")
+
+        if self.video.uuid != kwargs['video_uuid']:
+            raise Http404("Video inexistente")
+        if self.video.slug != kwargs['video_slug']:
+            return redirect(video, permanent=True)
+
+        self.player = request.GET.get('player', 'jwplayer')
+
+        return super(WebPlayerView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(supayerView, self).get_context_data(**kwargs)
+
+        context.update({
+            'player': self.player,
+            'video': self.video,
+        })
+        return context
 
 class VideoView(BaseView):
-
     template_name = 'video.html'
 
     def dispatch(self, request, *args, **kwargs):

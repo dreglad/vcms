@@ -9,7 +9,7 @@ BASE_BACKEND_URL = 'http://videosadmin-dev.jornada.com.mx/'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 STORAGE_ROOT = '/mnt/lajornadavideos_storage'
-TEMP_ROOT = os.path.join(STORAGE_ROOT, 'tmp')
+#TEMP_ROOT = os.path.join(STORAGE_ROOT, 'tmp')
 
 SECRET_KEY = 'd0^3t$7fwcp^6t!be^9u*1kqrysibzfi#58004@$u3@oiohshx'
 
@@ -172,7 +172,7 @@ DATABASES = {
         'HOST': 'localhost',
         'USER': 'root',
         'PASSWORD': 'pass',
-        'NAME': 'vcms'
+        'NAME': 'lajornadavideos'
     }
 }
 
@@ -296,7 +296,8 @@ MEDIA_ROOT = os.path.join(STORAGE_ROOT, 'media')
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(STORAGE_ROOT, 'static', 'lajornadavideos')
+STATIC_ROOT = os.path.join(STORAGE_ROOT, 'frontend_static')
+
 STATICFILES_DIRS = [ os.path.join(BASE_DIR, 'lajornadavideos', 'static') ]
 
 STATICFILES_FINDERS = (

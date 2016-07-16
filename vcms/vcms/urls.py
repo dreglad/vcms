@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*- #
-"""vcms URL Configuration
-"""
+"""vcms URL Configuration"""
 from django.conf import settings
 from django.conf.urls import url, include
 from django.conf.urls.static import static
@@ -41,8 +40,8 @@ urlpatterns = [
 
 
 def can_show_toolbar(request):
-    return True
-
+    return False
+    return settings.DEBUG
 
 if settings.DEBUG:
     import debug_toolbar

@@ -413,7 +413,8 @@ class Pagina(MPTTModel, SortableMixin, NamedMixin, ActivableMixin, DisplayableMi
         order_insertion_by = ['orden']
 
     def get_absolute_url(self):
-        return 'http://videos-stg.jornada.com.mx/secciones/%s?nc=%s' % (self.slug, uuid.uuid4())
+        if settings.FRONTEND_URL:
+            return '%s/secciones/%s?nc=%s' % (settings.FRONTEND_URL, self.slug, uuid.uuid4())
 
     # It is required to rebuild tree after save, when using order for mptt-tree
     def save(self, *args, **kwargs):
@@ -581,7 +582,8 @@ class Video(ModelBase, TitledMixin, DisplayableMixin):
 
     @property
     def player(self):
-        return 'http://videos-stg.jornada.com.mx/player/%s.html' % self.uuid
+        if settings.FRONTEND_URL:
+            return '%s/player/%s/%s' % (settings.FRONTEND_URL, self.uuid, self.slug)
     
     @property
     def uuid(self):

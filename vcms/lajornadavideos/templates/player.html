@@ -19,6 +19,7 @@
 
 <div id="player"></div>
 <script>
+$(function() {
   jwplayer("video").setup({
     sources: [
         {% if video.hls %}{ file: "{{ video.hls.url }}" },{% endif %}
@@ -32,6 +33,7 @@
     //ga: {}
     aspectratio:"{{ video.original_width }}:{{ video.original_height }}"
   });
+});
 </script>
 <noscript>
   <video title="{{ video.titulo }}" poster="{{ im.url }}">
