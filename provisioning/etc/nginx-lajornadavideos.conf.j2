@@ -1,4 +1,4 @@
-upstream django_lajornadavideos {
+upstream lajornadavideos {
     server unix:///run/uwsgi/app/lajornadavideos/socket;
 }
 
@@ -16,7 +16,7 @@ server {
     client_max_body_size 75M;
 
     location /media  {
-        alias /mnt/vcms_storage/media;
+        alias /mnt/lajornadavideos_storage/media;
 
 
         location ~* \.mp4$ {
@@ -36,9 +36,8 @@ server {
         }
     }
 
-
     location /static {
-        alias /mnt/vcms_storage/static/lajornadavideos;
+        alias /mnt/lajornadavideos_storage/frontend_static;
 
         location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
             expires 1y;
@@ -53,7 +52,7 @@ server {
     
     # Finally, send all non-media requests to the Django server.
     location / {
-        uwsgi_pass  django_lajornadavideos;
+        uwsgi_pass  lajornadavideos;
         include     /vagrant/provisioning/etc/uwsgi_params;
     }
 }

@@ -1,19 +1,19 @@
-upstream django_ojarasca {
-    server unix:///run/uwsgi/app/ojarasca/socket;
+upstream vcms_{{ item }} {
+    server unix:///run/uwsgi/app/vcms_{{ item }}/socket;
 }
 
 server {
     listen  80;
-    server_name .ojarascaadmin.openmultimedia.biz;
-    server_name .ojarascaadmin-stg.openmultimedia.biz;
-
+    server_name .{{ item }}-admin.openmultimedia.biz;
+    server_name .{{ item }}-admin-stg.openmultimedia.biz;
+    server_name .{{ item }}-admin-dev.openmultimedia.biz;
     charset     utf-8;
 
     # max upload size
     client_max_body_size 75M;
 
     location /media  {
-        alias /mnt/ojarasca_storage/media;
+        alias /mnt/lajornadavideos_storage/media;
         location ~* \.mp4$ {
             mp4;
             gzip off;
@@ -26,15 +26,14 @@ server {
         }
     }
 
-
     location /static {
-        alias /mnt/ojarasca_storage/static/vcms;
+        alias /mnt/lajornadavideos_storage/static/vcms;
     }
 
     
     # Finally, send all non-media requests to the Django server.
     location / {
-        uwsgi_pass  django_ojarasca;
+        uwsgi_pass  vcms_{{ item }};
         include     /vagrant/provisioning/etc/uwsgi_params;
     }
 }

@@ -1,15 +1,13 @@
 [uwsgi]
 
-
 processes = 5
-env = DJANGO_SETTINGS_MODULE=lajornadavideos.settings
-logto = /var/log/lajornadavideos.log
+env = DJANGO_SETTINGS_MODULE=vcms.settings_{{ item }}
+logto = /var/log/vcms_{{ item }}.log
 
 master = true
 enable-threads = true
 single-interpreter = true
 
 chdir = /vagrant/vcms
-module = lajornadavideos.wsgi
 module = vcms.wsgi
 vacuum = true

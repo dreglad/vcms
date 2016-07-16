@@ -1,6 +1,12 @@
 django>=1.9
+-e git+https://github.com/django-haystack/django-haystack.git#egg=haystack
+-e git+https://github.com/django-debug-toolbar/django-debug-toolbar.git#egg=django-debug-toolbar
+-e git+https://github.com/gsmke/django-suit-rq.git#egg=django-suit-rq
+-e git+https://github.com/rfkrocktk/django-locality.git#egg=django-locality
 django-el-pagination
 Pillow
+django-salmonella
+django_countries
 sorl-thumbnail
 django-analytical
 MySQL-python
@@ -16,7 +22,6 @@ django-polymorphic
 python-dateutil
 wget
 django-suit
-django-suit-rq
 django-reversion
 django-suit-redactor
 django-model-utils
@@ -29,6 +34,5 @@ django-redis
 django-redis-cache
 jsonfield
 djangorestframework
-django-haystack
 libsass
 elasticsearch>=1.0.0,<2.0.0

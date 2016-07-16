@@ -5,7 +5,6 @@
       - lajornadavideos
       - ciencias
       - wikileaks
-
   tasks:
     - name: Set hostname
       hostname: name=vcm-dev
@@ -31,7 +30,6 @@
         - libjpeg-dev
         - git
         - solr-jetty
-        - pysolr
         - python-dev
         - libyaml-dev
         - imagemagick
@@ -44,29 +42,32 @@
         - uwsgi
         - uwsgi-plugin-python
 
-    - name: Install you-get
-      command: pip3 install you-get creates="/usr/local/bin/you-get"
-
     - name: NGINX | Adding NGINX signing key
       apt_key: url=http://nginx.org/keys/nginx_signing.key state=present
+      tags: ['nginx', 'app', 'install']
 
     - name: NGINX | Adding sources.list deb url for NGINX
       lineinfile: dest=/etc/apt/sources.list line="deb http://nginx.org/packages/mainline/ubuntu/ trusty nginx"
       register: nginx_deburl
+      tags: ['nginx', 'app', 'install']
 
     - name: NGINX | Adding sources.list deb-src url for NGINX
       lineinfile: dest=/etc/apt/sources.list line="deb-src http://nginx.org/packages/mainline/ubuntu/ trusty nginx"
       register: nginx_debsrcurl
+      tags: ['nginx', 'app', 'install']
 
     - name: NGINX | Updating apt cache
       apt: update_cache=yes
       when: nginx_deburl.changed or nginx_debsrcurl.changed
+      tags: ['nginx', 'app', 'install']
 
     - name: NGINX | Installing NGINX
       apt: pkg=nginx state=latest
+      tags: ['nginx', 'app', 'install']
 
     - name: Create storage directories
       file: path={{ item }} state=directory mode=0777 follow=True
+      tags: ['storage', 'app']
       with_items:
         - /mnt/lajornadavideos_storage/media/hls
         - /mnt/lajornadavideos_storage/media/dash
@@ -85,62 +86,81 @@
 
     - name: Copy  web server configuration file
       copy: src=etc/nginx.conf dest=/etc/nginx.conf
+      tags: ['nginx', 'app']
       notify:
         - restart nginx
 
-    - name: Install vcms python requirements
+    # App server
+    - name: you-get installed
+      command: pip3 install you-get creates="/usr/local/bin/you-get"
+      tags: ['python', 'app', 'install']
+
+    - name: vcms python requirements installed
       pip: requirements=/vagrant/vcms/vcms/requirements.txt state=latest
 
-    - name: Create databases
+    - name: databases created
       mysql_db: name={{ item }} login_user=root login_password=pass state=present
       register: database
-      with_items: {{ vcms_apps }}
+      tags: ['python', 'app', 'database']
+      with_items: "{{ vcms_apps }}"
 
-    - name: Migrate databases
+    - name: databases migrated
       django_manage: command=migrate app_path=/vagrant/vcms settings=vcms.settings_{{ item }}
-      with_items: {{ vcms_apps }}
+      tags: ['python', 'app', 'database', 'django']
+      with_items: "{{ vcms_apps }}"
 
-#    - name: Load video fixtures data
-#      django_manage: command=loaddata app_path=/vagrant/video_site fixtures='lajornada/users lajornada/tipo_clips lajornada/tipo_programas lajornada/categorias paises lajornada/programas lajornada/corresponsales lajornada/servicios'
-#      when: database.changed
+    # - name: vcms initial fixtures loaded if database changed
+    #   django_manage: command=loaddata app_path=/vagrant/video_site fixtures='' settings=vcms.settings_{{ item }}
+    #   when: database.changed
+    #   with_items: {{ vcms_apps }}
 
-    - name: Collect vcms static files
+    - name: vcms static files collected
       django_manage: command=collectstatic app_path=/vagrant/vcms settings=vcms.settings_{{ item }}
-      with_items: {{ vcms_apps }}
+      tags: ['python', 'app', 'storage', 'django', 'collectstatic']
+      with_items: "{{ vcms_apps }}"
+
+    - name: vcm uWSGI configuration copied
+      template: src=etc/uwsgi-vcms.ini.j2 dest=/etc/uwsgi/apps-enabled/vcms_{{ item }}.ini
+      with_items: "{{ vcms_apps }}"
+      tags: ['uwsgi', 'app', 'backend']
+      notify:
+        - restart uwsgi
+
+    - name: vcm nginx configuration copied
+      template: src=etc/nginx-vcms.conf.j2 dest=/etc/nginx/conf.d/vcms_{{ item }}.conf
+      with_items: "{{ vcms_apps }}"
+      tags: ['nginx', 'app']
+      notify:
+        - restart nginx
+
+    # La Jornada Videos
+
+    - name: Install lajornadavideos python requirements
+      pip: requirements=/vagrant/vcms/lajornadavideos/requirements.txt state=latest
+      tags: ['python', 'app', 'install', 'frontend']
+
+    - name: Collect lajornadavideos static files
+      django_manage: command=collectstatic app_path=/vagrant/vcms settings=lajornadavideos.settings
+      tags: ['python', 'app', 'install', 'frontend', 'collectstatic']
+
+    - name: Copy uWSGI lajornadavideos applicaiton configuration file
+      copy: src=etc/uwsgi-lajornadavideos.ini dest=/etc/uwsgi/apps-enabled/lajornadavideos.ini
+      tags: ['uwsgi', 'app', 'install', 'frontend']
+      notify:
+        - restart uwsgi
+
+    - name: lajornadavideos nginx config updated
+      template: src=etc/nginx-lajornadavideos.conf.j2 dest=/etc/nginx/conf.d/lajornadavideos.conf
+      tags: ['nginx', 'app', 'frontend']
+      notify:
+        - restart nginx
+
+    # System 
 
     # - name: Add supervisor upstart script
     #   copy: src=etc/upstart-supervisor.conf dest=/etc/init/supervisor.conf
     #   notify:
     #     - reload upstart configuration
-
-    - name: Copy uWSGI vcms applicaiton configuration file
-      copy: src=etc/uwsgi-vcms_lajornadavideos.ini dest=/etc/uwsgi/apps-enabled/vcms_lajornadavideos.ini
-      notify:
-        - restart uwsgi
-
-    - name: Copy vcms web server configuration file
-      copy: src=etc/nginx-vcms_lajornadavideos.conf dest=/etc/nginx/conf.d/vcms_lajornadavideos.conf
-      notify:
-        - restart nginx
-
-
-    - name: Install lajornadavideos python requirements
-      pip: requirements=/vagrant/vcms/lajornadavideos/requirements.txt state=latest
-
-    - name: Collect lajornadavideos static files
-      django_manage: command=collectstatic app_path=/vagrant/vcms settings=lajornadavideos.settings
-
-
-    - name: Copy uWSGI lajornadavideos applicaiton configuration file
-      copy: src=etc/uwsgi-lajornadavideos.ini dest=/etc/uwsgi/apps-enabled/lajornadavideos.ini
-      notify:
-        - restart uwsgi
-
-
-    - name: Copy web server lajornada site configuration file
-      copy: src=etc/nginx-lajornadavideos.conf dest=/etc/nginx/conf.d/lajornadavideos.conf
-      notify:
-        - restart nginx
 
     - name: Ensure uWSGI is running
       service: name=uwsgi state=started
