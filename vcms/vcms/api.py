@@ -159,7 +159,7 @@ class VideoSerializer(serializers.HyperlinkedModelSerializer):
 
             # stream
             'duracion', 'duracion_iso', 'horas', 'minutos', 'segundos',
-            'resolucion', 'original_width', 'original_height',
+            'resolucion', 'width', 'height',
 
             # frontend
             'url', 'player',

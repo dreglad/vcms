@@ -35,7 +35,7 @@
             hlshtml: true,
             primary: 'html5',
             //height: 202,
-            aspectratio: '{{video.original_width}}:{{video.original_height}}',
+            aspectratio: '{{video.width}}:{{video.height}}',
 
             {% thumbnail video.imagen.file "360" quality=45 as thumb %}
             image: '{{ thumb.url }}'

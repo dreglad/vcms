@@ -355,12 +355,17 @@ class ListaQuerySet(models.query.QuerySet):
 
 
 class Lista(ModelBase, NamedMixin, ActivableMixin):
-    """Base class for playlist-like models"""
-    nombre_plural = models.CharField(max_length=255, blank=True)
+    nombre_plural = models.CharField(
+        max_length=255, blank=True, help_text=(
+            u'Opcional. Para hacer referencia al grupo de videos '
+            u'que pertenecen a esta lissta. Únicamente cuando el nombre sea '
+            u'pluralizable. Ej: Documenal -> Documentales, pero no Ciencia '
+            u'Ficción -> Ciencias Ficciones)'))
     clasificador = models.ForeignKey('Clasificador', related_name='listas')
     pagina = models.OneToOneField(
         'Pagina', related_name='lista_principal', null=True, blank=True,
-        help_text=u'Página dedicada a mostrar contenido sobre esta lista')
+        help_text=u(u'Sólo en caso de haya una página dedicada a mostrar '
+                    u'contenido de esta lista'))
     youtube_playlist = models.CharField(max_length=128, blank=True)
     links = models.ManyToManyField(
         'Link', blank=True, related_name='%(class)ss')
@@ -510,8 +515,8 @@ class Video(ModelBase, TitledMixin, DisplayableMixin):
 
     # stream info
     duracion = models.DurationField(u'duración', default=timedelta(0))
-    original_width = models.PositiveIntegerField(null=True, blank=True)
-    original_height = models.PositiveIntegerField(null=True, blank=True)
+    width = models.PositiveIntegerField(null=True, blank=True)
+    height = models.PositiveIntegerField(null=True, blank=True)
     original_metadata = JSONField(null=True, blank=True)
     custom_metadata = JSONField(null=True, blank=True)
     viejo_slug = models.CharField(max_length=255, blank=True, db_index=True)

@@ -147,8 +147,8 @@ def create_new_video_job(video_pk):
     os.remove(image_path)
     Video.objects.filter(pk=video.pk) \
         .update(imagen='images/%s' % image_name,
-                original_width=img_size[0],
-                original_height=img_size[1])
+                width=img_size[0],
+                height=img_size[1])
     '''
     Video
     '''

@@ -10,7 +10,7 @@
 
     {% for listado in lista.enlistado.all %}
       {% if forloop.first %}
-      aspectratio = "{{ listado.video.original_width }}:{{ listado.video.original_height }}";
+      aspectratio = "{{ listado.video.width }}:{{ listado.video.height }}";
       {% endif %}
       sources = [];
       tracks = [];

@@ -40,7 +40,7 @@
         width: '100%',
         hlshtml: true,
         primary: 'html5',
-        aspectratio: '{{video.original_width}}:{{video.original_height}}',
+        aspectratio: '{{video.width}}:{{video.height}}',
         image: '{{ thumb.url }}'
       }).on('displayClick', function() {
         if (!player.getControls()) {

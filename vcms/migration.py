@@ -214,8 +214,8 @@ def migrar():
                 vi = get_video_stream_info(os.path.join(DST_ROOT, new_imagen))
                 Video.objects.filter(pk=video.pk).update(archivo=new_archivo,
                     imagen=new_imagen,
-                    original_width=vi.get('width'),
-                    original_height=vi.get('height'))
+                    width=vi.get('width'),
+                    height=vi.get('height'))
 
                 if USE_EXISTING_OPTS:
                     new_hls = 'hls/%s/playlist.m3u8' % video.uuid
