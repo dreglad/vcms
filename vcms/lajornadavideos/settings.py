@@ -24,8 +24,6 @@ GOOGLE_ANALYTICS_PROPERTY_ID = 'UA-80731325-1'
 
 # Application definition
 INSTALLED_APPS = [
-    'polymorphic',
-
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',

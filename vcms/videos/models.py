@@ -19,7 +19,6 @@ from locality.models import Country, Territory
 from model_utils import Choices, FieldTracker
 from model_utils.fields import StatusField, MonitorField
 from mptt.models import MPTTModel, TreeForeignKey
-from polymorphic.models import PolymorphicModel
 import shortuuid
 from sorl.thumbnail import ImageField as SorlImageField, delete as delete_thumbnail
 from taggit.managers import TaggableManager

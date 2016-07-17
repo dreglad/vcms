@@ -1,17 +1,30 @@
 ---
 - hosts: default
+
   vars:
+
     - vcms_apps:
       - lajornadavideos
       - ciencias
       - wikileaks
+
+    - media_dirs:
+      - mp4
+      - webm
+      - hls
+      - dash
+      - sprites
+      - images
+      - captions
+
   tasks:
-    - name: Set hostname
+    - name: hostname set
       hostname: name=vcm-dev
-    - name: Update all packages to latest version
+
+    - name: APT packages updated at latest version
       apt: update_cache=yes upgrade=dist
 
-    - name: Add PPA repository for FFmpeg and codec libraries
+    - name: PPA repository for FFmpeg and codec libraries added
       apt_repository: repo='ppa:mc3man/trusty-media' update_cache=yes
 
     - name: Set MySQL root password in case of installing
@@ -20,27 +33,27 @@
     - name: Confirm MySQL root password in case of installing
       debconf: name='mysql-server' question='mysql-server/root_password_again' value='pass' vtype='password'
 
-    - name: Install required APT packages
+    - name: Required APT packages installed
       apt: pkg={{ item }}
       with_items:
+        - fdkaac-encoder
+        - ffmpeg
+        - git
+        - imagemagick
+        - libjpeg-dev
+        - libmysqlclient-dev
+        - libyaml-dev
+        - mysql-server
+        - python-dev
+        - python-memcache
+        - python-mysqldb
         - python-virtualenv
         - python3-pip
-        - python-memcache
         - redis-server
-        - libjpeg-dev
-        - git
         - solr-jetty
-        - python-dev
-        - libyaml-dev
-        - imagemagick
-        - mysql-server
-        - libmysqlclient-dev
-        - ffmpeg
-        - x264
-        - fdkaac-encoder
-        - python-mysqldb
         - uwsgi
         - uwsgi-plugin-python
+        - x264
 
     - name: NGINX | Adding NGINX signing key
       apt_key: url=http://nginx.org/keys/nginx_signing.key state=present
@@ -65,23 +78,15 @@
       apt: pkg=nginx state=latest
       tags: ['nginx', 'app', 'install']
 
+    - name: Create log directory
+      file: path=/var/log/vcms state=directory owner=nginx mode=0777 follow=True
+
     - name: Create storage directories
       file: path={{ item }} state=directory owner=nginx mode=0777 follow=True
       tags: ['storage', 'app']
-      with_items:
-        - /mnt/lajornadavideos_storage/media/hls
-        - /mnt/lajornadavideos_storage/media/dash
-        - /mnt/lajornadavideos_storage/media/original
-        - /mnt/lajornadavideos_storage/media/images
-        - /mnt/lajornadavideos_storage/media/sprites
-        - /mnt/lajornadavideos_storage/media/videos
-        - /mnt/lajornadavideos_storage/static/lajornadavideos
-        - /mnt/lajornadavideos_storage/static/vcms
-        - /mnt/lajornadavideos_storage/tmp/img
-        - /mnt/lajornadavideos_storage/tmp/mp4
-        - /mnt/lajornadavideos_storage/tmp/original
-        - /mnt/lajornadavideos_storage/tmp/status
-        - /var/log/vcms
+      with_nested:
+        - "{{ vcms_apps }}"
+        - "{{ media_dirs }}"
 
     - name: Copy  web server configuration file
       copy: src=etc/nginx.conf dest=/etc/nginx.conf
@@ -90,8 +95,8 @@
         - restart nginx
 
     # App server
-    - name: you-get installed
-      command: pip3 install you-get creates="/usr/local/bin/you-get"
+    - name: latest you-get installed
+      command: pip3 install --upgrade you-get creates="/usr/local/bin/you-get"
       tags: ['python', 'app', 'install']
 
     - name: vcms python requirements installed
@@ -105,11 +110,15 @@
 
     - name: databases migrated
       django_manage: command=migrate app_path=/vagrant/vcms settings=vcms.settings_{{ item }}
+      become: true
+      become_user: nginx
       tags: ['python', 'app', 'database', 'django']
       with_items: "{{ vcms_apps }}"
 
     - name: Iniial users created
       django_manage: command="createsuperuser --noinput --username=admin --email=admin@example.com" app_path=/vagrant/vcms settings=vcms.settings_{{ item }}
+      become: true
+      become_user: nginx
       tags: ['app', 'database', 'django']
       when: database.changed
       with_items: "{{ vcms_apps }}"
@@ -120,7 +129,6 @@
     #   with_items: {{ vcms_apps }}
 
     - name: vcms static files collected
-      django_manage: command=collectstatic app_path=/vagrant/vcms settings=vcms.settings_{{ item }}
       django_manage: command=collectstatic app_path=/vagrant/vcms settings=vcms.settings_{{ item }}
       tags: ['python', 'app', 'storage', 'django', 'collectstatic']
       with_items: "{{ vcms_apps }}"
