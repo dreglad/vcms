@@ -66,7 +66,7 @@
       tags: ['nginx', 'app', 'install']
 
     - name: Create storage directories
-      file: path={{ item }} state=directory mode=0777 follow=True
+      file: path={{ item }} state=directory owner=nginx mode=0777 follow=True
       tags: ['storage', 'app']
       with_items:
         - /mnt/lajornadavideos_storage/media/hls
@@ -82,7 +82,6 @@
         - /mnt/lajornadavideos_storage/tmp/original
         - /mnt/lajornadavideos_storage/tmp/status
         - /var/log/vcms
-        - /var/log/lajornadavideos
 
     - name: Copy  web server configuration file
       copy: src=etc/nginx.conf dest=/etc/nginx.conf
@@ -109,12 +108,19 @@
       tags: ['python', 'app', 'database', 'django']
       with_items: "{{ vcms_apps }}"
 
+    - name: Iniial users created
+      django_manage: command="createsuperuser --noinput --username=admin --email=admin@example.com" app_path=/vagrant/vcms settings=vcms.settings_{{ item }}
+      tags: ['app', 'database', 'django']
+      when: database.changed
+      with_items: "{{ vcms_apps }}"
+
     # - name: vcms initial fixtures loaded if database changed
     #   django_manage: command=loaddata app_path=/vagrant/video_site fixtures='' settings=vcms.settings_{{ item }}
     #   when: database.changed
     #   with_items: {{ vcms_apps }}
 
     - name: vcms static files collected
+      django_manage: command=collectstatic app_path=/vagrant/vcms settings=vcms.settings_{{ item }}
       django_manage: command=collectstatic app_path=/vagrant/vcms settings=vcms.settings_{{ item }}
       tags: ['python', 'app', 'storage', 'django', 'collectstatic']
       with_items: "{{ vcms_apps }}"

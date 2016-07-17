@@ -16,7 +16,9 @@ SECRET_KEY = 'd0^3t$7fwcp^6t!be^9u*1kqrysibzfi#58004@$u3@oiohshx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['videos-stg.jornada.com.mx', 'videos-dev.jornada.com.mx']
+ALLOWED_HOSTS = [
+    'videos-stg.jornada.com.mx', 'videos-dev.jornada.com.mx',
+]
 
 GOOGLE_ANALYTICS_PROPERTY_ID = 'UA-80731325-1'
 
@@ -96,14 +98,14 @@ LOGGING = {
             'level': 'ERROR',
             'formatter': 'simple',
             'class': 'logging.FileHandler',
-            'filename': '/var/log/lajornadavideos/error.log',
+            'filename': '/var/log/vcms/lajornadavideos_error.log',
         },
         'file_debug': {
             'level': 'DEBUG',
             'formatter': 'verbose',
             'filters': ['require_debug_true'],
             'class': 'logging.FileHandler',
-            'filename': '/var/log/lajornadavideos/debug.log',
+            'filename': '/var/log/vcms/lajornadavideos_debug.log',
         },
     },
     'loggers': {

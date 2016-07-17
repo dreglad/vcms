@@ -10,7 +10,7 @@ from taggit.utils import parse_tags
 from videos.models import *
 from vcms.video_ops import get_video_stream_info
  
-DST_ROOT = '/mnt/vcms_storage/media/'
+DST_ROOT = '/mnt/lajornadavideos_storage/media/'
 
 MODIFY_FS = True
 ONLY_IMAGES = True

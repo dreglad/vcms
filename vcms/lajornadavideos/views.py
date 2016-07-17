@@ -11,7 +11,7 @@ from videos.models import *
 
 
 class BaseView(TemplateView):
-    home = Pagina.objects.get(slug='home', activo=True)
+    home = get_object_or_404(Pagina, slug='home')
     paginas = Pagina.objects.filter(activo=True)
 
     def get_context_data(self, **kwargs):
