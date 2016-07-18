@@ -1,0 +1,61 @@
+---
+- configuracion: lajornada
+
+
+  - datacenter: unam
+
+    - servidor:    videos-unam
+      descripcion: Servidor virtual para Backend y Frontend de videos y omo origin de media
+      hostname:    videos-unam.jornada.com.mx
+      roles:
+        - backend:
+          - media_storage:      [FileSystemStorage, /mnt/media]
+          - originales_storage: [FileSystemStorage, /mnt/originales]
+          - temporales_storage: [FileSystemStorage, /mnt/temporales]
+          - sitios:
+            - lajornada: La Jornada Videos Backend
+            - ciencias:  Ciencias Videos Backend
+            - letraese:  LetraEse Videos Backend
+            - ojarasca:  Ojarasca Videos Backend
+            - semanal:   Semanal Videos Backend
+            - wikileaks: Wikileaks Videos Backend
+        - frontend:
+          - titulo: Lajornada Videos
+          - media_storage: [FileSystemStorage, /mnt/media]
+        - media-origin:  # webserver origen de archivos estáticos
+          - path: /mnt/media
+
+    - servidor:    media-edge-unam
+      descripcion: Espejo público de archivos estáticos"
+      hostname:    media-edge-unam.jornada.com.mx
+      roles:
+        - media-edge:
+          - origin:     http://media-origin-l.jornada.com.mx/
+          - cache_path: /mnt/media_mirror
+          - cache_size: 120G
+          - ssl_cert:   /etc/ssl/certs/videos.jornada.com.mx.cert
+          - ssl_key:    /etc/ssl/private/videos.jornada.com.mx.key
+
+
+- datacenter: limestone
+
+  - servidor:    videos-lstn
+    descripcion: Servidor virtual Frontend de videos
+    hostname:    videos-lstn.jornada.com.mx
+    roles:
+      - frontend:
+        - media_storage: [HTTPReadOnlyStorage, http://media]
+        - sitios:
+          - lajornada: La Jornada Videos
+            maestro: videos-lstn.jornada.com.mx  # Al especificar un maestro, este frontend se comporta como esclavo
+
+  - servidor:    media-edge-lstn
+    descripcion: Servidor virtual para espejo público de archivos estáticos"
+    hostname:    media-edge-lstn.jornada.com.mx
+    roles:
+      - media-edge:  # un webserver edge de archivos estáticos
+        - origin:     http://media-origin.jornada.com.mx/
+        - cache_path: /mnt/media_mirror
+        - cache_size: 120G
+        - ssl_cert:   /etc/ssl/certs/videos.jornada.com.mx.cert
+        - ssl_key:    /etc/ssl/private/videos.jornada.com.mx.key

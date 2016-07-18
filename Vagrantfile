@@ -12,8 +12,8 @@ Vagrant.configure(2) do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  #config.vm.box = "ubuntu/trusty64"
-  config.vm.box = "bento/ubuntu-14.04"
+  config.vm.box = "ubuntu/trusty64"
+  #config.vm.box = "bento/ubuntu-14.04"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -72,12 +72,14 @@ Vagrant.configure(2) do |config|
   # documentation for more information about their specific syntax and use.
   # config.vm.provision "shell", inline: <<-SHELL
   #   sudo apt-get update
-  #   sudo apt-get install -y apache2
+  #   sudo apt-get install -y python python-pip python-dev
+  #   sudo pip install --upgrade ansible
   # SHELL
 
   # Ansible provisioning
   config.vm.provision "ansible_local", run: "always" do |ansible|
     ansible.playbook = "provisioning/playbook.yml"
+    #ansible.verbose = true
     ansible.sudo = true
   end
 
