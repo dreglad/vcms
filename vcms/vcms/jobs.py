@@ -3,7 +3,6 @@ import logging
 import math
 import os
 import shutil
-from time import sleep
 
 from django.conf import settings
 from django.core.files.base import ContentFile
@@ -11,7 +10,8 @@ from django.db import connection
 from django_rq import job
 from PIL import Image
 
-from vcms import makesprites, video_ops
+from multimediaops impot video as video_ops
+from vcms import makesprites
 from videos.models import Video
 
 
@@ -20,7 +20,10 @@ logger = logging.getLogger('vcms')
 
 def _video_status_file(video, content=None):
     """Helper to write to video status file"""
-    with open(os.path.join(settings.TEMP_ROOT, 'status', video.uuid),'w') as f:
+    status_dir = os.path.join(settings.TEMPORALES_ROOT, 'status')
+    if not os.path.isdir(status_dir):
+        os.makedirs(status_dir)
+    with open(os.path.join(status_dir, video.uuid), 'w') as f:
         if content is not None:
             logger.debug('Writing "%s" to status file "%s"' % (content, f))
             return f.write(content)

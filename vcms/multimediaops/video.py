@@ -7,15 +7,12 @@ from math import ceil
 import os
 import re
 import shutil
-import uuid
-import wget
-
-from django.conf import settings
-from django.core.files.base import ContentFile
 from subprocess import Popen, PIPE, call, check_output
 
+import wget
 
-logger = logging.getLogger('vcms')
+
+logger = logging.getLogger('multimediaops')
 
 
 H264_PARAMS = {
@@ -60,8 +57,8 @@ DASH_PARAMS = {}
 
 
 VIDEO_EXTENSIONS = (
-    '.3gp', '.asf', '.avi', '.avi', '.flv', '.mkv', '.mov', '.mp4', '.mpg',
-    '.ogg', '.ogv', '.rm', '.swf', '.webm', '.wmv',
+    '.3gp', '.asf', '.avi', '.avi', '.flv', '.m4v', '.mkv', '.mov', 'mpeg',
+    '.mp4', '.mpg', '.ogg', '.ogv', '.rm', '.swf', '.vob', '.webm', '.wmv',
 )
 
 
@@ -240,12 +237,10 @@ def download_video(source, output_file, progress_fn=None, force_direct=False):
 
     elif force_direct or source.endswith(VIDEO_EXTENSIONS):
         logger.debug('download is a direct file download')
-        temp = os.path.join(settings.TEMP_ROOT, str(uuid.uuid4()))
         def wget_progress(current, total, width=80):
             if hasattr(progress_fn, '__call__'):
                 progress_fn(source, output_file, (current/float(total))*100)
-        wget.download(source, temp, bar=wget_progress)
-        shutil.move(temp, output_file)
+        wget.download(source, output_file, bar=wget_progress)
         return os.path.exists(output_file)
 
     else:

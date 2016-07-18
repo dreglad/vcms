@@ -6,7 +6,7 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from vcms.jobs.video import create_new_video_job
+from vcms.jobs import create_new_video_job
 from videos.models import Video
 
 
