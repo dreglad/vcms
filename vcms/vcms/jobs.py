@@ -10,7 +10,7 @@ from django.db import connection
 from django_rq import job
 from PIL import Image
 
-from multimediaops impot video as video_ops
+from multimediaops import video as video_ops
 from vcms import makesprites
 from videos.models import Video
 
@@ -47,14 +47,15 @@ def make_sprites_job(video_pk):
 
     # make sprites
     interval = math.ceil(video.duracion.total_seconds()/TOTAL_SPRITES)
-    makesprites.run(makesprites.SpriteTask(
-        videofile=video.archivo.path, outdir=sprites_dir
-        ), thumbRate=interval)
+    makesprites.run(
+        makesprites.SpriteTask(
+            thumbRate=interval, videofile=video.archivo.path,
+            outdir=sprites_dir
+        ))
 
     # update object
     Video.objects.filter(pk=video_pk).update(
-        sprites=os.path.join('sprites', video.uuid, 's.vtt')
-        )
+        sprites=os.path.join('sprites', video.uuid, 's.vtt'))
 
 
 @job('low', timeout=3*3600)
@@ -79,9 +80,11 @@ def make_hls_job(video_pk):
             logger.debug(('Finished partial playlist %s of height %d '
                           'out of %d ') % (hls_uri, current, total))
     # make HLS segments and playlists
+    hls_dir = os.path.join(settings.MEDIA_ROOT, 'hls')
+    if not os.path.isdir(hls_dir): os.makedirs(hls_dir)
     video_ops.make_hls_segments(
         input_file=video.archivo.path,
-        output_dir=os.path.join(settings.MEDIA_ROOT, 'hls', video.uuid),
+        output_dir=os.path.join(hls_dir, video.uuid),
         progress_fn=playlist_progress
         )
 
@@ -93,20 +96,17 @@ def create_new_video_job(video_pk):
     connection.close();
     video = Video.objects.get(pk=video_pk)
 
-    '''
-    Download
-    '''
-    download_path = os.path.join(settings.TEMP_ROOT, 'original', video.uuid)
+    # Download
+    download_path = os.path.join(settings.TEMPORALES_ROOT, video.uuid)
     source = video.origen_url or video.archivo_original or (video.archivo and video.archivo.path)
     logger.info('About to download %s to %s' % (source, download_path))
-    cdn = '://cdn.' in source
+    is_cdn = '://cdn.' in source
     def progress_fn(source, destination, progress):
         _video_status_file(video, 'download %g' % progress)
-    download = video_ops.download_video(source, download_path, force_direct=cdn,
-                                        progress_fn=progress_fn)
-    '''
-    Validate
-    '''
+    download = video_ops.download_video(
+        source, download_path, force_direct=is_cdn, progress_fn=progress_fn)
+
+    # Validate
     try:
         if not download or not os.path.exists(download_path):
             raise AssertionError('1 No se pudo descargar archivo de video')
@@ -125,48 +125,43 @@ def create_new_video_job(video_pk):
     except AssertionError as e:
         logger.error('Error validating download %s, error: %s' % (download, e))
         _video_status_file(video, 'error %s' % e)
-
         Video.objects.filter(pk=video.pk) \
             .update(procesamiento=Video.PROCESAMIENTO.error)
         return
 
-    '''
-    Data
-    '''
-    Video.objects.filter(pk=video.pk) \
-        .update(duracion=video_ops.get_video_duration(download_path),
-                original_metadata=stream_info)
-    '''
-    Image
-    '''
+    # Data
+    Video.objects.filter(pk=video.pk).update(
+        duracion=video_ops.get_video_duration(download_path),
+        original_metadata=stream_info)
+
+    # Image
     image_name = '%s.jpg' % video.uuid
-    image_path = os.path.join(settings.TEMP_ROOT, 'img', image_name)
+    image_path = os.path.join(settings.TEMPORALES_ROOT, image_name)
 
     video_ops.extract_video_image(download_path, image_path)
-    img_size=Image.open(image_path).size
+    img_size = Image.open(image_path).size
 
-    video.imagen.save(image_name, # move file to target storage
-        ContentFile(open(image_path).read()), save=False)
+    video.imagen.save(
+        image_name, ContentFile(open(image_path).read()), save=False)
     os.remove(image_path)
-    Video.objects.filter(pk=video.pk) \
-        .update(imagen='images/%s' % image_name,
-                width=img_size[0],
-                height=img_size[1])
-    '''
-    Video
-    '''
+
+    Video.objects.filter(pk=video.pk).update(
+        width=img_size[0], height=img_size[1], imagen='images/%s' % image_name)
+    
+    # Video
     video_name = '%s.mp4' % video.uuid
-    video_path = os.path.join(settings.TEMP_ROOT, 'mp4', video_name)
-    vstats_path = os.path.join(settings.TEMP_ROOT, 'vstats', video.uuid)
+    video_path = os.path.join(settings.TEMPORALES_ROOT, video_name)
+    vstats_path = os.path.join(settings.TEMPORALES_ROOT, 'vstats/', video.uuid)
 
     video_ops.compress_h264mpeg4avc(download_path, video_path, vstats_path)
 
-    video.archivo.save(video_name, # move file to target storage
-        ContentFile(open(video_path).read()), save=False)
+    video.archivo.save(
+        video_name, ContentFile(open(video_path).read()), save=False)
     os.remove(video_path)
-    Video.objects.filter(pk=video.pk) \
-        .update(archivo='videos/%s' % video_name,
-                procesamiento=Video.PROCESAMIENTO.listo)
+
+    Video.objects.filter(pk=video.pk).update(
+        procesamiento=Video.PROCESAMIENTO.listo,
+        archivo='videos/%s' % video_name)
 
     # update status file
     _video_status_file(video, 'done %d' % video.pk)
@@ -187,6 +182,6 @@ def error_handler(job, *exc_info):
     if job.func_name == make_hls_job.func_name:
         Video.objects.get(pk=video_pk).update(resolucion=0)
     elif job.func_name == create_new_video_job.func_name:
-        Video.objects.get(pk=video_pk) \
-            .update(procesamiento=Video.PROCESAMIENTO.error)
+        Video.objects.get(pk=video_pk).update(
+            procesamiento=Video.PROCESAMIENTO.error)
     return True  # continue with the next handler

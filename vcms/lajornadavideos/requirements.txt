@@ -2,3 +2,5 @@ Django
 django-compressor
 pysolr
 django-libsass
+django-rq
+django-cacheback[rq]

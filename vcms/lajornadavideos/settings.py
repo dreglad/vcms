@@ -8,10 +8,10 @@ BASE_BACKEND_URL = 'http://videosadmin-dev.jornada.com.mx/'
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-STORAGE_ROOT = '/mnt/lajornadavideos_storage'
-#TEMP_ROOT = os.path.join(STORAGE_ROOT, 'tmp')
-
 SECRET_KEY = 'd0^3t$7fwcp^6t!be^9u*1kqrysibzfi#58004@$u3@oiohshx'
+
+TEMPORALES_ROOT = '/tmp'
+ORIGINALES_ROOT = '/dev/null'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -29,10 +29,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'analytical',
+    'cacheback',
     'compressor',
     'el_pagination',
     'crispy_forms',
     'debug_toolbar',
+    'django_rq',
     'django_countries',
     'haystack',
     'locality',
@@ -44,6 +46,8 @@ INSTALLED_APPS = [
     'videos',
 ]
 
+DEFAULT_PLAYER = 'jwplayer'
+
 
 CACHES = {
     'default': {
@@ -52,6 +56,18 @@ CACHES = {
     }
 }
 
+CACHEBACK_TASK_QUEUE = 'rq'
+
+RQ_QUEUES_DB = 1
+RQ_QUEUES = {
+    'default': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': RQ_QUEUES_DB,
+        'PASSWORD': '',
+        'DEFAULT_TIMEOUT': 3600,
+    }
+}
 
 X_FRAME_OPTIONS = (
     'ALLOW-FROM http://www.jornada.unam.mx/ https://editonline.jornada.com.mx/ '
@@ -75,50 +91,50 @@ def can_show_toolbar(request):
     return bool(DEBUG)
 
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-        },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
-        },
-    },
-    'filters': {
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        },
-    },
-    'handlers': {
-        'file_log': {
-            'level': 'ERROR',
-            'formatter': 'simple',
-            'class': 'logging.FileHandler',
-            'filename': '/var/log/vcms/lajornadavideos_error.log',
-        },
-        'file_debug': {
-            'level': 'DEBUG',
-            'formatter': 'verbose',
-            'filters': ['require_debug_true'],
-            'class': 'logging.FileHandler',
-            'filename': '/var/log/vcms/lajornadavideos_debug.log',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file_debug', 'file_log'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
-            'filters': [],
-        },
-        'vcms': {
-            'handlers': ['file_debug', 'file_log'],
-            'level': 'DEBUG',
-            'filters': [],
-        }
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'verbose': {
+#             'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+#         },
+#         'simple': {
+#             'format': '%(levelname)s %(message)s'
+#         },
+#     },
+#     'filters': {
+#         'require_debug_true': {
+#             '()': 'django.utils.log.RequireDebugTrue',
+#         },
+#     },
+#     'handlers': {
+#         'file_log': {
+#             'level': 'ERROR',
+#             'formatter': 'simple',
+#             'class': 'logging.FileHandler',
+#             'filename': '/var/log/vcms/lajornadavideos_error.log',
+#         },
+#         'file_debug': {
+#             'level': 'DEBUG',
+#             'formatter': 'verbose',
+#             'filters': ['require_debug_true'],
+#             'class': 'logging.FileHandler',
+#             'filename': '/var/log/vcms/lajornadavideos_debug.log',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['file_debug', 'file_log'],
+#             'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+#             'filters': [],
+#         },
+#         'vcms': {
+#             'handlers': ['file_debug', 'file_log'],
+#             'level': 'DEBUG',
+#             'filters': [],
+#         }
+#     },
+# }
 
 MIDDLEWARE_CLASSES = [
     #'django.middleware.cache.UpdateCacheMiddleware',
@@ -291,12 +307,12 @@ USE_TZ = True
 
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(STORAGE_ROOT, 'media')
+MEDIA_ROOT = '/mnt/media/lajornadavideos'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(STORAGE_ROOT, 'frontend_static')
+STATIC_ROOT = os.path.join(MEDIA_ROOT, 'frontend_static')
 
 STATICFILES_DIRS = [ os.path.join(BASE_DIR, 'lajornadavideos', 'static') ]
 

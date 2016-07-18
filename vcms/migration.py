@@ -8,7 +8,7 @@ from isodate import parse_time
 from taggit.utils import parse_tags
 
 from videos.models import *
-from vcms.video_ops import get_video_stream_info
+from multimediaops.video import get_video_stream_info
 
 SRC_ROOT = '/root/videos/tvstorage/'
 DST_ROOT = '/mnt/lajornadavideos_storage/media/'

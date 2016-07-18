@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*- #
+from cacheback.queryset import QuerySetGetJob, QuerySetFilterJob
 from django.core.cache import cache
 from django.http import Http404
-from django.shortcuts import get_object_or_404, redirect, render
-
+from django.shortcuts import redirect, render
 from django.views.generic.base import TemplateView
 from haystack.generic_views import SearchView
 
@@ -10,40 +10,32 @@ from videos.models import *
 
 
 
+DAYS = 86400; MINUTES = 60; HOURS = 3600
+HOME = QuerySetGetJob(Pagina).get(slug='home'), lifetime=1*DAYS)
+
+
 class BaseView(TemplateView):
-    home = get_object_or_404(Pagina, slug='home')
-    paginas = Pagina.objects.filter(activo=True)
+
+    paginas = QuerySetFilterJob(Pagina).filter(activo=True, lifetime=1*HOURS)
 
     def get_context_data(self, **kwargs):
         context = super(BaseView, self).get_context_data(**kwargs)
 
         if self.request.is_ajax():
             context.update({
-                'lista': Lista.objects.get(
-                    slug=self.request.GET.get('querystring_key')),
+                'lista': QuerySetGetJob(Lista).get(
+                            slug=self.request.GET.get('querystring_key')),
             })
 
-        if hasattr(self, 'pagina'):
-            context.update({
-                'pagina': self.pagina,
-            })
-        if hasattr(self, 'listado'):
-            context.update({
-                'listado': self.listado,
-            })
-        context.update({
-            'home': self.home,
-            'paginas': self.paginas,
-        })
+        if hasattr(self, 'pagina'): context.update({ 'pagina': self.pagina })
+        if hasattr(self, 'listado'): context.update({ 'listado': self.listado })
+        context.update({ 'home': HOME, 'paginas': self.paginas })
+
         return context
 
     def get_template_names(self):
-        if self.request.is_ajax():
-            return 'ajax_lista.html'
-        else:
-            return self.template_name
-
-
+        """special AJAX lista case"""
+        return self.request.is_ajax() and 'ajax_lista.html' or self.template_name
 
 
 class BusquedaView(SearchView):
@@ -52,23 +44,23 @@ class BusquedaView(SearchView):
 
     def get_context_data(self, **kwargs):
         context = super(BusquedaView, self).get_context_data(**kwargs)
-        context.update({
-            'con': context, 'home': Pagina.objects.get(slug='home', activo=True),
-        })
+        context.update({ 'home': HOME, 'activo': True })
         return context
 
 
 class SeccionView(BaseView):
+
     template_name = 'pagina.html'
 
     def dispatch(self, request, *args, **kwargs):
-        self.pagina = get_object_or_404(Pagina, slug=kwargs['seccion_slug'])
+        self.pagina = QuerySetGetJob(Pagina).get(slug=kwargs['seccion_slug'])
         return super(SeccionView, self).dispatch(request, *args, **kwargs)
 
 
 class HomeView(SeccionView):
+
     def dispatch(self, request, *args, **kwargs):
-        self.pagina = self.home
+        self.pagina = HOME
         return super(SeccionView, self).dispatch(request, *args, **kwargs)
 
 
@@ -78,7 +70,7 @@ class ListaView(SeccionView):
 
     def dispatch(self, request, *args, **kwargs):
         self.listado = {
-            'lista': get_object_or_404(Lista, slug=kwargs['lista_slug']),
+            'lista': QueryGetFilterJob(Lista).get(slug=kwargs['lista_slug']),
             'mostrar_nombre': True,
             'mostrar_descripcion': True,
             'mostrar_paginacion': True,
@@ -88,90 +80,31 @@ class ListaView(SeccionView):
 
 
 class PlayerView(BaseView):
-    template_name= 'player.html'
 
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            video_pk = int(kwargs['video_uuid'].split('0', 1)[1])
-            self.video = Video.objects.publicos().get(pk=video_pk)
-        except (ValueError, IndexError, Video.DoesNotExist):
-            raise Http404("Video inexistente")
-
-        if self.video.uuid != kwargs['video_uuid']:
-            raise Http404("Video inexistente")
-        if self.video.slug != kwargs['video_slug']:
-            return redirect(video, permanent=True)
-
-        self.player = request.GET.get('player', 'jwplayer')
-
-    def get_context_data(self, **kwargs):
-        context = super(PlayerView, self).get_context_data(**kwargs)
-
-        context.update({
-            'player': self.player,
-            'video': self.video,
-        })
-        return context
-
-
-
-class WebPlayerView(BaseView):
     template_name = 'player.html'
 
     def dispatch(self, request, *args, **kwargs):
-        try:
-            video_pk = int(kwargs['video_uuid'].split('0', 1)[1])
-            self.video = Video.objects.publicos().get(pk=video_pk)
-        except (ValueError, IndexError, Video.DoesNotExist):
-            raise Http404("Video inexistente")
-
-        if self.video.uuid != kwargs['video_uuid']:
-            raise Http404("Video inexistente")
+        self.video = self.get_video(kwargs['video_uuid'])
         if self.video.slug != kwargs['video_slug']:
             return redirect(video, permanent=True)
 
-        self.player = request.GET.get('player', 'jwplayer')
-
+        self.player = request.GET.get('player', settings.DEFAULT_PLAYER)
         return super(WebPlayerView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(supayerView, self).get_context_data(**kwargs)
-
+        context = super(PlayerView, self).get_context_data(**kwargs)
         context.update({
             'player': self.player,
             'video': self.video,
         })
         return context
 
-class VideoView(BaseView):
+
+class VideoView(WebPlayerView):
+
     template_name = 'video.html'
 
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            video_pk = int(kwargs['video_uuid'].split('0', 1)[1])
-            self.video = Video.objects.publicos().get(pk=video_pk)
-        except (ValueError, IndexError, Video.DoesNotExist):
-            raise Http404("Video inexistente")
-
-        if self.video.uuid != kwargs['video_uuid']:
-            raise Http404("Video inexistente")
-        if self.video.slug != kwargs['video_slug']:
-            return redirect(video, permanent=True)
-
-        self.player = request.GET.get('player', 'jwplayer')
-
-        return super(VideoView, self).dispatch(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super(VideoView, self).get_context_data(**kwargs)
-
-        context.update({
-            'player': self.player,
-            'video': self.video,
-        })
-        return context
 
 
 def crossdomain(request, **kwargs):
-    return render(request, 'crossdomain.xml', {},
-                  content_type='application/xml')
+    return render(request, 'crossdomain.xml', {}, content_type='application/xml')

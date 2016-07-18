@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*- #
+from __future__ import unicode_literals
 from django.contrib.admin.widgets import AdminFileWidget
 from django.forms import FileInput
 from django.forms import TextInput
@@ -18,7 +19,9 @@ class FilestackWidget(TextInput):
     is_hidden = False
 
     class Media:
-        js = ('vcms/form_upload.js',)
+        js = (
+            'vcms/form_upload.js',
+        )
 
     def __init__(self, attrs=None):
         default_attrs = {

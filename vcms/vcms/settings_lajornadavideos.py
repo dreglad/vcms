@@ -7,7 +7,6 @@ DEBUG = False
 
 PROJECT = 'lajornadavideos'
 SITE_NAME = 'Videos La Jornada'
-STORAGE_DIR = '/mnt/lajornadavideos_storage'
 RQ_QUEUES_DB = 3
 THUMBNAIL_REDIS_DB = 11
 

@@ -8,7 +8,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import View
 from django.views.generic.base import RedirectView
 
-from vcms.video_ops import extract_video_image
+from multimediaops.video import extract_video_image
 from videos.models import *
 
 
