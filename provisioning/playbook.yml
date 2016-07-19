@@ -46,6 +46,7 @@
         - fdkaac
         - ffmpeg
         - git
+        - htop
         - imagemagick
         - libjpeg-dev
         - libmysqlclient-dev
@@ -62,6 +63,7 @@
         - supervisor
         - uwsgi
         - uwsgi-plugin-python
+        - vnstat
         - x264
 
     - name: APT Key present for official NGINX APT packages
