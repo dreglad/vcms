@@ -108,6 +108,9 @@
       command: pip3 install --upgrade you-get creates="/usr/local/bin/you-get"
       tags: ['python', 'install']
 
+    - name: pip at latest version
+      pip: name=pip state=latest
+
     - name: vcms python requirements installed
       pip: requirements=/vagrant/vcms/vcms/requirements.txt state=latest
 
