@@ -82,6 +82,6 @@ SUIT_CONFIG = {
 
 
 try:
-    from settings_wikileaks_local import *
+    from settings_lajornadavideos_local import *
 except ImportError as e:
     pass
