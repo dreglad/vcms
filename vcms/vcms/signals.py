@@ -7,7 +7,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from .jobs import create_new_video_job
-from videos.models import Video
+from videos.models import Video, temporales_storage
 
 
 logger = logging.getLogger('vcms')
@@ -21,10 +21,9 @@ def process_video(sender, **kwargs):
     if video.procesamiento == Video.PROCESAMIENTO.nuevo:
         logger.debug('New video needs processing: %s' % video)
 
-        status_path = os.path.join(settings.TEMP_ROOT, 'status', video.uuid)
-        with open(status_path, 'w') as status_file:
+        with temporales_storage.open(video.status_path, 'w') as status_file:
             status_file.write('queue')
-            logger.debug('Marked video as queued for processing: %s' % video)
+        logger.debug('Marked video as queued for processing: %s' % video)
 
         video.procesamiento = Video.PROCESAMIENTO.procesando
         video.save()

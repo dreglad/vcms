@@ -558,7 +558,7 @@ class Video(ModelBase, TitledMixin, DisplayableMixin):
     objects = VideoQuerySet.as_manager()
 
     def __unicode__(self):
-        if self.is_listo and self.titulo:
+        if self.procesamiento == 'listo' and self.titulo:
             return self.titulo
         else:
             return '{0}: [{1}]'.format(
@@ -667,8 +667,8 @@ class Video(ModelBase, TitledMixin, DisplayableMixin):
 
     @property
     def duracion_iso(self):
-        return (datetime.min + self.duracion) \
-                    .time().replace(microsecond=0).isoformat()
+        return (datetime.min + self.duracion).time() \
+                   .replace(microsecond=0).isoformat()
     @property
     def horas(self):
         return self.segundos//3600

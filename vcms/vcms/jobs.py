@@ -12,7 +12,7 @@ from PIL import Image
 
 from multimediaops import video as video_ops
 from vcms import makesprites
-from videos.models import Video
+from videos.models import Video, temporales_storage
 
 
 logger = logging.getLogger('vcms')
@@ -20,10 +20,7 @@ logger = logging.getLogger('vcms')
 
 def _video_status_file(video, content=None):
     """Helper to write to video status file"""
-    status_dir = os.path.join(settings.TEMPORALES_ROOT, 'status')
-    if not os.path.isdir(status_dir):
-        os.makedirs(status_dir)
-    with open(os.path.join(status_dir, video.uuid), 'w') as f:
+    with temporales_storage.open(video.status_path) as f:
         if content is not None:
             logger.debug('Writing "%s" to status file "%s"' % (content, f))
             return f.write(content)
@@ -39,6 +36,7 @@ def make_sprites_job(video_pk):
     video = Video.objects.get(pk=video_pk)
 
     # prepare
+
     sprites_dir = os.path.join(settings.MEDIA_ROOT, 'sprites', video.uuid)
     if os.path.isdir(sprites_dir):
         shutil.rmtree(sprites_dir)
@@ -85,9 +83,7 @@ def make_hls_job(video_pk):
     video_ops.make_hls_segments(
         input_file=video.archivo.path,
         output_dir=os.path.join(hls_dir, video.uuid),
-        progress_fn=playlist_progress
-        )
-
+        progress_fn=playlist_progress)
 
 @job('high', timeout=3600)
 def create_new_video_job(video_pk):
