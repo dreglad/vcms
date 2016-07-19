@@ -151,6 +151,7 @@
 
     - name: vcms static files collected
       django_manage: command=collectstatic app_path=/vagrant/vcms settings=vcms.settings_{{ item }}
+      tags: ['collectstatic', 'backend', 'django']
       with_items: "{{ vcms_apps }}"
 
     - name: vcm uWSGI configuration copied

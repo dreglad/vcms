@@ -632,7 +632,7 @@ class Video(ModelBase, TitledMixin, DisplayableMixin):
                      # download has finished and compreession started
                     status['total'] = float(status_list[1])
                     try:
-                        tailcmd = ['tail', '-2', self.vstats_path]
+                        tailcmd = ['tail', '-2', temporales_storage.path(self.vstats_path)]
                         vstats_line = check_output(tailcmd).split("\n")[0]
                         status['seconds'] = float(vstats_line.split()[9])
                         status['progress'] = 100 * round(
