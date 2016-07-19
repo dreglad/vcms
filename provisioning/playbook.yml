@@ -2,9 +2,9 @@
 - hosts: default
 
   vars:
-    - hostname: lajornadavideos-dev
+    hostname: videos.jornada.com.mx
 
-    - vcms_apps:
+    vcms_apps:
       - lajornadavideos
       - ciencias
       - wikileaks
@@ -12,7 +12,15 @@
       - ojarasca
       - semanal
 
-    - storage_dirs:
+    vcms_server_names:
+      lajornadavideos: videosadmin.jornada.com.mx
+      ciencias:        cienciasadmin.jornada.com.mx
+      wikileaks:       wikileaksadmin.jornada.com.mx
+      letraese:        letraeseadmin.jornada.com.mx
+      ojarasca:        ojarascaadmin.jornada.com.mx
+      semanal:         semanaladmin.jornada.com.mx
+
+    storage_dirs:
       - name: media
         path: /mnt/media
         backend: FileSystemBackend
@@ -145,6 +153,11 @@
       register: supervisor
       notify:
         - restart supervisor
+
+    - name: Supervisor restarted
+      service: name=supervisor state=restarted
+      tags: ['supervisor', 'backend']
+      when: supervisor.changed
 
     - name: Supervisor programs present
       command: supervisorctl reread && supervisorctl update

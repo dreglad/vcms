@@ -4,9 +4,11 @@ upstream vcms_{{ item }} {
 
 server {
     listen  80;
+    server_name .{{ vcms_server_names[item] }};
     server_name .{{ item }}-admin.openmultimedia.biz;
     server_name .{{ item }}-admin-stg.openmultimedia.biz;
     server_name .{{ item }}-admin-dev.openmultimedia.biz;
+
     charset     utf-8;
 
     # max upload size
