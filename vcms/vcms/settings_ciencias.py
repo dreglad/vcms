@@ -8,8 +8,8 @@ DEBUG = True
 PROJECT = 'ciencias'
 SITE_NAME = 'Videos Ciencias'
 STORAGE_DIR = '/mnt/ciencias_storage'
-RQ_QUEUES_DB = 4
-THUMBNAIL_REDIS_DB = 10
+RQ_QUEUES_DB = 0
+THUMBNAIL_REDIS_DB = 0
 
 exec open('/vagrant/vcms/vcms/settings.conf') in globals()
 

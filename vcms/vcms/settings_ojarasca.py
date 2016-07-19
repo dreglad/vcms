@@ -9,8 +9,8 @@ DEBUG = True
 PROJECT = 'ojarasca'
 SITE_NAME = 'Videos ojarasca'
 STORAGE_DIR = '/mnt/ojarasca_storage'
-RQ_QUEUES_DB = 5
-THUMBNAIL_REDIS_DB = 12
+RQ_QUEUES_DB = 3
+THUMBNAIL_REDIS_DB = 3
 
 exec open('/vagrant/vcms/vcms/settings.conf') in globals()
 

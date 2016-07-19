@@ -8,8 +8,8 @@ DEBUG = True
 PROJECT = 'telesurenglish'
 SITE_NAME = 'Videos teleSUR English'
 STORAGE_DIR = '/mnt/telesurenglish_storage'
-RQ_QUEUES_DB = 8
-THUMBNAIL_REDIS_DB = 13
+RQ_QUEUES_DB = 5
+THUMBNAIL_REDIS_DB = 5
 
 exec open('/vagrant/vcms/vcms/settings.conf') in globals()
 

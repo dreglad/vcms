@@ -59,7 +59,7 @@ CACHES = {
 
 CACHEBACK_TASK_QUEUE = 'rq'
 
-RQ_QUEUES_DB = 1
+RQ_QUEUES_DB = 2
 RQ_QUEUES = {
     'default': {
         'HOST': 'localhost',

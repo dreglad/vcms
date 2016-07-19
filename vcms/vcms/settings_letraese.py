@@ -9,8 +9,8 @@ DEBUG = True
 PROJECT = 'letraese'
 SITE_NAME = 'Videos letraese'
 STORAGE_DIR = '/mnt/letraese_storage'
-RQ_QUEUES_DB = 5
-THUMBNAIL_REDIS_DB = 12
+RQ_QUEUES_DB = 2
+THUMBNAIL_REDIS_DB = 2
 
 exec open('/vagrant/vcms/vcms/settings.conf') in globals()
 

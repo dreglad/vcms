@@ -7,8 +7,8 @@ DEBUG = False
 
 PROJECT = 'lajornadavideos'
 SITE_NAME = 'Videos La Jornada'
-RQ_QUEUES_DB = 3
-THUMBNAIL_REDIS_DB = 11
+RQ_QUEUES_DB = 1
+THUMBNAIL_REDIS_DB = 1
 
 exec open('/vagrant/vcms/vcms/settings.conf') in globals()
 

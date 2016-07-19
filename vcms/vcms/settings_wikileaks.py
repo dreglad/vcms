@@ -9,8 +9,8 @@ DEBUG = True
 PROJECT = 'wikileaks'
 SITE_NAME = 'Videos Wikileaks'
 STORAGE_DIR = '/mnt/wikileaks_storage'
-RQ_QUEUES_DB = 5
-THUMBNAIL_REDIS_DB = 12
+RQ_QUEUES_DB = 6
+THUMBNAIL_REDIS_DB = 6
 
 exec open('/vagrant/vcms/vcms/settings.conf') in globals()
 

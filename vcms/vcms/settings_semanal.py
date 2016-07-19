@@ -9,8 +9,8 @@ DEBUG = True
 PROJECT = 'semanal'
 SITE_NAME = 'Videos semanal'
 STORAGE_DIR = '/mnt/semanal_storage'
-RQ_QUEUES_DB = 5
-THUMBNAIL_REDIS_DB = 12
+RQ_QUEUES_DB = 4
+THUMBNAIL_REDIS_DB = 4
 
 exec open('/vagrant/vcms/vcms/settings.conf') in globals()
 
