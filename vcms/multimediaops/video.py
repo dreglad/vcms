@@ -15,6 +15,9 @@ import wget
 logger = logging.getLogger('multimediaops')
 
 
+CODEC_AUDIO = 'libvo_aacenc'#'aac' #'libfdk_aac'
+
+
 H264_PARAMS = {
     'profile': 'main',
     'level': '3.1',
@@ -136,9 +139,12 @@ def compress_h264mpeg4avc(input_file, output_file, vstats_file, autocrop=True):
     vstats_file -- File path where to write progress stats (Default None)
     autocrop -- Whether or not to autocrop video to get rid of black bars
     """
+    if not os.path.isdir(os.path.dirname(vstats_file)):
+        os.makedirs(os.path.dirname(vstats_file))
     autocrop_filter = autocrop and get_video_autocrop_filter(input_file) or ''
     cmd = ('ffmpeg -y -vstats_file {vstats_file} -i {input_file} '
-           '-c:a libfdk_aac -b:a {params[audio_bitrate]}k '
+           '-c:a {codec_audio} -b:a {params[audio_bitrate]}k '
+           #'-c:a aac -b:a {params[audio_bitrate]}k '
            '-ar {params[audio_samplerate]} -c:v libx264 -crf {params[crf]} '
            '-vf "scale=\'min(iw,{params[max_width]})\':-2" '
            '{autocrop_filter} -profile:v {params[profile]} '
@@ -146,7 +152,8 @@ def compress_h264mpeg4avc(input_file, output_file, vstats_file, autocrop=True):
            '-movflags +faststart {output_file}'
                 ).format(input_file=input_file, output_file=output_file,
                          params=H264_PARAMS, autocrop_filter=autocrop_filter,
-                         vstats_file=vstats_file or '/dev/null')
+                         vstats_file=vstats_file or '/dev/null',
+                         codec_audio=CODEC_AUDIO)
     logger.info('Compressing with command: %s' % cmd)
     return (call(cmd, shell=True) == 0)
 
@@ -240,6 +247,8 @@ def download_video(source, output_file, progress_fn=None, force_direct=False):
         def wget_progress(current, total, width=80):
             if hasattr(progress_fn, '__call__'):
                 progress_fn(source, output_file, (current/float(total))*100)
+        if os.path.exists(output_file):
+            os.remove(output_file)
         wget.download(source, output_file, bar=wget_progress)
         return os.path.exists(output_file)
 

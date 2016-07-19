@@ -25,29 +25,35 @@ from dateutil import relativedelta
 #TODO determine optimal number of images/segment distance based on length of video? (so longer videos don't have huge sprites)
 
 USE_SIPS = False #True to use sips if using MacOSX (creates slightly smaller sprites), else set to False to use ImageMagick
-THUMB_RATE_SECONDS=30 # every Nth second take a snapshot
+THUMB_RATE_SECONDS=45 # every Nth second take a snapshot
 THUMB_WIDTH=100 #100-150 is width recommended by JWPlayer; I like smaller files
 SKIP_FIRST=True #True to skip a thumbnail of second 1; often not a useful image, plus JWPlayer doesn't seem to show it anyway, and user knows beginning without needing preview
+SPRITE_NAME = "s.jpg" #jpg is much smaller than png, so using jpg
+VTTFILE_NAME = "s.vtt"
+THUMB_OUTDIR = "thumbs"
+USE_UNIQUE_OUTDIR = False #true to make a unique timestamped output dir each time, else False to overwrite/replace existing outdir
 TIMESYNC_ADJUST = -.5 #set to 1 to not adjust time (gets multiplied by thumbRate); On my machine,ffmpeg snapshots show earlier images than expected timestamp by about 1/2 the thumbRate (for one vid, 10s thumbrate->images were 6s earlier than expected;45->22s early,90->44 sec early)
 logger = logging.getLogger(sys.argv[0])
+logSetup=False
 
 class SpriteTask():
     """small wrapper class as convenience accessor for external scripts"""
     def __init__(self, **kwargs):
         self.videofile = kwargs['videofile']
         self.outdir = kwargs['outdir']
-        self.spritefile = os.path.join(self.outdir, "s.jpg")
-        self.vttfile = os.path.join(self.outdir, "s.vtt")
+        self.spritefile = os.path.join(self.outdir, kwargs.get('spitefile', 's.jpg'))
+        self.vttfile = os.path.join(self.outdir, kwargs.get('vttfile', 's.vtt'))
+
+        self.remotefile = self.videofile.startswith("http")
+        if not self.remotefile and not os.path.exists(self.videofile):
+            sys.exit("File does not exist: %s" % self.videofile)
 
     def getVideoFile(self):
         return self.videofile
-
     def getOutdir(self):
         return self.outdir
-
     def getSpriteFile(self):
         return self.spritefile
-
     def getVTTFile(self):
         return self.vttfile
 
@@ -74,8 +80,7 @@ def takesnaps(videofile,newoutdir,thumbRate=None):
     if not thumbRate:
         thumbRate = THUMB_RATE_SECONDS
     rate = "1/%d" % thumbRate # 1/60=1 per minute, 1/120=1 every 2 minutes
-    #cmd = "ffmpeg -i %s -f image2 -bt 20M -vf fps=%s -aspect 16:9 %s/tv%%03d.jpg" % (pipes.quote(videofile), rate, pipes.quote(newoutdir))
-    cmd = "ffmpeg -i %s -f image2 -bt 20M -vf fps=%s %s/tv%%03d.jpg" % (pipes.quote(videofile), rate, pipes.quote(newoutdir))
+    cmd = "ffmpeg -i %s -f image2 -bt 20M -vf fps=%s -aspect 16:9 %s/tv%%03d.jpg" % (pipes.quote(videofile), rate, pipes.quote(newoutdir))
     doCmd (cmd)
     if SKIP_FIRST:
         #remove the first image
@@ -210,6 +215,7 @@ def removespeed(videofile):
     return videofile
 
 def run(task, thumbRate=None):
+    addLogging()
     if not thumbRate:
         thumbRate = THUMB_RATE_SECONDS
     outdir = task.getOutdir()
@@ -231,24 +237,28 @@ def run(task, thumbRate=None):
     makevtt(spritefile,numfiles,coords,gridsize,task.getVTTFile(), thumbRate=thumbRate)
 
 def addLogging():
-    #CONSOLE AND FILE LOGGING
-    basescript = os.path.splitext(os.path.basename(sys.argv[0]))[0]
-    LOG_FILENAME = 'logs/%s.%s.log'% (basescript,datetime.datetime.now().strftime("%Y%m%d_%H%M%S")) #new log per job so we can run this program concurrently
-    if not os.path.exists('logs'):
-        os.makedirs('logs')
-    logger.setLevel(logging.DEBUG)
-    handler = logging.FileHandler(LOG_FILENAME)
-    logger.addHandler(handler)
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    logger.addHandler(ch)
+    global logSetup
+    if not logSetup:
+        basescript = os.path.splitext(os.path.basename(sys.argv[0]))[0]
+        LOG_FILENAME = '/tmp/spriteslog/%s.%s.log'% (basescript,datetime.datetime.now().strftime("%Y%m%d_%H%M%S")) #new log per job so we can run this program concurrently
+        #CONSOLE AND FILE LOGGING
+        #print "Writing log to: %s" % LOG_FILENAME
+        if not os.path.exists('/tmp/spriteslog'):
+           os.makedirs('/tmp/spriteslog')
+        logger.setLevel(logging.DEBUG)
+        handler = logging.FileHandler(LOG_FILENAME)
+        logger.addHandler(handler)
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.DEBUG)
+        logger.addHandler(ch)
+        logSetup = True #set flag so we don't reset log in same batch
 
 
-# if __name__ == "__main__":
-#     if not len(sys.argv) > 1 :
-#         sys.exit("Please pass the full path to the video file for which to create thumbnails.")
-
-#     addLogging()
-#     videofile = sys.argv[1]
-#     task = SpriteTask(videofile)
-#     run(task)
+if __name__ == "__main__":
+    if not len(sys.argv) > 1 :
+        sys.exit("Please pass the full path or url to the video file for which to create thumbnails.")
+    if len(sys.argv) == 3:
+        THUMB_OUTDIR = sys.argv[2]
+    videofile = sys.argv[1]
+    task = SpriteTask(videofile)
+    run(task)

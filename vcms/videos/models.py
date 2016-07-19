@@ -505,8 +505,7 @@ class Video(ModelBase, TitledMixin, DisplayableMixin):
 
     # derivated
     sprites = models.FileField(
-        _('sprites'), upload_to='sprites', blank=True, null=True,
-        editable=False)
+        _('sprites'), upload_to='sprites', blank=True, null=True)
     hls = models.FileField(
         _('HLS'), upload_to='hls', blank=True, null=True, editable=False)
     dash = models.FileField(
@@ -667,7 +666,7 @@ class Video(ModelBase, TitledMixin, DisplayableMixin):
 
     @property
     def duracion_iso(self):
-        return (datetime.min + self.duracion).time() \
+        return (datetime.min + (self.duracion or timedelta(0))).time() \
                    .replace(microsecond=0).isoformat()
     @property
     def horas(self):

@@ -20,7 +20,7 @@ logger = logging.getLogger('vcms')
 
 def _video_status_file(video, content=None):
     """Helper to write to video status file"""
-    with temporales_storage.open(video.status_path) as f:
+    with temporales_storage.open(video.status_path, 'w') as f:
         if content is not None:
             logger.debug('Writing "%s" to status file "%s"' % (content, f))
             return f.write(content)
@@ -47,9 +47,9 @@ def make_sprites_job(video_pk):
     interval = math.ceil(video.duracion.total_seconds()/TOTAL_SPRITES)
     makesprites.run(
         makesprites.SpriteTask(
-            thumbRate=interval, videofile=video.archivo.path,
-            outdir=sprites_dir
-        ))
+            videofile=video.archivo.path, outdir=sprites_dir),
+        thumbRate=interval)
+
 
     # update object
     Video.objects.filter(pk=video_pk).update(
@@ -147,7 +147,7 @@ def create_new_video_job(video_pk):
     # Video
     video_name = '%s.mp4' % video.uuid
     video_path = os.path.join(settings.TEMPORALES_ROOT, video_name)
-    vstats_path = os.path.join(settings.TEMPORALES_ROOT, 'vstats/', video.uuid)
+    vstats_path = os.path.join(settings.TEMPORALES_ROOT, 'vstats', video.uuid)
 
     video_ops.compress_h264mpeg4avc(download_path, video_path, vstats_path)
 
@@ -163,8 +163,9 @@ def create_new_video_job(video_pk):
     _video_status_file(video, 'done %d' % video.pk)
 
     #cleanup
-    os.remove(vstats_path)
     os.remove(download_path)
+    if os.path.exists(vstats_path):
+        os.remove(vstats_path)
 
     # Launch subtasks for sprites and segments
     make_sprites_job.delay(video.pk)
