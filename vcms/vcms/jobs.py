@@ -68,7 +68,7 @@ def make_hls_job(video_pk):
     def playlist_progress(playlist, current=None, total=None):
         """Called after each partial or the global playlist finises"""
         hls_uri = os.path.join('hls', video.uuid, playlist)
-
+        connection.close()
         if playlist == 'playlist.m3u8':
             Video.objects.filter(pk=video.pk).update(hls=hls_uri)
             logger.debug('Finished segmenting all video modes: %s' % hls_uri)
@@ -155,6 +155,7 @@ def create_new_video_job(video_pk):
         video_name, ContentFile(open(video_path).read()), save=False)
     os.remove(video_path)
 
+    connection.close()
     Video.objects.filter(pk=video.pk).update(
         procesamiento=Video.PROCESAMIENTO.listo,
         archivo='videos/%s' % video_name)

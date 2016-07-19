@@ -1,14 +1,14 @@
 {% if video.procesamiento != "listo" %}
   <div class="msg"></div>
   <div class="progress progress-striped active hide">
-    <div class="bar" style="width: 0"></div>
+    <div class="bar" style="width: 0; min-width:100px;"></div>
   </div>
   <script>
     {% if video.procesamiento != "error" %}
       setInterval(function() {{
         update_status('{{ video.pk }}',
                       '{% url "procesamiento_status" video.pk %}');
-      }}, 2000);
+      }}, 3000);
     {% endif %}
     update_status('{{ video.pk }}',
                   '{% url "procesamiento_status" video.pk %}');

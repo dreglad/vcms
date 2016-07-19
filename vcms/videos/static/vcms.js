@@ -166,7 +166,7 @@ function update_status(id, url) {
             //row.find('.field-video img').remove();
 
             if (status.progress) {
-                row.find('.bar').css('width', (status['progress'] - 20) + '%');
+                row.find('.bar').css('width', status['progress'] + '%');
                 row.find('.progress').removeClass('hide');
             } else {
                 row.find('.msg').removeClass('hide');

@@ -225,7 +225,7 @@ class VideoAdmin(VersionAdmin, ModelAdminBase, AdminImageMixin):
     readonly_fields = [
         'origen', 'origen_url', 'archivo_original', 'duracion', 'procesamiento',
         'usuario_creacion', 'fecha_creacion', 'usuario_modificacion',
-        'fecha_modificacion', 'archivo'
+        'fecha_modificacion', 'archivo', 'resolucion', 'max_resolucion',
     ]
     readonly_fields_new = []
     info_fields = (
@@ -300,7 +300,8 @@ class VideoAdmin(VersionAdmin, ModelAdminBase, AdminImageMixin):
                 ('procesamiento', 'duracion'),
                 ('fecha_creacion', 'usuario_creacion',),
                 ('fecha_modificacion', 'usuario_modificacion'),
-                ('origen', 'origen_url')
+                ('origen', 'origen_url'),
+                ('resolucion', 'max_resolucion')
             ]
         }),
         (_('Archivos'), {

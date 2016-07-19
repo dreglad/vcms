@@ -616,9 +616,6 @@ class Video(ModelBase, TitledMixin, DisplayableMixin):
 
     @property
     def procesamiento_status(self):
-        if self.procesamiento != self.PROCESAMIENTO.procesando:
-            return
-
         from subprocess import check_output, CalledProcessError
         status = {'status': None}
         if temporales_storage.exists(self.status_path):
