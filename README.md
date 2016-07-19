@@ -1,7 +1,5 @@
 # Instalación #
 
-
-
 ## Requerimientos ##
 
 * Vagrant (https://www.vagrantup.com)
@@ -11,17 +9,13 @@
 ## Instalación Local ##
 
 Clonar repositorio
-```
-#!bash
-
+```bash
 $ git clone https://github.com/dreglad/vcms
 $ cd vcms
 ```
 
 Crear, correr y aprovisionar máquina virtual
-```
-#!bash
-
+```bash
 $ vagrant up
 ```
 
@@ -29,27 +23,18 @@ $ vagrant up
 ## Deployment en producción ##
 
 La Jornada
-```
-#!bash
-
+```bash
 $ ansible-playbook -i provisioning/lajornada_inventory.ini provisioning/playbook.yml
-
 ```
 
 
 Globovisión
-```
-#!bash
-
+```bash
 $ ansible-playbook -i provisioning/gv_inventory.ini provisioning/playbook.yml
-
 ```
 
 
 teleSUR English
-```
-#!bash
-
+```bash
 $ ansible-playbook -i provisioning/telesurenglish_inventory.ini provisioning/playbook.yml
-
 ```
