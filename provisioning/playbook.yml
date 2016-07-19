@@ -19,8 +19,8 @@
       - name: originales
         path: /mnt/originales
         backend: FileSystemBackend
-      - name: temporal
-        path: /mnt/temporal
+      - name: temporales
+        path: /mnt/temporales
         backend: FileSystemBackend
 
   tasks:
