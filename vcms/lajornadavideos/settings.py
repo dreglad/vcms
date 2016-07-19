@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
 DEFAULT_PLAYER = 'jwplayer'
 
+CACHEBACK_VERIFY_CACHE_WRITE = False
 
 CACHES = {
     'default': {
@@ -311,7 +312,7 @@ MEDIA_ROOT = '/mnt/media/lajornadavideos'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
-STATIC_URL = '/static/'
+STATIC_URL = '/media/frontend_static/'
 STATIC_ROOT = os.path.join(MEDIA_ROOT, 'frontend_static')
 
 STATICFILES_DIRS = [ os.path.join(BASE_DIR, 'lajornadavideos', 'static') ]

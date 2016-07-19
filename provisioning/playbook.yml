@@ -30,8 +30,8 @@
     - name: APT packages updated at latest version
       apt: update_cache=yes upgrade=dist
 
-    - name: PPA repository for FFmpeg and codec libraries added
-      apt_repository: repo='ppa:mc3man/trusty-media' update_cache=yes
+    #- name: PPA repository for FFmpeg and codec libraries added
+    #  apt_repository: repo='ppa:mc3man/xenial-media' update_cache=yes
 
     - name: Set MySQL root password in case of installing
       debconf: name='mysql-server' question='mysql-server/root_password' value='pass' vtype='password'
@@ -42,7 +42,8 @@
     - name: Required APT packages installed
       apt: pkg={{ item }}
       with_items:
-        - fdkaac-encoder
+        #- fdkaac-encoder
+        - fdkaac
         - ffmpeg
         - git
         - imagemagick
@@ -54,6 +55,7 @@
         - python-memcache
         - python-mysqldb
         - python-virtualenv
+        - python-pip
         - python3-pip
         - redis-server
         - solr-jetty
@@ -66,12 +68,12 @@
       tags: ['nginx', 'install']
 
     - name: NGINX deb URL present in sources.list
-      lineinfile: dest=/etc/apt/sources.list line="deb http://nginx.org/packages/mainline/ubuntu/ trusty nginx"
+      lineinfile: dest=/etc/apt/sources.list line="deb http://nginx.org/packages/mainline/ubuntu/ xenial nginx"
       register: nginx_deburl
       tags: ['nginx', 'install']
 
     - name: NGINX deb-src URL present in sources.list
-      lineinfile: dest=/etc/apt/sources.list line="deb-src http://nginx.org/packages/mainline/ubuntu/ trusty nginx"
+      lineinfile: dest=/etc/apt/sources.list line="deb-src http://nginx.org/packages/mainline/ubuntu/ xenial nginx"
       register: nginx_debsrcurl
       tags: ['nginx', 'install']
 
@@ -94,8 +96,8 @@
         - "{{ storage_dirs }}"
         - "{{ vcms_apps }}"
 
-    - name: Copy  web server configuration file
-      copy: src=etc/nginx.conf dest=/etc/nginx.conf
+    - name: Copy web server configuration file
+      template: src=etc/nginx.conf.j2 dest=/etc/nginx/nginx.conf
       tags: ['nginx']
       notify:
         - restart nginx
@@ -132,7 +134,6 @@
 
     - name: vcms static files collected
       django_manage: command=collectstatic app_path=/vagrant/vcms settings=vcms.settings_{{ item }}
-      tags: ['python', 'storage', 'django', 'collectstatic']
       with_items: "{{ vcms_apps }}"
 
     - name: vcm uWSGI configuration copied

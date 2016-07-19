@@ -6,7 +6,7 @@ from django.views.decorators.cache import cache_page
 
 from .views import \
     BusquedaView, SeccionView, HomeView, ListaView, VideoView, \
-    PlayerView, crossdomain, WebPlayerView
+    PlayerView, crossdomain
 
 urlpatterns = [
     url(r'^$', cache_page(30)(HomeView.as_view()),
@@ -26,7 +26,7 @@ urlpatterns = [
 
 
     url(r'^player/(?P<video_uuid>\d+)/(?P<video_slug>.+)/$',
-        cache_page(60)(WebPlayerView.as_view()),
+        cache_page(60)(PlayerView.as_view()),
         name='web_player'),
 
     url(r'^busqueda/', BusquedaView.as_view(), name='haystack_search'),

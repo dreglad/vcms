@@ -157,8 +157,8 @@ class DisplayableMixin(models.Model):
         _('tema'), max_length=64, null=True, blank=True,
         choices=PLANTILLA_CHOICES)
     margen = models.CharField(
-        _('margen'), max_length=64, blank=True, choices=MARGEN_CHOICES,
-        default=MARGEN_CHOICES[0][0])
+        _('margen'), max_length=64, choices=MARGEN_CHOICES,
+        default=MARGEN_CHOICES[0][0], blank=True, null=True)
     layout = models.CharField(
         _('layout'), choices=LAYOUT_CHOICES, max_length=64,
         null=True, blank=True)

@@ -12,8 +12,8 @@ Vagrant.configure(2) do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "ubuntu/trusty64"
-  #config.vm.box = "bento/ubuntu-14.04"
+  #config.vm.box = "ubuntu/trusty64"
+  config.vm.box = "bento/ubuntu-16.04"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -81,6 +81,7 @@ Vagrant.configure(2) do |config|
     ansible.playbook = "provisioning/playbook.yml"
     #ansible.verbose = true
     ansible.sudo = true
+    #ansible.tags = 'nginx'
   end
 
   # # Startup (dependant on /vagrant share)

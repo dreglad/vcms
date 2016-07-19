@@ -11,12 +11,15 @@ from videos.models import *
 
 
 DAYS = 86400; MINUTES = 60; HOURS = 3600
-HOME = QuerySetGetJob(Pagina).get(slug='home'), lifetime=1*DAYS)
+try:
+    HOME = QuerySetGetJob(Pagina, lifetime=1*DAYS).get(slug='home')
+except Pagina.DoesNotExist:
+    HOME = Pagina.objects.create(slug='home', nombre="Home", orden=0)
 
 
 class BaseView(TemplateView):
 
-    paginas = QuerySetFilterJob(Pagina).filter(activo=True, lifetime=1*HOURS)
+    paginas = QuerySetFilterJob(Pagina, lifetime=1*HOURS).get(activo=True)
 
     def get_context_data(self, **kwargs):
         context = super(BaseView, self).get_context_data(**kwargs)
@@ -89,7 +92,7 @@ class PlayerView(BaseView):
             return redirect(video, permanent=True)
 
         self.player = request.GET.get('player', settings.DEFAULT_PLAYER)
-        return super(WebPlayerView, self).dispatch(request, *args, **kwargs)
+        return super(PlayerView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(PlayerView, self).get_context_data(**kwargs)
@@ -100,7 +103,7 @@ class PlayerView(BaseView):
         return context
 
 
-class VideoView(WebPlayerView):
+class VideoView(PlayerView):
 
     template_name = 'video.html'
 

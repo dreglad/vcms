@@ -16,8 +16,7 @@ server {
     client_max_body_size 75M;
 
     location /media  {
-        alias /mnt/lajornadavideos_storage/media;
-
+        alias /mnt/media/lajornadavideos;
 
         location ~* \.mp4$ {
             mp4;
@@ -35,20 +34,6 @@ server {
             log_not_found off;
         }
     }
-
-    location /static {
-        alias /mnt/lajornadavideos_storage/frontend_static;
-
-        location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
-            expires 1y;
-            log_not_found off;
-        }
-
-        location ~* \.(eot|vtt|mp4|m3u8|ttf|woff|woff2)$ {
-            add_header Access-Control-Allow-Origin *;
-        }
-    }
-
     
     # Finally, send all non-media requests to the Django server.
     location / {

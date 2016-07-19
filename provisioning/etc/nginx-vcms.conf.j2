@@ -13,7 +13,8 @@ server {
     client_max_body_size 75M;
 
     location /media  {
-        alias /mnt/lajornadavideos_storage/media;
+        alias /mnt/media/lajornadavideos;
+
         location ~* \.mp4$ {
             mp4;
             gzip off;
@@ -25,11 +26,6 @@ server {
             }
         }
     }
-
-    location /static {
-        alias /mnt/lajornadavideos_storage/static/vcms;
-    }
-
     
     # Finally, send all non-media requests to the Django server.
     location / {
