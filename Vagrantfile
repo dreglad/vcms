@@ -79,9 +79,9 @@ Vagrant.configure(2) do |config|
   # Ansible provisioning
   config.vm.provision "ansible_local", run: "always" do |ansible|
     ansible.playbook = "provisioning/playbook.yml"
-    #ansible.verbose = true
     ansible.sudo = true
-    #ansible.tags = 'nginx'
+    #ansible.verbose = true
+    #ansible.tags = ''  # specific tag(s)
   end
 
   # # Startup (dependant on /vagrant share)

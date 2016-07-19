@@ -59,6 +59,7 @@
         - python3-pip
         - redis-server
         - solr-jetty
+        - supervisor
         - uwsgi
         - uwsgi-plugin-python
         - x264
@@ -132,6 +133,19 @@
     #   when: database.changed
     #   with_items: {{ vcms_apps }}
 
+    - name: Supervisor vcms configuration
+      template: src=etc/supervisor-vcms.conf.j2 dest=/etc/supervisor/conf.d/vcms_{{ item }}.conf
+      with_items: "{{ vcms_apps }}"
+      tags: ['supervisor', 'backend']
+      register: supervisor
+      notify:
+        - restart supervisor
+
+    - name: Supervisor programs present
+      command: supervisorctl reread && supervisorctl update
+      tags: ['supervisor', 'backend']
+      when: supervisor.changed
+
     - name: vcms static files collected
       django_manage: command=collectstatic app_path=/vagrant/vcms settings=vcms.settings_{{ item }}
       with_items: "{{ vcms_apps }}"
@@ -172,21 +186,14 @@
       notify:
         - restart nginx
 
-    # System 
-
-    # - name: Add supervisor upstart script
-    #   copy: src=etc/upstart-supervisor.conf dest=/etc/init/supervisor.conf
-    #   notify:
-    #     - reload upstart configuration
-
     - name: Ensure uWSGI is running
       service: name=uwsgi state=started
 
     - name: Ensure NGINX is running
       service: name=nginx state=started
 
-    # - name: Ensure supervisor is running
-    #   service: name=supervisor state=started
+    - name: Ensure supervisor is running
+      service: name=supervisor state=started
 
 
   handlers:
@@ -198,3 +205,6 @@
 
     - name: reload upstart configuration
       command: initctl reload-configuration
+
+    - name: restart supervisor
+      service: name=supervisor state=restarted

@@ -1,0 +1,20 @@
+[supervisord]
+environment = PYTHONIOENCODING="utf8",LANG="en_US.utf8",LC_ALL="en_US.UTF-8",LC_LANG="en_US.UTF-8"
+
+[program:vcms_worker_{{ item }}]
+command=/vagrant/vcms/manage.py rqworker high default low
+process_name=all_queues_%(process_num)s
+environment = DJANGO_SETTINGS_MODULE="vcms.settings_{{ item }}"
+
+numprocs=2
+
+user=www-data
+redirect_stderr = true
+
+directory=/vagrant/vcms
+stdout_logfile = /var/log/vcms/worker_%(program_name)s_%(process_num)s.log
+
+stopsignal=TERM
+
+autostart=true
+autorestart=true
