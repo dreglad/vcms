@@ -50,70 +50,91 @@
         if ($('#fieldset-video').is(':visible'))  {
 
             var playerInstance = jwplayer();
-             playerInstance.on('ready',function() {
-                    if (jwplayer().getRenderingMode() == "html5"){
-                        videoTag = document.querySelector('video');
-                         if(videoTag.playbackRate) {
-                            playerInstance.addButton(
-                                "icon_dir.png",
-                                "0.25x",
-                                function() {
-                                  changeSpeed(0.25);
-                                },
-                                "0p25xslow"
-                            );
+            playerInstance.on('ready',function() {
+            pipOn();
+            // if (jwplayer().getRenderingMode() == "html5"){
+            //     videoTag = document.querySelector('video');
+            //      if(videoTag.playbackRate) {
+            //         playerInstance.addButton(
+            //             "icon_dir.png",
+            //             "0.25x",
+            //             function() {
+            //               changeSpeed(0.25);
+            //             },
+            //             "0p25xslow"
+            //         );
 
-                            playerInstance.addButton(
-                                "icon_dir.png",
-                                "0.5x",
-                                function() {
-                                  changeSpeed(0.5);
-                                },
-                                "0p5slow"
-                            );
+            //         playerInstance.addButton(
+            //             "icon_dir.png",
+            //             "0.5x",
+            //             function() {
+            //               changeSpeed(0.5);
+            //             },
+            //             "0p5slow"
+            //         );
 
-                            playerInstance.addButton(
-                                "icon_dir.png",
-                                "1x",
-                                function() {
-                                  changeSpeed(1);
-                                },
-                                "1xnormal"
-                            );
+            //         playerInstance.addButton(
+            //             "icon_dir.png",
+            //             "1x",
+            //             function() {
+            //               changeSpeed(1);
+            //             },
+            //             "1xnormal"
+            //         );
 
-                            playerInstance.addButton(
-                                "icon_dir.png",
-                                "1.5x",
-                                function() {
-                                  changeSpeed(1.5);
-                                },
-                                "1p5xforward"
-                            );
+            //         playerInstance.addButton(
+            //             "icon_dir.png",
+            //             "1.5x",
+            //             function() {
+            //               changeSpeed(1.5);
+            //             },
+            //             "1p5xforward"
+            //         );
 
-                            playerInstance.addButton(
-                                "icon_dir.png",
-                                "2x",
-                                function() {
-                                  changeSpeed(2);
-                                },
-                                "2xforward"
-                            );
-                        }
+            //         playerInstance.addButton(
+            //             "icon_dir.png",
+            //             "2x",
+            //             function() {
+            //               changeSpeed(2);
+            //             },
+            //             "2xforward"
+            //         );
+            //     }
+            // }
+            // else{
+            //     alert("your browser doesn't support HTML5，cant't change speed.");
+            // }
+            //console.log("state is :"+playerInstance.getState());
+        });
+
+            var lastClicked = 0;
+            playerInstance.on('displayClick', function() {
+                if (playerInstance.getControls()) {
+                    playerInstance.play(); // toggle
+                } else {
+                    var mills = new Date();
+                    if ((mills - lastClicked) < 190) {
+                        pipOff();
+                    } else {
+                        playerInstance.play(); // toggle
                     }
-                    else{
-                        alert("your browser doesn't support HTML5，cant't change speed.");
-                    }
-                    console.log("state is :"+playerInstance.getState());
-                });
+                    lastClicked = new Date();
+                }
+            });
 
-             old_height = null;
+            old_height = null;
 
-             function pipOn() {
-                var player_elem = $('.jwplayer');
+            function pipOn() {
+               var player_elem = $('.jwplayer');
+
+                if (!old_height) {
+                    old_height = player_elem.css('height')
+                    player_elem.parent().css('height', 0);
+                }
 
                 player_elem.css('opacity', 0).addClass('pip-on');
                 jwplayer().setControls(false);
-                player_elem.fadeTo(800, 1);
+                player_elem.fadeTo(400, 1);
              }
 
              function pipOff() {
@@ -122,15 +143,15 @@
                 player_elem.css('opacity', 0).removeClass('pip-on');
                 jwplayer().resize().setControls(true);
                 player_elem.fadeTo(400, 1);
-                // if (old_height) {
-                //     player_elem.parent().css('height', old_height);
-                //     old_height = 0;
-                // }
+                if (old_height) {
+                    player_elem.parent().css('height', old_height);
+                    old_height = 0;
+                }
              }
 
              $('#suit_form_tabs a').on('click', function() {
                 // console.log('clicked');
-                // pipOn();
+                pipOn();
                 // var player_elem = $('.jwplayer');
                 // if (!old_height) {
                 //     old_height = player_elem.css('height')
@@ -138,26 +159,25 @@
                 // }
              })
 
-            $(document).scroll(function() {
-                 var current_scroll = $(document).scrollTop(),
-                    breakpoint = $('#videobottom').offset().top,
-                    player_elem = $('.jwplayer'),
-                    is_piped = player_elem.hasClass('pip-on');
+            // $(document).scroll(function() {
+            //      var current_scroll = $(document).scrollTop(),
+            //         breakpoint = $('#videobottom').offset().top,
+            //         player_elem = $('.jwplayer'),
+            //         is_piped = player_elem.hasClass('pip-on');
 
-                if (!is_piped && current_scroll > breakpoint+30) {
-                    pipOn();
+            //     if (!is_piped && current_scroll > breakpoint+30) {
+            //         pipOn();
 
-                } else if (is_piped && current_scroll < breakpoint) {
-                    pipOff();
-                }
-            });
+            //     } else if (is_piped && current_scroll < breakpoint) {
+            //         pipOff();
+            //     }
+            // });
         }
     });
 })(jQuery)
 
 function update_status(id, url) {
     $.getJSON(url, function(status) {
-        console.log('a');
         if (status) {
             var row = $('tr[data-video=' + id + ']');
 

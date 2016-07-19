@@ -42,13 +42,6 @@
             {% endthumbnail %}
         });
 
-        jwplayer().on('displayClick', function() {
-          var player = jwplayer();
-          if (!player.getControls()) {
-            player.play();  // toggle
-          }
-        });
-
         jwplayer().on('resize', function(size) {
           $('.box-video').css('height', size.height + 30);
         })

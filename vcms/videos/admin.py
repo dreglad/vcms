@@ -243,10 +243,8 @@ class VideoAdmin(VersionAdmin, ModelAdminBase, AdminImageMixin):
         ('vcms/fieldset_video.html', 'top'),
     )
     suit_form_tabs = [
-        ('general', _('Hoja de datos')),
-        ('editorial', _('Redacción')),
+        ('general', _('General')),
         ('clasificacion', _('Clasificación')),
-        ('links', _('Links')),
         ('seo', _('SEO')),
     ]
     suit_form_tabs_new = [
@@ -294,7 +292,7 @@ class VideoAdmin(VersionAdmin, ModelAdminBase, AdminImageMixin):
         }),
     ]
     fieldsets = [
-        (None, {
+        ('Ficha de datos', {
             'classes': ('suit-tab', 'suit-tab-general', 'compact-fieldset'),
             'fields': [
                 ('procesamiento', 'duracion'),
@@ -308,21 +306,21 @@ class VideoAdmin(VersionAdmin, ModelAdminBase, AdminImageMixin):
             'classes': ('suit-tab', 'suit-tab-general', 'compact-fieldset'),
             'fields': [('imagen', 'sprites'), 'archivo_original'],
         }),
-        (_('Clasificación'), {
+        (_('Listas'), {
             'classes': ('suit-tab', 'suit-tab-clasificacion'),
             'fields': ['listas',]
         }),
-        (None, {
-            'classes': ('suit-tab', 'suit-tab-editorial'),
-            'fields': ['titulo', 'descripcion'],
-        }),
-        (_('Links'), {
-            'classes': ('suit-tab', 'suit-tab-links'),
-            'fields': ['links', ],
+        (_('Redacción'), {
+            'classes': ('suit-tab', 'suit-tab-clasificacion'),
+            'fields': ['titulo', 'descripcion', 'links'],
         }),
         (_('Ubicación'), {
-            'classes': ('suit-tab', 'suit-tab-editorial'),
-            'fields': ['fecha', 'pais', 'territorio', 'ciudad'],
+            'classes': ('suit-tab', 'suit-tab-clasificacion'),
+            'fields': ['pais', 'territorio', 'ciudad'],
+        }),
+        (_('Fecha'), {
+            'classes': ('suit-tab', 'suit-tab-clasificacion'),
+            'fields': ['fecha',]
         }),
         (_('SEO'), {
             'classes': ('suit-tab', 'suit-tab-seo'),

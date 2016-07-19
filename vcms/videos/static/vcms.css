@@ -133,10 +133,6 @@ a.related-lookup {
 
 
 
-.box-video {
-  padding: 15px 40px;
-}
-
 
 .compact-fieldset .control-group:first-of-type .control-label {
   padding-top: 10px !important;
@@ -200,6 +196,14 @@ a.related-lookup {
 }
 
 
+.box-video {
+  padding: 0;
+  /*opacity: 0;*/
+  height: 0;
+  border-radius: 0;
+  box-shadow: 0;
+}
+
 .box-video .jwplayer  {
   margin: 1em auto !important;
 }
@@ -213,7 +217,7 @@ a.related-lookup {
 
 .pip-on{
     z-index: 10;
-    top: 340px;
+    bottom: 2px;
     right: 21px;
     width: 177px !important;
     position: fixed !important;
