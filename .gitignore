@@ -2,9 +2,4 @@
 .vagrant
 .Python
 .DS_Store
-
-src/bin
-src/include
-src/local
-src/lib
-
+*_local.py
