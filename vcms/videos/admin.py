@@ -630,7 +630,7 @@ class FiltroAdmin(ModelAdminBase):
 class ListaAdmin(ModelAdminBase):
     inlines = [LinkEnListaInline]
     list_per_page = 100
-    list_display = ('nombre_', 'icono_', 'videos_', 'descripcion', 'clasificador')
+    list_display = ('nombre_', 'icono_', 'clasificador', 'videos_', 'descripcion')
     search_fields = ['nombre', 'clasificador__nombre']
     list_filter = (ClasificadorFilter,)
     suit_form_tabs = (
