@@ -17,7 +17,9 @@ ORIGINALES_ROOT = '/dev/null'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'videos-stg.jornada.com.mx', 'videos-dev.jornada.com.mx',
+    'videos.jornada.com.mx',
+    'videos-stg.jornada.com.mx',
+    'videos-dev.jornada.com.mx',
 ]
 
 GOOGLE_ANALYTICS_PROPERTY_ID = 'UA-80731325-1'
