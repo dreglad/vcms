@@ -10,13 +10,13 @@ from taggit.utils import parse_tags
 from videos.models import *
 from multimediaops.video import get_video_stream_info
 
-SRC_ROOT = '/root/videos/tvstorage/'
-DST_ROOT = '/mnt/lajornadavideos_storage/media/'
+SRC_ROOT = '/mnt/migration/'
+DST_ROOT = '/mnt/media/lajornadavideos/'
 
 MODIFY_FS = True
-ONLY_IMAGES = True
+ONLY_IMAGES = False
 USE_EXISTING_OPTS = False
-DELETE_ALL_FIRST = True
+DELETE_ALL_FIRST = False
 VIDEOS_MAX = -1
 # state
 found = {}
@@ -207,7 +207,7 @@ def migrar():
                 #copiar imagen
                 new_imagen = 'images/%s.jpg' % video.uuid
                 if MODIFY_FS:
-                    shutil.copy(os.path.join(SRC_ROOT, clip['imagen']),
+                    shutil.move(os.path.join(SRC_ROOT, clip['imagen']),
                                 os.path.join(DST_ROOT, new_imagen))
                 file_mapping.append((os.path.join(SRC_ROOT, clip['imagen']),
                                      os.path.join(DST_ROOT, new_imagen)))
