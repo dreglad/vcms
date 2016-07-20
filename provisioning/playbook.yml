@@ -59,6 +59,7 @@
         - libjpeg-dev
         - libmysqlclient-dev
         - libyaml-dev
+        - memcached
         - mysql-server
         - python-dev
         - python-memcache
