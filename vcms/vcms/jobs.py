@@ -131,18 +131,19 @@ def create_new_video_job(video_pk):
         original_metadata=stream_info)
 
     # Image
-    image_name = '%s.jpg' % video.uuid
-    image_path = os.path.join(settings.TEMPORALES_ROOT, image_name)
+    if not video.imagen:
+        image_name = '%s.jpg' % video.uuid
+        image_path = os.path.join(settings.TEMPORALES_ROOT, image_name)
 
-    video_ops.extract_video_image(download_path, image_path)
-    img_size = Image.open(image_path).size
+        video_ops.extract_video_image(download_path, image_path)
+        img_size = Image.open(image_path).size
 
-    video.imagen.save(
-        image_name, ContentFile(open(image_path).read()), save=False)
-    os.remove(image_path)
+        video.imagen.save(
+            image_name, ContentFile(open(image_path).read()), save=False)
+        os.remove(image_path)
 
-    Video.objects.filter(pk=video.pk).update(
-        width=img_size[0], height=img_size[1], imagen='images/%s' % image_name)
+        Video.objects.filter(pk=video.pk).update(
+            width=img_size[0], height=img_size[1], imagen='images/%s' % image_name)
     
     # Video
     video_name = '%s.mp4' % video.uuid
