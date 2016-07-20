@@ -122,7 +122,7 @@
     </div>
   </article>
 
-
+{% more_like_this video as similares limit 8  %}
 {% cache 120 similares video.pk %}
 {% get_display_attrs pagina as display_pagina %}
 {% with display=display_pagina mostrar_nombre=True videos=similares|result_list nombre="Similares" mostrar_paginacion=True %}
