@@ -38,9 +38,7 @@ urlpatterns = [
     url(r'^crossdomain\.xml$', views.crossdomain),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-
 def can_show_toolbar(request):
-    return False
     return settings.DEBUG
 
 if settings.DEBUG:

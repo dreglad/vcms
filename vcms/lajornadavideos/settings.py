@@ -365,6 +365,6 @@ THUMBNAIL_OPTIONS_DICT = {
 }
 
 try:
-    from local_settings import *
+    from settings_local import *
 except ImportError as e:
     pass
