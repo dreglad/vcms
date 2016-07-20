@@ -649,7 +649,7 @@ class ListaAdmin(ModelAdminBase):
             'classes': ('suit-tab', 'suit-tab-media'),
             'fields': [
                 ('icono', 'mostrar_icono'), ('imagen', 'mostrar_imagen'),
-                ('cortinilla_inicio', 'mostrar_cortinilla_inicio'),
+                ('cortinilla_inicial', 'mostrar_cortinilla_inicial'),
                 ('cortinilla_final', 'mostrar_cortinilla_final'),
             ],
         }),
