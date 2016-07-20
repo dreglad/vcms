@@ -87,9 +87,16 @@ class PlayerView(BaseView):
     template_name = 'player.html'
 
     def dispatch(self, request, *args, **kwargs):
-        self.video = self.get_video(kwargs['video_uuid'])
+        try:
+            video_pk = int(kwargs['video_uuid'].split('0', 1)[1])
+            self.video = QuerySetGetJob(
+                Video, lifetime=10*MINUTES).get(pk=video_pk)
+            #self.video = Video.objects.publicos().get(pk=video_pk)
+        except (ValueError, IndexError, Video.DoesNotExist):
+            raise Http404("Video inexistente")
+
         if self.video.slug != kwargs['video_slug']:
-            return redirect(video, permanent=True)
+            return redirect(self.video, permanent=True)
 
         self.player = request.GET.get('player', settings.DEFAULT_PLAYER)
         return super(PlayerView, self).dispatch(request, *args, **kwargs)

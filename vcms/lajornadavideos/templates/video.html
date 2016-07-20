@@ -123,7 +123,7 @@
   </article>
 
 
-{% cache 3600 similares video.pk %}
+{% cache 120 similares video.pk %}
 {% get_display_attrs pagina as display_pagina %}
 {% with display=display_pagina mostrar_nombre=True videos=similares|result_list nombre="Similares" mostrar_paginacion=True %}
     {% include "includes/lista.html" %}
@@ -131,9 +131,9 @@
 {% endcache %}
 
 {% for lista in video.listas.all %}
-    {% cache 3600 pagina_lista pagina.pk lista.pk %}
+    {% cache 120 pagina_lista pagina.pk lista.pk %}
     {% if lista.clasificador.slug != 'autor' and lista.videos.count %}
-    {% with display=display_pagina mostrar_nombre=True videos=lista.videos.publicos nombre=lista.nombre mostrar_maximo=4 %}
+    {% with display=display_pagina mostrar_nombre=True videos=lista.videos.publicos nombre=lista.nombre mostrar_maximo=8 %}
     {% include "includes/lista.html" %}
     {% endwith %}
     {% endif %}

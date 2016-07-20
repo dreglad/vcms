@@ -322,6 +322,7 @@ class Link(ModelBase):
     class Meta:
         verbose_name = _('link')
         verbose_name_plural = _('links')
+        get_latest_by = 'fecha_creacion'
 
 
 class ListaQuerySet(models.query.QuerySet):
