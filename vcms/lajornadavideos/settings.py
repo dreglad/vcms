@@ -195,16 +195,8 @@ DATABASES = {
     }
 }
 
-# HAYSTACK_CONNECTIONS = {
-#     'default': {
-#         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-#         'URL': 'http://127.0.0.1:9200/',
-#         'INDEX_NAME': 'haystack',
-#     },
-# }
 
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 12
-
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
@@ -213,60 +205,6 @@ HAYSTACK_CONNECTIONS = {
          'URL': 'http://127.0.0.1:8983/solr/mysite',
     },
 }
-
-# ELASTICSEARCH_INDEX_SETTINGS = {
-#     'settings': {
-#         "analysis": {
-#             "analyzer": {
-#                 "synonym_analyzer" : {
-#                     "type": "custom",
-#                     "tokenizer" : "standard",
-#                     "filter" : ["synonym"]
-#                 },
-#                 "ngram_analyzer": {
-#                     "type": "custom",
-#                     "tokenizer": "lowercase",
-#                     "filter": ["haystack_ngram", "synonym"]
-#                 },
-#                 "edgengram_analyzer": {
-#                     "type": "custom",
-#                     "tokenizer": "lowercase",
-#                     "filter": ["haystack_edgengram"]
-#                 }
-#             },
-#             "tokenizer": {
-#                 "haystack_ngram_tokenizer": {
-#                     "type": "nGram",
-#                     "min_gram": 3,
-#                     "max_gram": 15,
-#                 },
-#                 "haystack_edgengram_tokenizer": {
-#                     "type": "edgeNGram",
-#                     "min_gram": 2,
-#                     "max_gram": 15,
-#                     "side": "front"
-#                 }
-#             },
-#             "filter": {
-#                 "haystack_ngram": {
-#                     "type": "nGram",
-#                     "min_gram": 3,
-#                     "max_gram": 15
-#                 },
-#                 "haystack_edgengram": {
-#                     "type": "edgeNGram",
-#                     "min_gram": 2,
-#                     "max_gram": 15
-#                 },
-#                 "synonym" : {
-#                     "type" : "synonym",
-#                     "ignore_case": "true",
-#                     "synonyms_path" : "synonyms.txt"
-#                 }
-#             }
-#         }
-#     }
-# }
 
 
 DEBUG_TOOLBAR_PATCH_SETTINGS = False

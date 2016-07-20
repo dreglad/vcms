@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*- #
 import datetime
 
-from elasticstack.fields import CharField
 from haystack import indexes
 
 from .models import Video, Lista
 
 
 class VideoIndex(indexes.SearchIndex, indexes.Indexable):
-    text = CharField(document=True, use_template=True,
-            analyzer='synonym_analyzer')
+    text = indexes.CharField(document=True, use_template=True)
     fecha = indexes.DateTimeField(model_attr='fecha')
     listas = indexes.MultiValueField()
     clasificadores = indexes.MultiValueField()

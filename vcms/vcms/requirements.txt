@@ -1,7 +1,7 @@
-git+https://github.com/django-haystack/django-haystack.git#egg=haystack
 git+https://github.com/django-debug-toolbar/django-debug-toolbar.git#egg=django-debug-toolbar
-git+https://github.com/gsmke/django-suit-rq.git#egg=django-suit-rq
+git+https://github.com/django-haystack/django-haystack.git#egg=haystack
 git+https://github.com/rfkrocktk/django-locality.git#egg=django-locality
+git+https://github.com/gsmke/django-suit-rq.git#egg=django-suit-rq
 
 django>=1.9
 django-analytical
