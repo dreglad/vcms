@@ -67,14 +67,15 @@ DEFAULT_FORMFIELD_OVERRIDES = {
     ImageField: {
         'widget': AdminImageWidget
     },
-    # models.DateTimeField: {
-    #     'widget': SuitSplitDateTimeWidget
-    # },
-    # models.DateTimeField: {
-    #     'widget': SuitSplitDateTimeWidget
-    # },
+    models.DateTimeField: {
+        'widget': SuitSplitDateTimeWidget
+    },
     models.DateField: {
         'widget': SuitDateWidget
+    },
+    models.TextField: {
+        'widget': AutosizedTextarea(
+            attrs={'rows': 5, 'class': 'input-block-level'})
     }
 }
 
