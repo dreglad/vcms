@@ -92,6 +92,8 @@ class PlayerView(BaseView):
             self.video = QuerySetGetJob(
                 Video, lifetime=10*MINUTES).get(pk=video_pk)
             #self.video = Video.objects.publicos().get(pk=video_pk)
+            if self.video.estado != Video.ESTADO.publicado:
+                raise ValueError
         except (ValueError, IndexError, Video.DoesNotExist):
             raise Http404("Video inexistente")
 

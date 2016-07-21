@@ -28,8 +28,12 @@
             sources: sources, tracks: tracks,
             preload: 'auto',
             sharing: {
-               code: '<iframe src="xxx"  width="480"  height="270"  frameborder="0"  scrolling="auto" />',
-               heading: "Compartir video"
+              code: '<iframe src="{{ video.player }}" width="480" height="360" ' +
+                    'scrolling="no" class="vcms" data-vcms-site="lajornadavideos"' +
+                    ' frameborder="0" data-vcms-id="{{ video.pk }}" />',
+               heading: "Link para ompartir y código embed",
+               link: '{{ video.get_absolute_url }}',
+               sites: []
             },
             width: '100%',
             hlshtml: true,

@@ -149,6 +149,7 @@ a.related-lookup {
 }
 .compact-fieldset .multi-field-controls span {
   padding-top: 0.5em;
+  line-height: 1.15em;
 }
 
 
@@ -162,20 +163,20 @@ a.related-lookup {
   margin-bottom: 0 !important;
   margin-right: 0 !important;
   padding-right: 0.5em;
-  width: 57%;
+  width: 62%;
   /*min-width: 64% !important;
   max-width: 64% !important; */
 
 }
 
 .compact-fieldset .multi-field-box:first-of-type { /* primer input */
-  width: 40%;
+  width: 35%;
   padding-right: 0.5em !important;
   margin-right: 0;
 }
 
 .compact-fieldset .multi-field-box label { /* segundo input */
-  min-width: 8em;
+  min-width: 9em;
   text-align: right;
   background: white;
   margin: 0 1em 0 0 !important;

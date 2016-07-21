@@ -105,8 +105,8 @@ class SortedWithMixin(SortableModelAdmin):
     }
 
     def is_sortable(self, request):
-        return request.GET.get(self.sorted_with_filter) is not None \
-                and len(request.GET.items()) == 1
+        return (request.GET.get(self.sorted_with_filter) is not None
+                and len(request.GET.items()) == 1)
 
     def get_list_display(self, request):
         list_display = super(SortedWithMixin, self).get_list_display(
@@ -126,7 +126,8 @@ class SortedWithMixin(SortableModelAdmin):
                         .get_changelist_form(request, **kwargs)
 
     def save_model(self, request, obj, form, change):
-        if not obj.pk or getattr(obj, self.sortable, None) is None or self.sorted_with in form.changed_data:
+        if (not obj.pk or getattr(obj, self.sortable, None) is None
+            or self.sorted_with in form.changed_data):
             max_order = obj.__class__.objects.filter(
                 **{self.sorted_with: getattr(obj, self.sorted_with)}
                 ).aggregate(models.Max(self.sortable))
@@ -222,12 +223,15 @@ class VideoAdmin(VersionAdmin, ModelAdminBase, AdminImageMixin):
     list_per_page = 20
     list_display = ('padded_pk', 'video', 'info')
     list_filter = (('listas', admin.RelatedOnlyFieldListFilter), 'estado')
-    search_fields = ('titulo', 'descripcion', 'meta_descripcion', 'observaciones')
+    search_fields = (
+        'titulo', 'descripcion', 'meta_descripcion', 'observaciones'
+    )
     date_hierarchy = 'fecha'
     readonly_fields = [
         'origen', 'origen_url', 'archivo_original', 'duracion', 'procesamiento',
         'usuario_creacion', 'fecha_creacion', 'usuario_modificacion',
-        'fecha_modificacion', 'archivo', 'resolucion', 'max_resolucion',
+        'fecha_modificacion', 'archivo', 'width', 'resolucion_', 'height',
+        'max_resolucion', 'hls', 'dash', 'dimensiones', 'fps',
     ]
     readonly_fields_new = []
     info_fields = (
@@ -294,19 +298,30 @@ class VideoAdmin(VersionAdmin, ModelAdminBase, AdminImageMixin):
         }),
     ]
     fieldsets = [
+        (None, {
+            'classes': ('suit-tab', '' 'suit-tab-general'),
+            'fields': ['estado']
+        }),
         ('Ficha de datos', {
             'classes': ('suit-tab', 'suit-tab-general', 'compact-fieldset'),
             'fields': [
                 ('procesamiento', 'duracion'),
-                ('fecha_creacion', 'usuario_creacion',),
-                ('fecha_modificacion', 'usuario_modificacion'),
                 ('origen', 'origen_url'),
-                ('resolucion', 'max_resolucion')
+                ('dimensiones', 'hls'),
+                ('resolucion_', 'dash'),
+                ('fps', 'captions'),
             ]
         }),
-        (_('Archivos'), {
+        (_('Imágenes'), {
             'classes': ('suit-tab', 'suit-tab-general', 'compact-fieldset'),
-            'fields': [('imagen', 'sprites'), 'archivo_original'],
+            'fields': [('imagen', 'sprites')],
+        }),
+        ('Registros', {
+            'classes': ('suit-tab', 'suit-tab-general', 'compact-fieldset'),
+            'fields': [
+                ('fecha_creacion', 'fecha_modificacion'),
+                ('usuario_creacion', 'usuario_modificacion',),
+            ]
         }),
         (_('Listas'), {
             'classes': ('suit-tab', 'suit-tab-clasificacion'),
@@ -343,17 +358,19 @@ class VideoAdmin(VersionAdmin, ModelAdminBase, AdminImageMixin):
 
     def formfield_for_dbfield(self, db_field, **kwargs):
         if db_field.name in ('descripcion',):
-             kwargs['widget'] = RedactorWidget(editor_options=REDACTOR_OPTIONS_LG)
+             kwargs['widget'] = RedactorWidget(
+                editor_options=REDACTOR_OPTIONS_LG)
         return super(VideoAdmin, self).formfield_for_dbfield(db_field, **kwargs)
 
     def get_queryset(self, request):
         return super(VideoAdmin, self).get_queryset(request) \
                                       .prefetch_related('listas', 'tags')
 
-    def player(self, obj):
-        if obj.video:
-            t = loader.get_template('vcms/changeform_video_player.html')
-            return mark_safe(t.render(Context({'video': obj.video})))
+    def dimensiones(self, obj):
+        return '{0}x{1}'.format(obj.width, obj.height)
+
+    def resolucion_(self, obj):
+        return '%dp' % obj.resolucion
 
     def suit_row_attributes(self, obj, request):
         return { 'class': 'estado-%s' % obj.ESTADO }
@@ -551,7 +568,8 @@ class VideoInline(SortableStackedInline):
                     margin=margin(im, '242x136')))
 
     def save_model(self, request, obj, form, change):
-        if not obj.pk or getattr(obj, self.sortable, None) is None or self.sorted_with in form.changed_data:
+        if (not obj.pk or getattr(obj, self.sortable, None) is None
+            or self.sorted_with in form.changed_data):
             max_order = obj.__class__.objects.filter(
                 **{self.sorted_with: getattr(obj, self.sorted_with)}
                 ).aggregate(models.Max(self.sortable))

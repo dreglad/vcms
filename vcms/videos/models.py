@@ -524,8 +524,7 @@ class Video(ModelBase, TitledMixin, DisplayableMixin):
     resolucion = models.IntegerField(
         _('resolución'), db_index=True, blank=True, null=True, editable=False)
     original_metadata = JSONField(null=True, blank=True)
-    fps = models.FloatField(
-        _('FPS'), blank=True, null=True, default=0, editable=False)
+    fps = models.PositiveIntegerField(_('FPS'), blank=True, null=True)
 
     # editorial
     fecha = models.DateTimeField(
@@ -552,7 +551,7 @@ class Video(ModelBase, TitledMixin, DisplayableMixin):
     # Tracking
     fecha_publicacion = MonitorField(
         _('fecha de publicación'), monitor='estado', when=['publicado'])
-    tracker = FieldTracker()
+    #tracker = FieldTracker()
 
     # Default Manager
     objects = VideoQuerySet.as_manager()

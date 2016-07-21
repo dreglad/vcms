@@ -55,10 +55,10 @@ class AdminImageWidget(FileInput):
             if name == 'icono':
                 size = '30'
             else:
-                size = '400'
+                size = '360'
             thumb = get_thumbnail(image_path, size, crop='center', quality=99)
             output.append(u'<a href="%s" target="_blank">' \
-                          u'<img style="margin-top:1em;" class="responsive" src="%s" alt="%s" /></a>' % (
+                          u'<img style="margin-top:1em; margin-right:1em;" class="responsive" src="%s" alt="%s" /></a>' % (
                               image_url, thumb.url, file_name))
             if not vtt:
                 output.append('<br>Para modificar elija un nuevo archivo: <br/>')
