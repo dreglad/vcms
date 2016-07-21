@@ -14,7 +14,7 @@ $(function() {
     });
 
     $("img.lazy").lazyload({
-        threshold: 500
+        threshold: 250
     });
 
     $.endlessPaginate({
