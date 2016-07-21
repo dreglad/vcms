@@ -17,6 +17,7 @@ div.progress .bar {
 
 td.field-video {
     /*padding: 4px !important;*/
+    vertical-align: middle;
 }
 
 td.field-video img.procesando {
@@ -239,6 +240,12 @@ table.info code {
   display: block;
   white-space: normal;
 }
+
+
+table.info span.label {
+  margin: 3px;
+}
+
 
 table.info th {
     width: 75px;
