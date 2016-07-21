@@ -92,16 +92,37 @@
 <script src="{% static 'js/tether.min.js' %}"></script>
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
 {% compress js %}{% block compressed_bottom_script %}
-  <script src="{% static 'js/busqueda.js' %}"></script>
-  <script>
-    DEFAULT_SHORTS = {
-      AAAA: '/',
-      PPPP: '/videos/pagina/',
-      VVVV: '/videos/video/',
-      NNNN: '/videos/video/add/',
-    };
-  </script>
-  <script src="{% static 'js/site.js' %}"></script>
+<script src="{% static 'js/busqueda.js' %}"></script>
+<script>
+  DEFAULT_SHORTS = {
+    AAAA: '/',
+    PPPP: '/videos/pagina/',
+    VVVV: '/videos/video/',
+    NNNN: '/videos/video/add/',
+  };
+</script>
+<script src="{% static 'js/site.js' %}"></script>
+<script>
+  function registerShorts(shorts) {
+    shorts = $.extend(DEFAULT_SHORTS, shorts);
+    var input = '';
+    document.body.addEventListener('keypress',function(ev){
+        // input += String.fromCharCode(ev.keyCode);
+        input += String.fromCharCode(ev.charCode).toUpperCase();
+        if (input in shorts) {
+            var url = shorts[input];
+            if (url.indexOf('=None') === -1) {
+                location.href = 'https://videosadmin.jornada.com.mx' + url;
+            }
+        }
+    });
+    document.body.addEventListener('keyup',function(ev){
+        if(input.length > 5 || ev.keyCode == 27) {
+            input = "";
+        }
+    });
+  }
+</script>
 {% endblock %}{% endcompress %}
 {% endblock %}
 

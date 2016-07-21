@@ -73,7 +73,7 @@ class ListaView(SeccionView):
 
     def dispatch(self, request, *args, **kwargs):
         self.listado = {
-            'lista': QueryGetFilterJob(Lista).get(slug=kwargs['lista_slug']),
+            'lista': QuerySetGetJob(Lista).get(slug=kwargs['lista_slug']),
             'mostrar_nombre': True,
             'mostrar_descripcion': True,
             'mostrar_paginacion': True,
