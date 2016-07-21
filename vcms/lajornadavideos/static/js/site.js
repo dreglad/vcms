@@ -87,25 +87,3 @@ $(function() {
 
     new UISearch(document.getElementById('busqueda-form'));
 });
-
-
-function registerShorts(shorts) {
-    shorts = $.extend(DEFAULT_SHORTS, shorts);
-    var input = '';
-    document.body.addEventListener('keypress',function(ev){
-        // input += String.fromCharCode(ev.keyCode);
-        input += String.fromCharCode(ev.charCode).toUpperCase();
-        if (input in shorts) {
-            var url = shorts[input];
-            if (url.indexOf('=None') === -1) {
-                location.href = 'http://videosadmin-stg.jornada.com.mx' + url;
-            }
-        }
-    });
-
-    document.body.addEventListener('keyup',function(ev){
-        if(input.length > 5 || ev.keyCode == 27) {
-            input = "";
-        }
-    });
-}
