@@ -370,7 +370,8 @@ class VideoAdmin(VersionAdmin, ModelAdminBase, AdminImageMixin):
         return '{0}x{1}'.format(obj.width, obj.height)
 
     def resolucion_(self, obj):
-        return '%dp' % obj.resolucion
+        if obj.resolucion:
+            return '%dp' % obj.resolucion
 
     def suit_row_attributes(self, obj, request):
         return { 'class': 'estado-%s' % obj.ESTADO }
