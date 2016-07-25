@@ -12,11 +12,11 @@ from subprocess import Popen, PIPE, call, check_output
 import wget
 
 
-logger = logging.getLogger('multimediaops')
+logger = logging.getLogger('multimedia_ops')
 
 
-CODEC_AUDIO = 'libvo_aacenc'#'aac' #'libfdk_aac'
-
+CODEC_AUDIO = 'libvo_aacenc' # included in libacbocdec-extra
+#CODEC_AUDIO = 'libfdk_aac'  # best AAC encode, however not included by default
 
 H264_PARAMS = {
     'profile': 'main',
@@ -174,7 +174,7 @@ def make_hls_segments(input_file, output_dir, progress_fn=None):
         logger.info('Removed existing HLS directory: %s' % output_dir)
     os.makedirs(output_dir)
 
-    # detemrine needed modes (different qualities)
+    # detemrine required modes (different qualities)
     video_height = get_video_stream_info(input_file)['height']
     for max_mode in HLS_MODES:
         if video_height >= max_mode['cut_height']:
