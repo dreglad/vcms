@@ -11,7 +11,7 @@ from django.db import connection
 from django_rq import job
 from PIL import Image
 
-from multimediaops import video as video_ops
+from multimedia_ops import video as video_ops
 from vcms import makesprites
 from videos.models import Video, temporales_storage
 

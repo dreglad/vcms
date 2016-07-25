@@ -8,7 +8,7 @@ from isodate import parse_time
 from taggit.utils import parse_tags
 
 from videos.models import *
-from multimediaops.video import get_video_stream_info
+from multimedia_ops.video import get_video_stream_info
  
 DST_ROOT = '/mnt/lajornadavideos_storage/media/'
 
