@@ -38,6 +38,6 @@ server {
     # Finally, send all non-media requests to the Django server.
     location / {
         uwsgi_pass  lajornadavideos;
-        include     /vagrant/provisioning/etc/uwsgi_params;
+        include     /etc/nginx/uwsgi_params;
     }
 }
