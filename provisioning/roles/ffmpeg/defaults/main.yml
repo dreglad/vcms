@@ -1,0 +1,6 @@
+---
+# ffmpeg default vars
+
+sources_path: /root/ffmpeg_sources
+fdk_aac_version: HEAD
+ffmpeg_version: HEAD

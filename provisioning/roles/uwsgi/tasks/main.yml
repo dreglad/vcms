@@ -1,0 +1,20 @@
+---
+# uwsgi role tasks
+
+
+# APT packages
+- name: Install APT packages
+  apt: pkg={{ item }}
+  with_items:
+    - python
+    - uwsgi
+    - uwsgi-plugin-python
+  tags: ['packages']
+
+- name: Copy uwsgi_params file for Django
+  copy: src=../files/uwsgi_params dest=/etc/nginx/uwsgi_params
+  notify:
+    - restart uwsgi
+
+- name: Ensure uWSGI is running
+  service: name=uwsgi state=started

@@ -1,0 +1,35 @@
+---
+# nginx role tasks
+
+- name: APT Key present for official NGINX APT packages
+  apt_key: url=http://nginx.org/keys/nginx_signing.key state=present
+
+- name: NGINX deb URL present in sources.list
+  lineinfile: dest=/etc/apt/sources.list line="deb http://nginx.org/packages/mainline/ubuntu/ xenial nginx"
+  register: nginx_deburl
+
+- name: NGINX deb-src URL present in sources.list
+  lineinfile: dest=/etc/apt/sources.list line="deb-src http://nginx.org/packages/mainline/ubuntu/ xenial nginx"
+  register: nginx_debsrcurl
+
+- name: Update apt cache after adding NGINX in apt sources
+  apt: update_cache=yes
+  when: nginx_deburl.changed or nginx_debsrcurl.changed
+
+- name: NGINX installed
+  apt: pkg=nginx state=latest
+
+- name: Copy web server configuration file
+  template: src=../templates/nginx.conf.j2 dest=/etc/nginx/nginx.conf
+  notify:
+    - restart nginx
+
+- name: Set nginx default server configuration
+  template: src=../templates/default.conf.j2 dest=/etc/nginx/conf.d/default.conf owner=root group=root mode=0644
+  notify: Restart nginx
+
+# services
+- name: Ensure nginx is running
+  service: name=nginx state=started
+  tags:
+    - service

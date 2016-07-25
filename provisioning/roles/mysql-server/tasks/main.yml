@@ -1,0 +1,31 @@
+---
+# mysql-server role tasks
+
+- name: Set MySQL root password in case of installing
+  debconf: name='mysql-server' question='mysql-server/root_password' value='{{ mysql_root_password }}' vtype='password'
+
+- name: Confirm MySQL root password in case of installing
+  debconf: name='mysql-server' question='mysql-server/root_password_again' value='{{ mysql_root_password }}' vtype='password'
+
+# APT packages
+- name: Install APT packages
+  apt: pkg={{ item }}
+  with_items:
+    - libmysqlclient-dev
+    - mysql-client
+    - mysql-server
+    - python
+    - python-dev
+    - python-mysqldb
+  tags:
+    - packages
+
+- name: Copy .my.cnf file with root password credentials
+  action: template src=../templates/my.cnf.j2 dest=/etc/my.cnf
+
+# services
+- name: Ensure MySQL is running
+  service: name=mysql state=started
+  tags:
+    - service
+

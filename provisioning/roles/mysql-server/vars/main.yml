@@ -1,0 +1,4 @@
+---
+# mysql role vars
+
+mysql_root_password: pass

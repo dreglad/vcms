@@ -1,0 +1,22 @@
+---
+# redis-server role tasks
+
+
+# Redis package
+- name: Install Redis APT packages
+  apt: pkg={{ item }}
+  with_items:
+    - redis-server
+  tags: ['packages']
+
+# # configuration
+# - name: Set Redis configuration file
+#   template: src=../templates/etc-redis-redis.conf.j2 dest=/etc/redis/redis.conf backup=yes owner=root group=root mode=0644
+#   notify: Restart redis-server
+#   tags:
+#     - redis-server
+
+# services
+- name: Ensure redis-server is running
+  service: name=redis-server state=started
+  tags: ['service']

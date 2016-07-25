@@ -1,0 +1,5 @@
+---
+# redis-server role handlers
+
+- name: Restart redis-server
+  action: service name=redis-server state=restarted

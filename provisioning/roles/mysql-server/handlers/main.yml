@@ -1,0 +1,5 @@
+---
+# mysql-server role handlers
+
+- name: Restart mysql-server
+  action: service name=mysql state=restarted

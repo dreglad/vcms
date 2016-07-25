@@ -1,0 +1,10 @@
+---
+# solr role tasks
+
+# APT packages
+- name: Install APT packages
+  apt: pkg={{ item }}
+  with_items:
+    - solr-jetty
+  tags:
+    - packages

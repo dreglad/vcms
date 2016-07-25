@@ -1,0 +1,76 @@
+---
+# ffmpeg role tasks
+
+# see https://trac.ffmpeg.org/wiki/UbuntuCompilationGuide
+
+- name: Install APT packages
+  apt: pkg={{ item }}
+  with_items:
+    - autoconf
+    - automake
+    - build-essential
+    - git
+    - libass-dev
+    - libfreetype6-dev
+    - libmp3lame-dev
+    - libopus-dev
+    - libtheora-dev
+    - libtool
+    - libvorbis-dev
+    - libx264-dev
+    - pkg-config
+    - texinfo
+    - yasm
+    - zlib1g-dev
+  tags:
+    - apt
+
+- name: Create sources directory
+  file: path={{ sources_path }} state=directory mode=0755
+
+# fdc-aac
+- name: Clone fdk-aac source code
+  git: repo=git://github.com/mstorsjo/fdk-aac.git dest={{ sources_path }}/fdk-aac version={{ fdk_aac_version|default('HEAD') }}
+  register: fdk_aac_source_download
+
+- name: Build fdk-aac
+  shell: |
+    cd {{ sources_path }}/fdk-aac && \
+    autoreconf -fiv && \
+    ./configure --disable-shared && \
+    make && \
+    make install && \
+    make distclean
+  when: fdk_aac_source_download.changed
+
+# libvpx
+- name: Clone libvpx git repository
+  git: repo=https://chromium.googlesource.com/webm/libvpx dest={{ sources_path }}/libvpx version={{ libvpx_version|default('HEAD') }}
+  register: libvpx_source_download
+
+- name: Build and install libvpx
+  shell: |
+    cd {{ sources_path }}/libvpx && \
+    ./configure --disable-examples --disable-unit-tests && \
+    make && \
+    make install && \
+    make clean
+  when: libvpx_source_download.changed
+
+# ffmpeg
+- name: Clone ffmpeg git repository
+  git: repo=git://source.ffmpeg.org/ffmpeg dest={{ sources_path }}/ffmpeg version={{ ffmpeg_version|default('HEAD') }}
+  register: ffmpeg_source_download
+
+- name: Build and install ffmpeg
+  shell: |
+    cd {{ sources_path }}/ffmpeg && \
+    ./configure \
+    --enable-gpl --enable-libass --enable-libfdk-aac --enable-libfreetype \
+    --enable-libmp3lame --enable-libopus --enable-libtheora --enable-libvorbis \
+    --enable-libvpx --enable-libx264 --enable-libx265 --enable-nonfree
+    make && \
+    make install && \
+    make distclean && \
+    hash -r
+  when: ffmpeg_source_download.changed

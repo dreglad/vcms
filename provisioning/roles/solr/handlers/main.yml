@@ -1,0 +1,5 @@
+---
+# solr role handlers
+
+- name: Restart jetty
+  action: service name=jetty state=restarted
