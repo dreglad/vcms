@@ -8,3 +8,6 @@
     - solr-jetty
   tags:
     - packages
+
+- name: Ensure jetty is running
+  service: name=jetty8 state=started
