@@ -644,8 +644,8 @@ class Video(ModelBase, TitledMixin, DisplayableMixin):
                     elif status_list[0] == 'error':
                         status['code'] = int(status_list[1])
                         status['msg'] = ' '.join(status_list[2:])
-            except Exception e:
-                return {'status': 'error', 'message': e}
+        except Exception, e:
+            return {'status': 'error', 'message': e}
         return status
 
     # @procesamiento_status.setter
