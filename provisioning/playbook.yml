@@ -31,6 +31,13 @@
         path: /mnt/temporales
         backend: FileSystemBackend
 
+  roles:
+    - ffmpeg
+    - mysql-server
+    - redis-server
+    - solr
+    - uwsgi
+
   tasks:
     - name: hostname set
       hostname: name={{ hostname }}
@@ -38,65 +45,24 @@
     - name: APT packages updated at latest version
       apt: update_cache=yes upgrade=dist
 
-    #- name: PPA repository for FFmpeg and codec libraries added
-    #  apt_repository: repo='ppa:mc3man/xenial-media' update_cache=yes
-
-    - name: Set MySQL root password in case of installing
-      debconf: name='mysql-server' question='mysql-server/root_password' value='pass' vtype='password'
-
-    - name: Confirm MySQL root password in case of installing
-      debconf: name='mysql-server' question='mysql-server/root_password_again' value='pass' vtype='password'
-
     - name: Required APT packages installed
       apt: pkg={{ item }}
       with_items:
-        #- fdkaac-encoder
-        - fdkaac
-        - ffmpeg
+        - curl
         - git
         - htop
         - imagemagick
         - libjpeg-dev
-        - libmysqlclient-dev
         - libyaml-dev
         - memcached
-        - mysql-server
         - python-dev
         - python-memcache
-        - python-mysqldb
         - python-virtualenv
         - python-pip
         - python3-pip
-        - redis-server
-        - solr-jetty
         - supervisor
-        - uwsgi
-        - uwsgi-plugin-python
         - vnstat
-        - x264
-
-    - name: APT Key present for official NGINX APT packages
-      apt_key: url=http://nginx.org/keys/nginx_signing.key state=present
-      tags: ['nginx', 'install']
-
-    - name: NGINX deb URL present in sources.list
-      lineinfile: dest=/etc/apt/sources.list line="deb http://nginx.org/packages/mainline/ubuntu/ xenial nginx"
-      register: nginx_deburl
-      tags: ['nginx', 'install']
-
-    - name: NGINX deb-src URL present in sources.list
-      lineinfile: dest=/etc/apt/sources.list line="deb-src http://nginx.org/packages/mainline/ubuntu/ xenial nginx"
-      register: nginx_debsrcurl
-      tags: ['nginx', 'install']
-
-    - name: Update apt cache after adding NGINX in apt sources
-      apt: update_cache=yes
-      when: nginx_deburl.changed or nginx_debsrcurl.changed
-      tags: ['nginx', 'install']
-
-    - name: NGINX installed
-      apt: pkg=nginx state=latest
-      tags: ['nginx', 'install']
+        - wget
 
     - name: vcms log directory present
       file: path=/var/log/vcms state=directory owner=www-data mode=0755 follow=True
@@ -108,12 +74,6 @@
         - "{{ storage_dirs }}"
         - "{{ vcms_apps }}"
 
-    - name: Copy web server configuration file
-      template: src=etc/nginx.conf.j2 dest=/etc/nginx/nginx.conf
-      tags: ['nginx']
-      notify:
-        - restart nginx
-
     # App server
     - name: latest you-get installed
       command: pip3 install --upgrade you-get creates="/usr/local/bin/you-get"
@@ -122,21 +82,21 @@
     - name: pip at latest version
       pip: name=pip state=latest
 
-    - name: vcms python requirements installed
+    - name: vcms's Python requirements at their latest version
       pip: requirements=/vagrant/vcms/vcms/requirements.txt state=latest
 
-    - name: databases created
+    - name: vcms databases created
       mysql_db: name={{ item }} login_user=root login_password=pass state=present
       register: database
       tags: ['python', 'database']
       with_items: "{{ vcms_apps }}"
 
-    - name: databases migrated
+    - name: vcms databases migrated
       django_manage: command=migrate app_path=/vagrant/vcms settings=vcms.settings_{{ item }}
       tags: ['python', 'database', 'django']
       with_items: "{{ vcms_apps }}"
 
-    - name: Iniial users created
+    - name: vcms Iniial users created
       django_manage: command="createsuperuser --noinput --username=admin --email=admin@example.com" app_path=/vagrant/vcms settings=vcms.settings_{{ item }}
       tags: ['database', 'django']
       when: database.changed
@@ -206,25 +166,10 @@
       notify:
         - restart nginx
 
-    - name: Ensure uWSGI is running
-      service: name=uwsgi state=started
-
-    - name: Ensure NGINX is running
-      service: name=nginx state=started
-
     - name: Ensure supervisor is running
       service: name=supervisor state=started
 
 
   handlers:
-    - name: restart nginx
-      service: name=nginx state=restarted
-
-    - name: restart uwsgi
-      service: name=uwsgi state=restarted
-
-    - name: reload upstart configuration
-      command: initctl reload-configuration
-
     - name: restart supervisor
       service: name=supervisor state=restarted
