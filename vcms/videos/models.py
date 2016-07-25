@@ -617,32 +617,35 @@ class Video(ModelBase, TitledMixin, DisplayableMixin):
     @property
     def procesamiento_status(self):
         from subprocess import check_output, CalledProcessError
-        status = {'status': None}
-        if temporales_storage.exists(self.status_path):
-            with temporales_storage.open(self.status_path, 'r') as status_file:
-                status_list = status_file.read().split()
-            if status_list:
-                status['status'] = status_list[0]
-                if status_list[0] == 'download':  # download has begun
-                    status['progress'] = float(status_list[1])
-                elif status_list[0] == 'valid':
-                     # download has finished and compreession started
-                    status['total'] = float(status_list[1])
-                    try:
-                        tailcmd = ['tail', '-2', temporales_storage.path(self.vstats_path)]
-                        vstats_line = check_output(tailcmd).split("\n")[0]
-                        status['seconds'] = float(vstats_line.split()[9])
-                        status['progress'] = 100 * round(
-                            status['seconds'] / status['total'], 2)
-                    except (CalledProcessError, IndexError):
-                        # No vstats file or invalid
-                        status['seconds'] = 0
-                        status['progress'] = 0
-                elif status_list[0] == 'done':
-                    status['id'] = int(status_list[1])
-                elif status_list[0] == 'error':
-                    status['code'] = int(status_list[1])
-                    status['msg'] = ' '.join(status_list[2:])
+        try:
+            status = {'status': None}
+            if temporales_storage.exists(self.status_path):
+                with temporales_storage.open(self.status_path, 'r') as status_file:
+                    status_list = status_file.read().split()
+                if status_list:
+                    status['status'] = status_list[0]
+                    if status_list[0] == 'download':  # download has begun
+                        status['progress'] = float(status_list[1])
+                    elif status_list[0] == 'valid':
+                         # download has finished and compreession started
+                        status['total'] = float(status_list[1])
+                        try:
+                            tailcmd = ['tail', '-2', temporales_storage.path(self.vstats_path)]
+                            vstats_line = check_output(tailcmd).split("\n")[0]
+                            status['seconds'] = float(vstats_line.split()[9])
+                            status['progress'] = 100 * round(
+                                status['seconds'] / status['total'], 2)
+                        except (CalledProcessError, IndexError):
+                            # No vstats file or invalid
+                            status['seconds'] = 0
+                            status['progress'] = 0
+                    elif status_list[0] == 'done':
+                        status['id'] = int(status_list[1])
+                    elif status_list[0] == 'error':
+                        status['code'] = int(status_list[1])
+                        status['msg'] = ' '.join(status_list[2:])
+            except Exception e:
+                return {'status': 'error', 'message': e}
         return status
 
     # @procesamiento_status.setter
