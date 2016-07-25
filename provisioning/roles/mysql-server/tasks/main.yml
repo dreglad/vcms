@@ -17,11 +17,15 @@
     - python
     - python-dev
     - python-mysqldb
-  tags:
-    - packages
+  register: apt_packages
+  tags: ['packages']
 
 - name: Copy .my.cnf file with root password credentials
   action: template src=../templates/my.cnf.j2 dest=/etc/my.cnf
+
+- name: Populate tzinfo MySQL data
+  shell: mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql
+  #when: apt_packages.changed
 
 # services
 - name: Ensure MySQL is running
