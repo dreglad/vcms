@@ -48,7 +48,7 @@
   failed_when: "'FAILED' in install_x265.stderr"
 
 # fdc-aac
-- name: Clone fdk-aac source code
+- name: Get fdk-aac source code
   git: repo=git://github.com/mstorsjo/fdk-aac.git dest={{ sources_path }}/fdk-aac version={{ fdk_aac_version|default('HEAD') }}
   register: fdk_aac_source_download
 
@@ -64,7 +64,7 @@
   when: fdk_aac_source_download.changed
 
 # libvpx
-- name: Clone libvpx git repository
+- name: Get libvpx source code
   git: repo=https://chromium.googlesource.com/webm/libvpx dest={{ sources_path }}/libvpx version={{ libvpx_version|default('HEAD') }}
   register: libvpx_source_download
 
@@ -79,7 +79,7 @@
   when: libvpx_source_download.changed
 
 # ffmpeg
-- name: Clone ffmpeg git repository
+- name: Get ffmpeg source code
   git: repo=git://source.ffmpeg.org/ffmpeg dest={{ sources_path }}/ffmpeg version={{ ffmpeg_version|default('HEAD') }}
   register: ffmpeg_source_download
 
