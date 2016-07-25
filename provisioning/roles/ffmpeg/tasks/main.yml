@@ -9,6 +9,7 @@
     - autoconf
     - automake
     - build-essential
+    - cmake
     - git
     - libass-dev
     - libfreetype6-dev
@@ -18,6 +19,7 @@
     - libtool
     - libvorbis-dev
     - libx264-dev
+    - mercurial
     - pkg-config
     - texinfo
     - yasm
@@ -27,6 +29,23 @@
 
 - name: Create sources directory
   file: path={{ sources_path }} state=directory mode=0755
+
+# H.265/HEVC
+- name: Get x265 source code
+  hg: repo=https://bitbucket.org/multicoreware/x265 dest={{ sources_path }}/x265
+  register: x265_source_download
+
+- name: Build and install x265
+  shell: |
+    cd {{ sources_path }}/x265/build/linux && \
+    cmake -G "Unix Makefiles" -DENABLE_SHARED:bool=off ../../source && \
+    make && \
+    make install && \
+    make distclean
+  tags: ['compile']
+  when: x265_source_download.changed
+  register: install_x265
+  failed_when: "'FAILED' in install_x265.stderr"
 
 # fdc-aac
 - name: Clone fdk-aac source code
@@ -41,6 +60,7 @@
     make && \
     make install && \
     make distclean
+  tags: ['compile']
   when: fdk_aac_source_download.changed
 
 # libvpx
@@ -55,6 +75,7 @@
     make && \
     make install && \
     make clean
+  tags: ['compile']
   when: libvpx_source_download.changed
 
 # ffmpeg
@@ -66,11 +87,14 @@
   shell: |
     cd {{ sources_path }}/ffmpeg && \
     ./configure \
-    --enable-gpl --enable-libass --enable-libfdk-aac --enable-libfreetype \
-    --enable-libmp3lame --enable-libopus --enable-libtheora --enable-libvorbis \
+    --pkg-config-flags="--static" --enable-gpl --enable-libass \
+    --enable-libfdk-aac --enable-libfreetype --enable-libmp3lame \
+    --enable-libopus --enable-libtheora --enable-libvorbis \
     --enable-libvpx --enable-libx264 --enable-libx265 --enable-nonfree
     make && \
     make install && \
     make distclean && \
     hash -r
+  tags: ['compile']
+  #when: ffmpeg_source_download.changed or x265_source_download.changed or libvpx_source_download.changed or fdk_aac_source_download.changed
   when: ffmpeg_source_download.changed
