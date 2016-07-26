@@ -1,0 +1,5 @@
+---
+# nginx role vars
+
+nginx_ssl_certificate: ""
+nginx_ssl_certificate_key: ""
