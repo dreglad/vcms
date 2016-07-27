@@ -7,8 +7,8 @@ DEBUG = False
 
 PROJECT = '{{ item.name }}'
 SITE_NAME = '{{ item.title }}'
-RQ_QUEUES_DB = {{ items.redis_db }}
-THUMBNAIL_REDIS_DB = {{ items.redis_db }}
+RQ_QUEUES_DB = {{ item.redis_db }}
+THUMBNAIL_REDIS_DB = {{ item.redis_db }}
 
 exec open('/vagrant/vcms/vcms/settings.conf') in globals()
 
