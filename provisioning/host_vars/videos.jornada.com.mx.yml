@@ -28,7 +28,7 @@ vcms_apps:
     admin_host: videosadmin.jornada.com.mx
     admin_url: https://videosadmin.jornada.com.mx/
     frontend_url: https://videos.jornada.com.mx/
-    x_frame_allow_from: http://www.jornada.unam.mx/ https://editonline.jornada.com.mx/ ' http://ojarasca.jornada.com.mx/ http://semanal.jornada.com.mx/ http://letraese.jornada.com.mx/ http://ciencias.jornada.com.mx/ http://wikileaks.jornada.com.mx/ http://staging.jornada.com.mx/
+    x_frame_allow_from: http://www.jornada.unam.mx/ https://editonline.jornada.com.mx/ http://ojarasca.jornada.com.mx/ http://semanal.jornada.com.mx/ http://letraese.jornada.com.mx/ http://ciencias.jornada.com.mx/ http://wikileaks.jornada.com.mx/ http://staging.jornada.com.mx/
     language_code: es
     redis_db: 1
 
@@ -36,7 +36,7 @@ vcms_apps:
     title: La Jornada Ciencias Videos
     admin_host: ciencias.jornada.com.mx
     admin_url: https://cienciasadmin.jornada.com.mx/
-    x_frame_allow_from: http://www.jornada.unam.mx/ https://editonline.jornada.com.mx/ ' http://ojarasca.jornada.com.mx/ http://semanal.jornada.com.mx/ http://letraese.jornada.com.mx/ http://ciencias.jornada.com.mx/ http://wikileaks.jornada.com.mx/ http://staging.jornada.com.mx/
+    x_frame_allow_from: http://www.jornada.unam.mx/ https://editonline.jornada.com.mx/ http://ojarasca.jornada.com.mx/ http://semanal.jornada.com.mx/ http://letraese.jornada.com.mx/ http://ciencias.jornada.com.mx/ http://wikileaks.jornada.com.mx/ http://staging.jornada.com.mx/
     frontend_url: false
     language_code: es
     redis_db: 2
@@ -45,7 +45,7 @@ vcms_apps:
     title: La Jornada wikileaks Videos
     admin_host: wikileaksadmin.jornada.com.mx
     admin_url: https://wikileaksadmin.jornada.com.mx/
-    x_frame_allow_from: http://www.jornada.unam.mx/ https://editonline.jornada.com.mx/ ' http://ojarasca.jornada.com.mx/ http://semanal.jornada.com.mx/ http://letraese.jornada.com.mx/ http://ciencias.jornada.com.mx/ http://wikileaks.jornada.com.mx/ http://staging.jornada.com.mx/
+    x_frame_allow_from: http://www.jornada.unam.mx/ https://editonline.jornada.com.mx/ http://ojarasca.jornada.com.mx/ http://semanal.jornada.com.mx/ http://letraese.jornada.com.mx/ http://ciencias.jornada.com.mx/ http://wikileaks.jornada.com.mx/ http://staging.jornada.com.mx/
     language_code: es
     frontend_url: false
     redis_db: 3
@@ -54,7 +54,7 @@ vcms_apps:
     title: La Jornada LetraEse Videos
     admin_host: letraese.jornada.com.mx
     admin_url: https://letraeseadmin.jornada.com.mx/
-    x_frame_allow_from: http://www.jornada.unam.mx/ https://editonline.jornada.com.mx/ ' http://ojarasca.jornada.com.mx/ http://semanal.jornada.com.mx/ http://letraese.jornada.com.mx/ http://ciencias.jornada.com.mx/ http://wikileaks.jornada.com.mx/ http://staging.jornada.com.mx/
+    x_frame_allow_from: http://www.jornada.unam.mx/ https://editonline.jornada.com.mx/ http://ojarasca.jornada.com.mx/ http://semanal.jornada.com.mx/ http://letraese.jornada.com.mx/ http://ciencias.jornada.com.mx/ http://wikileaks.jornada.com.mx/ http://staging.jornada.com.mx/
     language_code: es
     redis_db: 4
 
@@ -62,7 +62,7 @@ vcms_apps:
     title: La Jornada Ojarasca Videos
     admin_host: ojarascaadmin.jornada.com.mx
     admin_url: https://ojarascaadmin.jornada.com.mx/
-    x_frame_allow_from: http://www.jornada.unam.mx/ https://editonline.jornada.com.mx/ ' http://ojarasca.jornada.com.mx/ http://semanal.jornada.com.mx/ http://letraese.jornada.com.mx/ http://ciencias.jornada.com.mx/ http://wikileaks.jornada.com.mx/ http://staging.jornada.com.mx/
+    x_frame_allow_from: http://www.jornada.unam.mx/ https://editonline.jornada.com.mx/ http://ojarasca.jornada.com.mx/ http://semanal.jornada.com.mx/ http://letraese.jornada.com.mx/ http://ciencias.jornada.com.mx/ http://wikileaks.jornada.com.mx/ http://staging.jornada.com.mx/
     language_code: es
     frontend_url: false
     redis_db: 5
@@ -71,7 +71,7 @@ vcms_apps:
     title: La Jornada Semanal Videos
     admin_host: semanal.jornada.com.mx
     admin_url: https://semanaladmin.jornada.com.mx/
-    x_frame_allow_from: http://www.jornada.unam.mx/ https://editonline.jornada.com.mx/ ' http://ojarasca.jornada.com.mx/ http://semanal.jornada.com.mx/ http://letraese.jornada.com.mx/ http://ciencias.jornada.com.mx/ http://wikileaks.jornada.com.mx/ http://staging.jornada.com.mx/
+    x_frame_allow_from: http://www.jornada.unam.mx/ https://editonline.jornada.com.mx/ http://ojarasca.jornada.com.mx/ http://semanal.jornada.com.mx/ http://letraese.jornada.com.mx/ http://ciencias.jornada.com.mx/ http://wikileaks.jornada.com.mx/ http://staging.jornada.com.mx/
     language_code: es
     frontend_url: false
     redis_db: 6
