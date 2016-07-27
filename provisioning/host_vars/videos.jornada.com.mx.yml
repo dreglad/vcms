@@ -39,6 +39,7 @@ vcms_apps:
     x_frame_allow_from: http://www.jornada.unam.mx/ https://editonline.jornada.com.mx/ http://ojarasca.jornada.com.mx/ http://semanal.jornada.com.mx/ http://letraese.jornada.com.mx/ http://ciencias.jornada.com.mx/ http://wikileaks.jornada.com.mx/ http://staging.jornada.com.mx/
     language_code: es
     redis_db: 1
+    ssl_enabled: true
 
   - name: ciencias
     title: La Jornada Ciencias Videos
@@ -48,6 +49,7 @@ vcms_apps:
     frontend_url: false
     language_code: es
     redis_db: 2
+    ssl_enabled: true
 
   - name: wikileaks
     title: La Jornada wikileaks Videos
@@ -57,6 +59,7 @@ vcms_apps:
     language_code: es
     frontend_url: false
     redis_db: 3
+    ssl_enabled: true
 
   - name: letraese
     title: La Jornada LetraEse Videos
@@ -66,6 +69,7 @@ vcms_apps:
     language_code: es
     frontend_url: false
     redis_db: 4
+    ssl_enabled: true
 
   - name: ojarasca
     title: La Jornada Ojarasca Videos
@@ -75,6 +79,7 @@ vcms_apps:
     language_code: es
     frontend_url: false
     redis_db: 5
+    ssl_enabled: true
 
   - name: semanal
     title: La Jornada Semanal Videos
@@ -84,4 +89,5 @@ vcms_apps:
     language_code: es
     frontend_url: false
     redis_db: 6
+    ssl_enabled: true
     

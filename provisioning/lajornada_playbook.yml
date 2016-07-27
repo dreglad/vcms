@@ -1,5 +1,7 @@
 ---
 - hosts: videos.jornada.com.mx
+  vars:
+    ssl_enabled: true
 
   roles:
     - common

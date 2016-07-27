@@ -11,12 +11,10 @@ server {
 
     charset     utf-8;
 
-    {% if nginx_ssl_certificate %}
-        listen  443;
-        ssl_certificate /etc/ssl/certs/{{ ansible_hostname }}.crt;
-        {% if nginx_ssl_certificate_key %}
-            ssl_certificate_key /etc/ssl/private/{{ ansible_hostname }}.key
-        {% endif %}
+    {% if item.ssl_enabled %}
+    listen  443;
+    ssl_certificate /etc/ssl/certs/{{ ansible_hostname }}.crt;
+    ssl_certificate_key /etc/ssl/private/{{ ansible_hostname }}.key
     {% endif %}
 
     # max upload size
