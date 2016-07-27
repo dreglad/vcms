@@ -64,6 +64,7 @@ vcms_apps:
     admin_url: https://letraeseadmin.jornada.com.mx/
     x_frame_allow_from: http://www.jornada.unam.mx/ https://editonline.jornada.com.mx/ http://ojarasca.jornada.com.mx/ http://semanal.jornada.com.mx/ http://letraese.jornada.com.mx/ http://ciencias.jornada.com.mx/ http://wikileaks.jornada.com.mx/ http://staging.jornada.com.mx/
     language_code: es
+    frontend_url: false
     redis_db: 4
 
   - name: ojarasca
