@@ -4,7 +4,7 @@ upstream vcms_{{ item.name }} {
 
 server {
     listen  80;
-    server_name .{{ item.backend_host }};
+    server_name .{{ item.admin_host }};
     server_name .{{ item.name }}-admin.openmultimedia.biz;
     server_name .{{ item.name }}-admin-stg.openmultimedia.biz;
     server_name .{{ item.name }}-admin-dev.openmultimedia.biz;
