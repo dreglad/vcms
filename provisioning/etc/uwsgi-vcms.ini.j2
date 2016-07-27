@@ -2,8 +2,8 @@
 
 processes = 3
 env = PYTHONIOENCODING=UTF-8
-env = DJANGO_SETTINGS_MODULE=vcms.settings_{{ item }}
-logto = /var/log/vcms/uwsgi_vcms_{{ item }}.log
+env = DJANGO_SETTINGS_MODULE=vcms.settings_{{ item.name }}
+logto = /var/log/vcms/uwsgi_vcms_{{ item.name }}.log
 master = true
 enable-threads = true
 single-interpreter = true

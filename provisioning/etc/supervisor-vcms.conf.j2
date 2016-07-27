@@ -1,10 +1,10 @@
 [supervisord]
 environment = PYTHONIOENCODING="utf8",LANG="en_US.utf8",LC_ALL="en_US.UTF-8",LC_LANG="en_US.UTF-8"
 
-[program:vcms_worker_{{ item }}]
+[program:vcms_worker_{{ item.name }}]
 command=/vagrant/vcms/manage.py rqworker high default low
 process_name=all_queues_%(process_num)s
-environment = DJANGO_SETTINGS_MODULE="vcms.settings_{{ item }}"
+environment = DJANGO_SETTINGS_MODULE="vcms.settings_{{ item.name }}"
 
 numprocs=2
 

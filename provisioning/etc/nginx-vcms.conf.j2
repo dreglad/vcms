@@ -1,13 +1,13 @@
-upstream vcms_{{ item }} {
-    server unix:///run/uwsgi/app/vcms_{{ item }}/socket;
+upstream vcms_{{ item.name }} {
+    server unix:///run/uwsgi/app/vcms_{{ item.name }}/socket;
 }
 
 server {
     listen  80;
-    server_name .{{ vcms_server_names[item] }};
-    server_name .{{ item }}-admin.openmultimedia.biz;
-    server_name .{{ item }}-admin-stg.openmultimedia.biz;
-    server_name .{{ item }}-admin-dev.openmultimedia.biz;
+    server_name .{{ item.backend_host }};
+    server_name .{{ item.name }}-admin.openmultimedia.biz;
+    server_name .{{ item.name }}-admin-stg.openmultimedia.biz;
+    server_name .{{ item.name }}-admin-dev.openmultimedia.biz;
 
     charset     utf-8;
 
@@ -15,7 +15,7 @@ server {
     client_max_body_size 75M;
 
     location /media  {
-        alias /mnt/media/lajornadavideos;
+        alias /mnt/media/{{ item.name }};
 
         location ~* \.mp4$ {
             mp4;
@@ -31,7 +31,7 @@ server {
     
     # Finally, send all non-media requests to the Django server.
     location / {
-        uwsgi_pass  vcms_{{ item }};
+        uwsgi_pass  vcms_{{ item.name }};
         include     /etc/nginx/uwsgi_params;
     }
 }
