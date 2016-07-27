@@ -1,0 +1,25 @@
+127.0.0.1       localhost
+
+{% if private_address %}{{ private_address }}  {{ inventory_hostname_short }}{% endif %}
+{% if public_address %}{{ public_address }}    {{ inventory_hostname }}{% endif %}
+
+{% if private_address %}
+# Force upload service through private network
+{{ upload_private_vip }}   upload  upload.openmultimedia.biz
+{{ upload_private_vip }}   upload.local  upload.local.openmultimedia.biz
+
+# Redis service
+{{ redis_vip }}           redis.local  redis.local.openmultimedia.biz
+{{ redis_vip }}           redis.local  redis.local.openmultimedia.biz
+
+# MySQL service
+{{ mysql_vip }}            mysql.local  mysql.local.openmultimedia.biz
+{% endif %}
+
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters

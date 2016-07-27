@@ -1,0 +1,108 @@
+---
+# common role tasks
+
+- name: hostname set
+  hostname: name={{ hostname }}
+
+- name: APT packages updated at latest version
+  apt: update_cache=yes upgrade=dist
+  tags: ['packages']
+
+# - name: Install basic APT packages
+#   apt: pkg={{ item }}
+#   with_items:
+#     - software-properties-common
+#   tags: ['[ackages']
+
+
+# # Network configuration
+# - name: Set dist interfaces file
+#   template: src=../templates/etc-network-interfaces.dist.j2 dest=/etc/network/interfaces.dist owner=root group=root mode=0644
+#   tags:
+#     - network
+
+# - name: Set network interface configuration
+#   template: src=../templates/etc-network-interfaces.j2 dest=/etc/network/interfaces backup=yes owner=root group=root mode=0644
+#   tags:
+#     - network
+#   #notify: Restart networking
+
+# - name: Set hosts file
+#   template: src=../templates/etc-hosts.j2 dest=/etc/hosts
+#   tags:
+#     - network
+
+#- name: remove old kernels
+#  shell: dpkg -l linux-* | awk '/^ii/{ print $2}' | grep -v -e `uname -r | cut -f1,2 -d"-"` | grep -e [0-9] | xargs sudo apt-get -y purge
+
+
+# users
+# - name: Set root password
+#   user: name=root password=!
+#   tags:
+#     - users
+
+# - name: Enable passwordless sudo to user 'om'
+#   copy: dest=/etc/sudoers.d/om content="om ALL = (root) NOPASSWD:ALL" owner=root group=root mode=0440
+#   tags:
+#     - users
+
+
+# access and SSH configuration
+# - name: Ensure SSH password login in disabled
+#   lineinfile: dest=/etc/ssh/sshd_config regexp="^PasswordAuthentication " line="PasswordAuthentication no"
+#   notify: Restart ssh
+#   tags:
+#     - ssh
+
+# - name: Copy default root's RSA key pair
+#   copy: src=../files/root-ssh-{{ item }} dest=/root/.ssh/{{ item }} owner=root group=root mode=0600
+#   with_items:
+#     - id_rsa
+#     - id_rsa.pub
+#   tags:
+#     - ssh
+#     - users
+
+# - name: Set root's authorized_keys
+#   authorized_key: user=om  key="{{ lookup('file', '../files/public_keys/' + item) }}"
+#   with_items: $root_authorized_keys
+#   tags:
+#     - ssh
+#     - users
+
+# - name: Set om's authorized_keys
+#   authorized_key: user=om  key="{{ lookup('file', '../files/public_keys/' + item) }}"
+#   with_items: $om_authorized_keys
+#   tags:
+#     - ssh
+#     - users
+
+
+# - name: Ensure known_hosts file is present
+#   #file: dest=/root/.ssh/known_hosts state=touch mode=0600
+#   #hack until file state=touch is available in next ansible release
+#   command: touch /root/.ssh/known_hosts
+#   tags:
+#     - ssh
+
+# - name: Ensure bitbucket.org is a known host
+#   lineinfile: dest=/root/.ssh/known_hosts state=present regexp="^\|1\|WAFSFBCLk2cR4nvvxQqipadCwJ0=\|CWhQHgsMYfSDWIoTFyZ78lavaZg=" line="|1|WAFSFBCLk2cR4nvvxQqipadCwJ0=|CWhQHgsMYfSDWIoTFyZ78lavaZg= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAubiN81eDcafrgMeLzaFPsw2kNvEcqTKl/VqLat/MaB33pZy0y3rJZtnqwR2qOOvbwKZYKiEO1O6VqNEBxKvJJelCq0dTXWT5pbO2gDXC6h6QDXCaHo6pOHGPUy+YBaGQRGuSusMEASYiWunYN0vCAI8QaXnWMXNMdFP3jHAJH0eDsoiGnLPBlBp4TNm6rYI74nMzgz3B9IikW4WVK+dc8KZJZWYjAuORU3jc1c/NPskD2ASinf8v3xnfXeukU0sJ5N6m5E8VLjObPEO+mN2t/FZTMZLiFqPWc/ALSqnMnnhwrNi2rbfg/rd/IpL8Le3pSBne8+seeFVBoGqzHM9yXw=="
+#   tags:
+#     - ssh
+
+# - name: Ensure github.com is a known host
+#   lineinfile: dest=/root/.ssh/known_hosts state=present regexp="^\|1\|6ugKvA56TK\+yh1aPmBrVajCsx6E=\|ogkiGjh1jwiU4wAPcnob/ZhxP9I=" line="|1|6ugKvA56TK+yh1aPmBrVajCsx6E=|ogkiGjh1jwiU4wAPcnob/ZhxP9I= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ=="
+#   tags:
+#     - ssh
+
+# Monitoring
+# - name: Set munin-node allowed hosts
+#   lineinfile: dest=/etc/munin/munin-node.conf regexp="{{ item.regexp }}" line="{{ item.line }}" insertafter="^allow"
+#   with_items:
+#     - { regexp: '^allow \\^216\\\.245\\\.194\\\.59\$', line: 'allow ^216\.245\.194\.59$' }
+#     - { regexp: '^allow \^10\\\.4\\\.57\\\.140\$', line: 'allow ^10\.4\.57\.140$' }
+#     - { regexp: "^host_name", line: ""}
+#   notify: Restart munin-node
+#   tags:
+#     - munin

@@ -1,0 +1,91 @@
+#####
+# This file acts as a blueprint for quick network configuration
+# under Limestone Networks provider's network facilities.
+####
+
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+{% if nat_interface is defined and nat_interface %}
+#
+# NATted interface
+#
+
+#auto {{ nat_interface }}
+iface {{ nat_interface }} inet dhcp
+{% endif %}
+
+{% if private_address is defined %}
+#
+# Private interface
+#
+
+#auto {{ private_interface }}
+iface {{ private_interface }} inet static
+        netmask {{ private_netmask }}
+        post-up route add -net 10.4.0.0 netmask 255.255.0.0 gw {{ private_gateway }}
+        pre-down route del -net 10.4.0.0 netmask 255.255.0.0 gw {{ private_gateway }}
+
+# 10.4.57.128/27 (10.4.57.130 - 10.4.57.157)
+#        address 10.4.57.xx
+# 10.4.54.0/27 (10.4.54.2 - 10.4.54.29)
+#        address 10.4.54.xx
+# 10.4.30.0/27 (10.4.30.2 - 10.4.30.29)
+#        address 10.4.30.xx
+{% endif %}
+
+
+{% if public_address is defined %}
+#
+# Public interface
+#
+
+#auto {{ public_interface }}
+iface {{ public_interface }} inet static
+        dns-nameservers {{ dns_nameservers }}
+        dns-search {{ dns_search }}
+
+# 208.115.205.144/29 (208.115.205.146 - 208.115.205.150)
+#        address 208.115.205.1xx
+#        netmask 255.255.255.248
+#        gateway 208.115.205.145
+
+# 69.162.125.64/28 (69.162.125.66 - 69.162.125.77)
+#        address 69.162.125.xx
+#        netmask 255.255.255.240
+#        gateway 69.162.125.65
+
+# 69.162.67.176/29 (69.162.67.178 - 69.162.67.181)
+#        address 69.162.67.1xx
+#        netmask 255.255.255.248
+#        gateway 69.162.67.177
+
+# 69.162.86.112/28 (69.162.86.114 - 69.162.86.125)
+#        address 69.162.86.1xx
+#        netmask 255.255.255.240
+#        gateway 69.162.86.113
+
+# 216.245.194.48/28 (216.245.194.50 - 216.245.194.61)
+#        address 216.245.194.xx
+#        netmask 255.255.255.240
+#        gateway 216.245.194.49
+
+# 74.63.216.16/28 (74.63.216.18 - 74.63.216.29)
+#        address 74.63.216.xx
+#        netmask 255.255.255.240
+#        gateway 74.63.216.17
+
+# 208.115.243.64/28 (208.115.243.66 - 208.115.243.77)
+#        address 208.115.243.xx
+#        netmask 255.255.255.240
+#        gateway 208.115.243.65
+
+# 64.31.10.160/28 (64.31.10.162 - 64.31.10.173)
+#        address 64.31.10.1xx
+#        netmask 255.255.255.240
+#        gateway 64.31.10.161
+{% endif %}

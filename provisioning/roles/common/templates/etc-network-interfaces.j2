@@ -1,0 +1,45 @@
+auto lo
+iface lo inet loopback
+
+{% if nat_interface is defined %}
+    auto {{ nat_interface }}
+    iface {{ nat_interface }} inet dhcp
+            dns-search {{ dns_search }}
+            dns-nameservers {{ dns_nameservers }}
+{% endif %}
+
+{% if public_address %}
+    auto {{ public_interface }}
+    iface {{ public_interface }} inet static
+            address {{ public_address }}
+            netmask {{ public_netmask }}
+            gateway {{ public_gateway }}
+            dns-nameservers {{ dns_nameservers }}
+            dns-search {{ dns_search }}
+{% endif %}
+
+{% if private_address is defined %}
+    auto {{ private_interface }}
+    iface {{ private_interface }} inet static
+            address {{ private_address }}
+            netmask {{ private_netmask }}
+            {% if public_gateway or nat_interface -%}
+            post-up route add -net 10.4.0.0 netmask 255.255.0.0 gw {{ private_gateway }}
+            pre-down route del -net 10.4.0.0 netmask 255.255.0.0 gw {{ private_gateway }}
+            {% else %}
+            gateway {{ private_gateway }}
+            {% endif %}
+{% endif %}
+
+{% if private_address2 is defined %}
+    auto {{ private_interface2 }}
+    iface {{ private_interface2 }} inet static
+            address {{ private_address2 }}
+            netmask {{ private_netmask2 }}
+            {% if public_gateway or nat_interface -%}
+            post-up route add -net {{ private_network2 }} netmask {{ private_netmask2 }} gw {{ private_gateway2 }}
+            pre-down route del -net {{ private_network2 }} netmask {{ private_netmask2 }} gw {{ private_gateway2 }}
+            {% else %}
+            gateway {{ private_gateway2 }}
+            {% endif %}
+{% endif %}

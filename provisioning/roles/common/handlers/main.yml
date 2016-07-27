@@ -1,0 +1,8 @@
+---
+# common role handlers
+
+- name: Restart ssh
+  action: service name=ssh state=restarted
+
+- name: Restart networking
+  action: service name=networking state=restarted
