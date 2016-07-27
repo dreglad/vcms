@@ -16,8 +16,8 @@ network:
       dns-nameservers: 172.16.20.254
       dns-search: jornada.com.mx
 
-nginx_ssl_certificate: ../files/lajornada/videos.jornada.com.mx.crt
-nginx_ssl_certificate_key: ../files/lajornada/videos.jornada.com.mx.key
+nginx_ssl_certificate: lajornada/jornada.com.mx.crt
+nginx_ssl_certificate_key: lajornada/jornada.com.mx.key
 
 mounts:
     - path: '/mnt'

@@ -4,17 +4,17 @@
 
 - name: OpenSSL at latest version
   apt: pkg=openssl state=latest
-  when: nginx_ssl_certificate
+  when: nginx_ssl_certificate is defined and nginx_ssl_certificate
   tags: ['packages', 'ssl']
 
 - name: Copy SSL certificate
-  copy: src={{ nginx_ssl_certificate }} dest=/etc/ssl/certs/{{ ansible_hostname }}.crt owner=root group=root mode=0644
-  when: nginx_ssl_certificate
+  copy: src=files/{{ nginx_ssl_certificate }} dest=/etc/ssl/certs/{{ ansible_hostname }}.crt owner=root group=root mode=0644
+  when: nginx_ssl_certificate is defined and nginx_ssl_certificate
   tags: ['ssl']
 
 - name: Copy certificate key
-  copy: src={{ nginx_ssl_certificate_key }} dest=/etc/ssl/certs/{{ ansible_hostname }}.key owner=root group=root mode=0600
-  when: nginx_ssl_certificate_key
+  copy: src=files/{{ nginx_ssl_certificate_key }} dest=/etc/ssl/certs/{{ ansible_hostname }}.key owner=root group=root mode=0600
+  when: nginx_ssl_certificate is defined and nginx_ssl_certificate
   tags: ['ssl']
 
 - name: APT Key present for official NGINX APT packages

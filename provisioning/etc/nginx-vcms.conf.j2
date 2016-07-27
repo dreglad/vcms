@@ -11,6 +11,14 @@ server {
 
     charset     utf-8;
 
+    {% if nginx_ssl_certificate %}
+        listen  443;
+        ssl_certificate /etc/ssl/certs/{{ ansible_hostname }}.crt;
+        {% if nginx_ssl_certificate_key %}
+            ssl_certificate_key /etc/ssl/private/{{ ansible_hostname }}.key
+        {% endif %}
+    {% endif %}
+
     # max upload size
     client_max_body_size 75M;
 
