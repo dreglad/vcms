@@ -20,9 +20,9 @@ nginx_ssl_certificate: ../files/lajornada/videos.jornada.com.mx.crt
 nginx_ssl_certificate_key: ../files/lajornada/videos.jornada.com.mx.key
 
 mounts:
-    - path: '/mnt',
-      src: 'UUID=a891a365-762e-467f-bcee-33db2193d8aa',
-      type: 'ext4',
+    - path: '/mnt'
+      src: 'UUID=a891a365-762e-467f-bcee-33db2193d8aa'
+      type: 'ext4'
       opts: 'noatime,errors=remount-ro'
 
 storage_dirs:
