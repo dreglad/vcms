@@ -1,0 +1,12 @@
+---
+- hosts: jornada.com.mx
+
+  roles:
+    - common
+    - mysql-server
+    - redis-server
+    - solr
+    - uwsgi
+    - ffmpeg
+    - nginx
+    - vcms
