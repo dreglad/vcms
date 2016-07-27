@@ -6,7 +6,7 @@
     - mysql-server
     - redis-server
     - solr
+    - nginx
     - uwsgi
     - ffmpeg
-    - nginx
     - vcms
