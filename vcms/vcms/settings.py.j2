@@ -13,11 +13,6 @@ THUMBNAIL_REDIS_DB = {{ items.redis_db }}
 exec open('/vagrant/vcms/vcms/settings.conf') in globals()
 
 # Override ...
-
-ALLOWED_HOSTS = [
-    '{{ item.admin_host }}',
-]
-
 {% if item.frontend_url %}
     FRONTEND_URL = '{{ item.frontend_url }}'
 {% else %}
@@ -26,6 +21,10 @@ ALLOWED_HOSTS = [
 
 LANGUAGE_CODE = '{{ item.language_code }}'
 LANGUAGES = ['{{ item.language_code }}',]
+
+ALLOWED_HOSTS = ['{{ item.admin_host }}']
+
+X_FRAME_OPTIONS = 'ALLOW-FROM {{ item.x_frame_allow_from }}'
 
 SUIT_CONFIG = {
     'CONFIRM_UNSAVED_CHANGES': False,
