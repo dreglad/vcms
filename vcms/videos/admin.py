@@ -67,9 +67,9 @@ DEFAULT_FORMFIELD_OVERRIDES = {
     ImageField: {
         'widget': AdminImageWidget
     },
-    models.DateTimeField: {
-        'widget': SuitSplitDateTimeWidget
-    },
+    # models.DateTimeField: {
+    #     'widget': SuitSplitDateTimeWidget
+    # },
     models.DateField: {
         'widget': SuitDateWidget
     },

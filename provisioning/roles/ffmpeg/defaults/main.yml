@@ -1,6 +1,7 @@
 ---
 # ffmpeg default vars
 
+recompile_ffmpeg: false
 sources_path: /root/ffmpeg_sources
 fdk_aac_version: HEAD
 ffmpeg_version: HEAD

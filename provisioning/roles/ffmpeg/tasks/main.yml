@@ -41,9 +41,9 @@
     cmake -G "Unix Makefiles" -DENABLE_SHARED:bool=off ../../source && \
     make && \
     make install && \
-    make distclean
+    make clean
   tags: ['compile']
-  when: x265_source_download.changed
+  when: x265_source_download.changed and recompile_ffmpeg
   register: install_x265
   failed_when: "'FAILED' in install_x265.stderr"
 
@@ -61,7 +61,7 @@
     make install && \
     make distclean
   tags: ['compile']
-  when: fdk_aac_source_download.changed
+  when: fdk_aac_source_download.changed and recompile_ffmpeg
 
 # libvpx
 - name: Get libvpx source code
@@ -76,7 +76,7 @@
     make install && \
     make clean
   tags: ['compile']
-  when: libvpx_source_download.changed
+  when: libvpx_source_download.changed and recompile_ffmpeg
 
 # ffmpeg
 - name: Get ffmpeg source code
@@ -96,5 +96,5 @@
     make distclean && \
     hash -r
   tags: ['compile']
-  #when: ffmpeg_source_download.changed or x265_source_download.changed or libvpx_source_download.changed or fdk_aac_source_download.changed
-  when: ffmpeg_source_download.changed
+  when: recompile_ffmpeg and (ffmpeg_source_download.changed or x265_source_download.changed or libvpx_source_download.changed or fdk_aac_source_download.changed)
+  #when: ffmpeg_source_download.changed and x265_source_download.changed and libvpx_source_download.changed and fdk_aac_source_download.changed
