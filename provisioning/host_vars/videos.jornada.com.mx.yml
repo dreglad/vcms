@@ -1,0 +1,78 @@
+---
+# videos.jornada.com.mx host vars
+
+
+hostname: videos.jornada.com.mx
+
+storage_dirs:
+  - name: media
+    path: /mnt/media
+    backend: FileSystem
+
+  - name: originales
+    path: /mnt/originales
+    backend: FileSystem
+
+  - name: temporales
+    path: /mnt/temporales
+    backend: FileSystem
+
+
+nginx_ssl_certificate: ../files/lajornada/videos.jornada.com.mx.crt
+nginx_ssl_certificate_key: ../files/lajornada/videos.jornada.com.mx.key
+
+
+vcms_apps:
+  - name: lajornadavideos
+    title: La Jornada Videos
+    admin_host: videosadmin.jornada.com.mx
+    admin_url: https://videosadmin.jornada.com.mx/
+    frontend_url: https://videos.jornada.com.mx/
+    x_frame_allow_from: http://www.jornada.unam.mx/ https://editonline.jornada.com.mx/ ' http://ojarasca.jornada.com.mx/ http://semanal.jornada.com.mx/ http://letraese.jornada.com.mx/ http://ciencias.jornada.com.mx/ http://wikileaks.jornada.com.mx/ http://staging.jornada.com.mx/
+    language_code: es
+    redis_db: 1
+
+  - name: ciencias
+    title: La Jornada Ciencias Videos
+    admin_host: ciencias.jornada.com.mx
+    admin_url: https://cienciasadmin.jornada.com.mx/
+    x_frame_allow_from: http://www.jornada.unam.mx/ https://editonline.jornada.com.mx/ ' http://ojarasca.jornada.com.mx/ http://semanal.jornada.com.mx/ http://letraese.jornada.com.mx/ http://ciencias.jornada.com.mx/ http://wikileaks.jornada.com.mx/ http://staging.jornada.com.mx/
+    frontend_url: false
+    language_code: es
+    redis_db: 2
+
+  - name: wikileaks
+    title: La Jornada wikileaks Videos
+    admin_host: wikileaksadmin.jornada.com.mx
+    admin_url: https://wikileaksadmin.jornada.com.mx/
+    x_frame_allow_from: http://www.jornada.unam.mx/ https://editonline.jornada.com.mx/ ' http://ojarasca.jornada.com.mx/ http://semanal.jornada.com.mx/ http://letraese.jornada.com.mx/ http://ciencias.jornada.com.mx/ http://wikileaks.jornada.com.mx/ http://staging.jornada.com.mx/
+    language_code: es
+    frontend_url: false
+    redis_db: 3
+
+  - name: letraese
+    title: La Jornada LetraEse Videos
+    admin_host: letraese.jornada.com.mx
+    admin_url: https://letraeseadmin.jornada.com.mx/
+    x_frame_allow_from: http://www.jornada.unam.mx/ https://editonline.jornada.com.mx/ ' http://ojarasca.jornada.com.mx/ http://semanal.jornada.com.mx/ http://letraese.jornada.com.mx/ http://ciencias.jornada.com.mx/ http://wikileaks.jornada.com.mx/ http://staging.jornada.com.mx/
+    language_code: es
+    redis_db: 4
+
+  - name: ojarasca
+    title: La Jornada Ojarasca Videos
+    admin_host: ojarascaadmin.jornada.com.mx
+    admin_url: https://ojarascaadmin.jornada.com.mx/
+    x_frame_allow_from: http://www.jornada.unam.mx/ https://editonline.jornada.com.mx/ ' http://ojarasca.jornada.com.mx/ http://semanal.jornada.com.mx/ http://letraese.jornada.com.mx/ http://ciencias.jornada.com.mx/ http://wikileaks.jornada.com.mx/ http://staging.jornada.com.mx/
+    language_code: es
+    frontend_url: false
+    redis_db: 5
+
+  - name: semanal
+    title: La Jornada Semanal Videos
+    admin_host: semanal.jornada.com.mx
+    admin_url: https://semanaladmin.jornada.com.mx/
+    x_frame_allow_from: http://www.jornada.unam.mx/ https://editonline.jornada.com.mx/ ' http://ojarasca.jornada.com.mx/ http://semanal.jornada.com.mx/ http://letraese.jornada.com.mx/ http://ciencias.jornada.com.mx/ http://wikileaks.jornada.com.mx/ http://staging.jornada.com.mx/
+    language_code: es
+    frontend_url: false
+    redis_db: 6
+    
