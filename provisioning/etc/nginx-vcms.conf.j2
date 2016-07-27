@@ -11,14 +11,14 @@ server {
 
     charset     utf-8;
 
-    {% if item.ssl_enabled %}
+    {% if ssl_enabled %}
     listen  443;
     ssl_certificate /etc/ssl/certs/{{ ansible_hostname }}.crt;
     ssl_certificate_key /etc/ssl/private/{{ ansible_hostname }}.key
     {% endif %}
 
     # max upload size
-    client_max_body_size 75M;
+    client_max_body_size 4000M;
 
     location /media  {
         alias /mnt/media/{{ item.name }};
