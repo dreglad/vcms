@@ -1,5 +1,5 @@
 ---
-- hosts: jornada.com.mx
+- hosts: videos.jornada.com.mx
 
   roles:
     - common
