@@ -18,7 +18,7 @@ server {
     {% if ssl_enabled %}
     listen  443;
     ssl_certificate /etc/ssl/certs/{{ ansible_hostname }}.crt;
-    ssl_certificate_key /etc/ssl/private/{{ ansible_hostname }}.key
+    ssl_certificate_key /etc/ssl/private/{{ ansible_hostname }}.key;
     {% endif %}
 
     location /media  {

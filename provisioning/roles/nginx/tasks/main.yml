@@ -13,7 +13,7 @@
   tags: ['ssl']
 
 - name: Copy certificate key
-  copy: src=files/{{ nginx_ssl_certificate_key }} dest=/etc/ssl/certs/{{ ansible_hostname }}.key owner=root group=root mode=0600
+  copy: src=files/{{ nginx_ssl_certificate_key }} dest=/etc/ssl/private/{{ ansible_hostname }}.key owner=root group=root mode=0600
   when: ssl_enabled
 
   tags: ['ssl']
