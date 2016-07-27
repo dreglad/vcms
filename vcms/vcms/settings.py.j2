@@ -14,9 +14,9 @@ exec open('/vagrant/vcms/vcms/settings.conf') in globals()
 
 # Override ...
 {% if item.frontend_url %}
-    FRONTEND_URL = '{{ item.frontend_url }}'
+FRONTEND_URL = '{{ item.frontend_url }}'
 {% else %}
-    FRONTEND_URL = False
+FRONTEND_URL = False
 {% endif %}
 
 LANGUAGE_CODE = '{{ item.language_code }}'
