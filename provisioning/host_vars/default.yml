@@ -2,21 +2,14 @@
 # default vcms host vars
 
 
-hostname: videos.jornada.com.mx
+hostname: vcms-dev.openmultimedia.biz
+
+mounts: []
 
 storage_dirs:
-  - name: media
-    path: /mnt/media
-    backend: FileSystem
-
-  - name: originales
-    path: /mnt/originales
-    backend: FileSystem
-
-  - name: temporales
-    path: /mnt/temporales
-    backend: FileSystem
-
+  - {name: media, backend: FileSystem, path: /mnt/media}
+  - {name: originales, backend: FileSystem, path: /mnt/originales}
+  - {name: temporales, backend: FileSystem, path: /mnt/temporales}
 
 nginx_ssl_certificate: false
 nginx_ssl_certificate_key: false
@@ -24,9 +17,9 @@ nginx_ssl_certificate_key: false
 vcms_apps:
   - name: vcms
     title: VCMS
-    admin_host: vcms-dev.jornada.com.mx
-    admin_url: https://vcms-dev.jornada.com.mx/
-    frontend_url: https://vcms-dev.jornada.com.mx/
-    x_frame_allow_from: http://www.jornada.unam.mx/ https://editonline.jornada.com.mx/ http://ojarasca.jornada.com.mx/ http://semanal.jornada.com.mx/ http://letraese.jornada.com.mx/ http://ciencias.jornada.com.mx/ http://wikileaks.jornada.com.mx/ http://staging.jornada.com.mx/
+    admin_host: vcms-dev.openmultimedia.biz
+    admin_url: http://vcms-dev.openmultimedia.biz/
+    frontend_url: http://vcms-dev-frontend.openmultimedia.biz
+    x_frame_allow_from: http://vcms-dev-frontend.openmultimedia.biz http://vcms-dev.openmultimedia.biz
     language_code: es
     redis_db: 1

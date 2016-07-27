@@ -4,23 +4,31 @@
 
 hostname: videos.jornada.com.mx
 
-storage_dirs:
-  - name: media
-    path: /mnt/media
-    backend: FileSystem
-
-  - name: originales
-    path: /mnt/originales
-    backend: FileSystem
-
-  - name: temporales
-    path: /mnt/temporales
-    backend: FileSystem
-
+network:
+  - iface: ens3
+    type: static
+    conf:
+      address: 172.16.20.40
+      netmask: 255.255.255.0
+      network: 172.16.20.0
+      broadcast: 172.16.20.255
+      gateway: 172.16.20.254
+      dns-nameservers: 172.16.20.254
+      dns-search: jornada.com.mx
 
 nginx_ssl_certificate: ../files/lajornada/videos.jornada.com.mx.crt
 nginx_ssl_certificate_key: ../files/lajornada/videos.jornada.com.mx.key
 
+mounts:
+    - path: '/mnt',
+      src: 'UUID=a891a365-762e-467f-bcee-33db2193d8aa',
+      type: 'ext4',
+      opts: 'noatime,errors=remount-ro'
+
+storage_dirs:
+  - {name: media, backend: FileSystem, path: /mnt/media}
+  - {name: originales, backend: FileSystem, path: /mnt/originales}
+  - {name: temporales, backend: FileSystem, path: /mnt/temporales}
 
 vcms_apps:
   - name: lajornadavideos
