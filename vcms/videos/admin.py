@@ -413,7 +413,7 @@ class VideoAdmin(VersionAdmin, ModelAdminBase, AdminImageMixin):
     info.short_description = _('información')
 
     def padded_pk(self, obj):
-        return  "%05d" % obj.pk
+        return  "%04d" % obj.pk
     padded_pk.short_description = 'ID'
 
     def video(self, obj):
