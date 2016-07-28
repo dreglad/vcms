@@ -251,7 +251,7 @@ class VideoAdmin(VersionAdmin, ModelAdminBase, AdminImageMixin):
     suit_form_tabs = [
         ('general', _('General')),
         ('clasificacion', _('Clasificación')),
-        ('seo', _('SEO')),
+        ('seo', _('Buscadores')),
     ]
     suit_form_tabs_new = [
         ('nuevo', _('Nuevo video')),
@@ -339,10 +339,10 @@ class VideoAdmin(VersionAdmin, ModelAdminBase, AdminImageMixin):
             'classes': ('suit-tab', 'suit-tab-clasificacion'),
             'fields': ['fecha',]
         }),
-        (_('SEO'), {
+        (_('SEO y Accesibilidad'), {
             'classes': ('suit-tab', 'suit-tab-seo'),
             'fields': [
-                'tags', 'meta_descripcion', 'reproduccion', 'custom_metadata'
+                'tags', 'meta_descripcion', 'reproduccion',
             ]
         }),
     ]
@@ -471,14 +471,14 @@ class PlataformaAdmin(ModelAdminBase, SortableModelAdmin):
     suit_form_tabs = [
         ('general', _('General')),
         ('display', _('Configuración global de visualización')),
-        ('seo', _('SEO')),
+        ('seo', _('Buscadores')),
     ]
     fieldsets = [
         (None, {
             'classes': ('suit-tab', 'suit-tab-general'),
             'fields': ['nombre', ('tipo', 'link'), 'descripcion'],
         }),
-        (_('SEO'), {
+        (_('SEO y Accesibilidad'), {
              'classes': ('suit-tab', 'suit-tab-seo'),
              'fields': ['tags', 'meta_descripcion',]
         }),
@@ -619,7 +619,7 @@ class PaginaAdmin(MPTTModelAdmin, SortableModelAdmin, ModelAdminBase):
             'classes': ('suit-tab', 'suit-tab-display'),
             'fields': [('nombre', 'mostrar_en_menu'), 'parent', 'descripcion'],
         }),
-        (_('SEO'), {
+        (_('SEO y Accesibilidad'), {
              'classes': ('suit-tab', 'suit-tab-seo'),
              'fields': ['meta_descripcion', 'tags']
         }),
