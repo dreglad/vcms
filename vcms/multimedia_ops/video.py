@@ -22,29 +22,32 @@ H264_PARAMS = {
     'profile': 'main',
     'level': '3.1',
     'crf': 22,
-    'max_width': 2048,
-    'audio_bitrate': 128,
+    'max_width': 3840,
+    'audio_bitrate': 192,
     'audio_samplerate': 44100,
 }
 
 HLS_MODES = [  # must be ordered with highest height first
-    {'height': 1080, 'cut_height': 800,     'profile': 'main',     'level': 32,
-         'fps': 30,   'bandwidth': 3500000, 'bitrate': 3500,       'gop': 72 },
+    {'height': 2160, 'cut_height': 2000,     'profile': 'high',     'level': 42,
+         'fps': 30,   'bandwidth': 16000000, 'bitrate': 15000,     'gop': 72 },
 
-    { 'height': 720, 'cut_height': 600,     'profile': 'main',     'level': 32,
+    {'height': 1440, 'cut_height': 1400,     'profile': 'high',     'level': 42,
+         'fps': 30,   'bandwidth': 8000000, 'bitrate': 7800,       'gop': 72 },
+
+    {'height': 1080, 'cut_height': 960,     'profile': 'main',     'level': 32,
+         'fps': 30,   'bandwidth': 4000000, 'bitrate': 3800,       'gop': 72 },
+
+    { 'height': 720, 'cut_height': 650,     'profile': 'main',     'level': 32,
          'fps': 24,   'bandwidth': 2000000, 'bitrate': 1800,       'gop': 72 },
 
-    { 'height': 480, 'cut_height': 400,     'profile': 'baseline', 'level': 31,
-         'fps': 24,   'bandwidth': 1000000, 'bitrate': 900,        'gop': 72 },
+    { 'height': 480, 'cut_height': 420,     'profile': 'baseline', 'level': 31,
+         'fps': 24,   'bandwidth': 1000000, 'bitrate': 950,        'gop': 72 },
 
-    { 'height': 360, 'cut_height': 300,    'profile': 'baseline',  'level': 31,
-         'fps': 24,   'bandwidth': 700000, 'bitrate': 600,         'gop': 72 },
+    { 'height': 360, 'cut_height': 320,    'profile': 'baseline',  'level': 31,
+         'fps': 24,   'bandwidth': 650000, 'bitrate': 620,         'gop': 72 },
 
     { 'height': 240, 'cut_height': 200,    'profile': 'baseline',  'level': 31,
-         'fps': 12,   'bandwidth': 400000, 'bitrate': 320,         'gop': 36 },
-
-    { 'height': 120, 'cut_height': 100,    'profile': 'baseline',  'level': 31,
-         'fps': 12,   'bandwidth': 200000, 'bitrate': 180,         'gop': 36 },
+         'fps': 12,   'bandwidth': 300000, 'bitrate': 270,         'gop': 36 },
 ]
 
 HLS_PARAMS = {
