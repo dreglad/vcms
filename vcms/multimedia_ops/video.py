@@ -35,19 +35,19 @@ HLS_MODES = [  # must be ordered with highest height first
          'fps': 30,   'bandwidth': 8000000, 'bitrate': 7800,       'gop': 72 },
 
     {'height': 1080, 'cut_height': 960,     'profile': 'main',     'level': 32,
-         'fps': 30,   'bandwidth': 4000000, 'bitrate': 3800,       'gop': 72 },
+         'fps': 30,   'bandwidth': 6000000, 'bitrate': 3800,       'gop': 72 },
 
     { 'height': 720, 'cut_height': 650,     'profile': 'main',     'level': 32,
-         'fps': 24,   'bandwidth': 2000000, 'bitrate': 1800,       'gop': 72 },
+         'fps': 24,   'bandwidth': 3000000, 'bitrate': 1800,       'gop': 72 },
 
     { 'height': 480, 'cut_height': 420,     'profile': 'baseline', 'level': 31,
-         'fps': 24,   'bandwidth': 1000000, 'bitrate': 950,        'gop': 72 },
+         'fps': 24,   'bandwidth': 1500000, 'bitrate': 950,        'gop': 72 },
 
     { 'height': 360, 'cut_height': 320,    'profile': 'baseline',  'level': 31,
-         'fps': 24,   'bandwidth': 650000, 'bitrate': 620,         'gop': 72 },
+         'fps': 24,   'bandwidth': 1000000, 'bitrate': 620,         'gop': 72 },
 
     { 'height': 240, 'cut_height': 200,    'profile': 'baseline',  'level': 31,
-         'fps': 12,   'bandwidth': 300000, 'bitrate': 270,         'gop': 36 },
+         'fps': 12,   'bandwidth': 600000, 'bitrate': 270,         'gop': 36 },
 ]
 
 HLS_PARAMS = {

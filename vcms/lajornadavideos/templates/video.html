@@ -114,7 +114,9 @@
       </div>
 
 
-      <div class="descripcion">{{ video.descripcion|safe }}</div>
+      <div class="descripcion">
+        {{ video.descripcion|safe }}
+      </div>
       <ul class="links">
           {% for link in video.links.all %}
             <li><span class="fa fa-link"></span> <a href="{{ link.url }}">{{ link.titulo }}</a></li>
