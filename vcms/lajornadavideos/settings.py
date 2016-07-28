@@ -192,7 +192,7 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': 'pass',
         'NAME': 'lajornadavideos',
-        'OPTIONS': {'charset': 'utf-8'},
+        'OPTIONS': {'charset': 'utf8mb4'},
     }
 }
 
