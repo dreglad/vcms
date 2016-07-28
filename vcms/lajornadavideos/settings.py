@@ -191,7 +191,8 @@ DATABASES = {
         'HOST': 'localhost',
         'USER': 'root',
         'PASSWORD': 'pass',
-        'NAME': 'lajornadavideos'
+        'NAME': 'lajornadavideos',
+        'OPTIONS': {'charset': 'utf-8'},
     }
 }
 

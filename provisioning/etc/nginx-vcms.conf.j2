@@ -12,7 +12,7 @@ server {
     charset     utf-8;
 
     {% if ssl_enabled %}
-    listen  443;
+    listen 443 ssl;
     ssl_certificate /etc/ssl/certs/{{ ansible_hostname }}.crt;
     ssl_certificate_key /etc/ssl/private/{{ ansible_hostname }}.key;
     {% endif %}
