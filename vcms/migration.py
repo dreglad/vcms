@@ -200,7 +200,7 @@ def migrar():
                     else:
                         try:
                             shutil.move(src, dst)
-                            file_mapping.append(src, dst)
+                            file_mapping.append([src, dst])
                         except IOError:
                             print "Error al copiar, borrando video"
                             video.delete()
