@@ -16,6 +16,9 @@ class VideoIndex(indexes.SearchIndex, indexes.Indexable):
     formato = indexes.CharField()
     tags = indexes.MultiValueField()
 
+    def get_updated_field(self):
+        return 'fecha_creacion'
+
     def get_model(self):
         return Video
 
@@ -43,7 +46,7 @@ class VideoIndex(indexes.SearchIndex, indexes.Indexable):
         total_tags = set([tag.name for tag in obj.tags.all()])
         for lista in obj.listas.all():
             total_tags = total_tags | set([tag.name for tag in lista.tags.all()])
-        return total_tags
+        return list(total_tags)
 
     def prepare_clasificadores(self, obj):
         clasificadores = set()

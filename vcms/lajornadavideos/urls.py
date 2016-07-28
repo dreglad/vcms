@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.views.decorators.cache import cache_page
 
 from .views import \
-    BusquedaView, SeccionView, HomeView, ListaView, VideoView, \
+    BusquedaView, SeccionView, HomeView, ListaView, ListaEmbedView, VideoView, \
     PlayerView, crossdomain, SimilaresView, TwitterCardView
 
 urlpatterns = [
@@ -15,19 +15,22 @@ urlpatterns = [
         cache_page(30)(SeccionView.as_view()),
         name='seccion'),
     url(r'^listas/(?P<lista_slug>.+)/$',
-        cache_page(30)(ListaView.as_view()),
+        cache_page(30*2)(ListaView.as_view()),
+        name='lista'),
+    url(r'^lista_embed/(?P<lista_slug>.+)/$',
+        cache_page(30*2)(ListaView.as_view()),
         name='lista'),
     url(r'^video/(?P<video_uuid>\d+)/(?P<video_slug>.+)/$',
-        cache_page(60)(VideoView.as_view()),
+        cache_page(60*60)(VideoView.as_view()),
         name='video'),
     url(r'^pplayer/(?P<video_uuid>\d+)/(?P<video_slug>.+)/$',
-        cache_page(60)(PlayerView.as_view()),
+        cache_page(60*60)(PlayerView.as_view()),
         name='video_player'),
     url(r'^twitter_card/(?P<video_uuid>\d+)/(?P<video_slug>.+)/$',
         cache_page(120)(TwitterCardView.as_view()),
         name='twitter_card'),
     url(r'^similares/(?P<video_uuid>\d+)/(?P<video_slug>.+)/$',
-        cache_page(120)(SimilaresView.as_view()),
+        cache_page(60*60)(SimilaresView.as_view()),
         name='similares'),
 
 

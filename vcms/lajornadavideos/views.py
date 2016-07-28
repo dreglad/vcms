@@ -78,9 +78,14 @@ class ListaView(SeccionView):
             'mostrar_nombre': True,
             'mostrar_descripcion': True,
             'mostrar_paginacion': True,
-            'num_videos': 24,
+            'num_videos': request.get('num_videos', 24),
         }
         return super(SeccionView, self).dispatch(request, *args, **kwargs)
+
+
+class ListaEmbedView(ListaView):
+
+    template_name = 'lista_embed.html'
 
 
 class PlayerView(BaseView):
@@ -120,15 +125,14 @@ class TwitterCardView(PlayerView):
 
 class SimilaresView(PlayerView):
 
-    def render_to_json_response(self, context, **response_kwargs):
+    def render_to_response(self, context, **response_kwargs):
         playlist = [{
-            'sources': [{'file': video.archivo.url, 'type': 'video/mp4'}],
-            'image': video.imagen.url,
-            'title': video.titulo,
-            #'mediaid': "234567"
-        } for video in SearchQuerySet.more_like_this(self.video)[:20]]
+            'sources': [{'file': result.object.archivo.url, 'type': 'video/mp4'}],
+            'image': result.object.imagen.url,
+            'title': result.object.titulo,
+        } for result in list(SearchQuerySet().more_like_this(self.video)[:9])]
 
-        return JsonResponse(playlist, **response_kwargs
+        return JsonResponse(playlist, safe=False, **response_kwargs)
 
 
 class VideoView(PlayerView):
