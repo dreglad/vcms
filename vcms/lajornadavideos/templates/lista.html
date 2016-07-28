@@ -10,7 +10,7 @@
     <p>{{ listado.lista.descripcion }}</p>
   {% endif %}
 
-  {% with videos=listado.lista.videos.publicos %}
+  {% with videos=listado.lista.videos.publicos nombre=listado.nombre|default:listado.lista.nombre_plural|default:listado.lista.nombre %}
   {% include "includes/lista.html" %}
   {% endwith %}
 </main>

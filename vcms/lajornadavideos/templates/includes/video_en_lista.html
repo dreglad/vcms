@@ -26,7 +26,7 @@
           </span>
         {% endif %}
         <span class="titulo">
-          {{ video.titulo|truncatewords:20|breaksentence }}
+          {{ titulo|default:video.titulo|truncatewords:20|breaksentence }}
         </span>
         <div class="detalle">
           {# <span class="icon fa fa-youtube-play" aria-hidden="true"></span> #}
@@ -41,7 +41,7 @@
       {# {% if listado.invertido or pagina.invertido %} #}
       <div class="invertido_caption">
         <span class="titulo">
-          <span class="icon fa fa-play" aria-hidden="true"></span> {{ video.titulo|truncatewords:14 }}
+          <span class="icon fa fa-play" aria-hidden="true"></span> {{ titulo|default:video.titulo|truncatewords:20|breaksentence }}
         </span>
         <div class="detalle">
           {# <span class="icon fa fa-youtube-play" aria-hidden="true"></span> #}
