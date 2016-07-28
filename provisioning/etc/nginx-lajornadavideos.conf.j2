@@ -2,24 +2,30 @@ upstream lajornadavideos {
     server unix:///run/uwsgi/app/lajornadavideos/socket;
 }
 
-server {
-    listen  80;
-    server_name .videos.jornada.com.mx;
-    server_name .videos-stg.jornada.com.mx;
-    server_name .videos-dev.jornada.com.mx;
-    server_name .lajornadavideos-dev.openmultimedia.biz;
-    charset     utf-8;
+{% if ssl_enabled %}
+    server {
+        listen       80;
+        server_name  .videos.jornada.com.mx;
+        rewrite     ^   https://$server_name$request_uri? permanent;
+    }
+{% endif %}
 
+server {
+    {% if ssl_enabled %}
+        listen 443 ssl;
+        ssl_certificate /etc/ssl/certs/{{ ansible_hostname }}.crt;
+        ssl_certificate_key /etc/ssl/private/{{ ansible_hostname }}.key;
+    {% else %}
+        listen  80;
+    {% endif %}
+
+    server_name  .videos.jornada.com.mx;
+
+    charset     utf-8;
     add_header Vary Accept-Encoding;
 
     # max upload size
-    client_max_body_size 75M;
-
-    {% if ssl_enabled %}
-    listen 443 ssl;
-    ssl_certificate /etc/ssl/certs/{{ ansible_hostname }}.crt;
-    ssl_certificate_key /etc/ssl/private/{{ ansible_hostname }}.key;
-    {% endif %}
+    client_max_body_size 10M;
 
     location /media  {
         alias /mnt/media/lajornadavideos;

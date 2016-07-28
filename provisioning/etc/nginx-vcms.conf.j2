@@ -2,20 +2,24 @@ upstream vcms_{{ item.name }} {
     server unix:///run/uwsgi/app/vcms_{{ item.name }}/socket;
 }
 
+{% if ssl_enabled %}
+    server {
+        listen       80;
+        server_name .{{ item.admin_host }};
+        rewrite     ^   https://$server_name$request_uri? permanent;
+    }
+{% endif %}
+
 server {
-    listen  80;
-    server_name .{{ item.admin_host }};
-    server_name .{{ item.name }}-admin.openmultimedia.biz;
-    server_name .{{ item.name }}-admin-stg.openmultimedia.biz;
-    server_name .{{ item.name }}-admin-dev.openmultimedia.biz;
-
-    charset     utf-8;
-
     {% if ssl_enabled %}
-    listen 443 ssl;
-    ssl_certificate /etc/ssl/certs/{{ ansible_hostname }}.crt;
-    ssl_certificate_key /etc/ssl/private/{{ ansible_hostname }}.key;
+        listen 443 ssl;
+        ssl_certificate /etc/ssl/certs/{{ ansible_hostname }}.crt;
+        ssl_certificate_key /etc/ssl/private/{{ ansible_hostname }}.key;
+    {% else %}
+        listen  80;
     {% endif %}
+
+    server_name .{{ item.admin_host }};
 
     # max upload size
     client_max_body_size 4000M;
