@@ -564,8 +564,11 @@ class Video(ModelBase, TitledMixin, DisplayableMixin):
                 self.pk, self.PROCESAMIENTO[self.procesamiento])
 
     def get_absolute_url(self):
-        return reverse('video', kwargs={ 'video_slug': self.slug,
+        url = reverse('video', kwargs={ 'video_slug': self.slug,
                                          'video_uuid': self.uuid })
+        if getattr(settings, 'FRONTEND_URL'):
+            url = settings.FRONTEND_URL + url
+        return url
 
     def get_admin_form_tabs(self):
         return GET_VIDEO_TABS(self)
@@ -591,6 +594,12 @@ class Video(ModelBase, TitledMixin, DisplayableMixin):
     def player(self):
         if settings.FRONTEND_URL:
             return '{0}/player/{1}/{2}'.format(
+                settings.FRONTEND_URL, self.uuid, self.slug)
+
+    @property
+    def twitter_card(self):
+        if settings.FRONTEND_URL:
+            return '{0}/twitter_card/{1}/{2}'.format(
                 settings.FRONTEND_URL, self.uuid, self.slug)
     
     @property

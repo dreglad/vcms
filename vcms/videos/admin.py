@@ -526,7 +526,7 @@ class ListaInline(SortableStackedInline):
         for video in obj.lista.videos.publicos()[:20]:
             url = reverse('admin:videos_video_change', args=[video.id])
             result.append('<a class="video" href="{0}" title="{1}">'.format(
-                url, video.titulo))
+                                                            url, video.titulo))
             im = get_thumbnail(video.imagen.file, '64x36', crop='center')           
             result.append('<img src="{0}">').format(im.url)
             result.append('</a>')

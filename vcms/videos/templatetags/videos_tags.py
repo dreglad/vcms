@@ -45,7 +45,7 @@ def get_clasificacion(video, clasificador=None):
 def clasificacion(video, clasificador=None):
     try:
         return video.get_clasificacion(clasificador)
-    except video.listas.model.DoesNotExist:
+    except:
         return None
 
 
