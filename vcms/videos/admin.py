@@ -85,8 +85,8 @@ DISPLAYABLE_FIELDSET = (
     'fields': [
         ('mostrar_nombre', 'mostrar_maximo'),
         ('mostrar_descripcion', 'mostrar_paginacion'),
-        ('layout', 'margen'),
-        ('mostrar_publicidad', 'tema'),
+        #TODO:margen,tema
+        ('mostrar_publicidad', 'layout'),
     ],
 })
 
@@ -497,8 +497,8 @@ class ListaInline(SortableStackedInline):
         'lista_', 'nombre', 'descripcion', 'videos_',
         ('mostrar_nombre', 'mostrar_maximo'),
         ('mostrar_descripcion', 'mostrar_paginacion'),
-        ('layout', 'margen'),
-        ('mostrar_publicidad', 'tema'),
+        #TODO: margen, tema
+        ('mostrar_publicidad', 'layout'),
     ]
     suit_classes = 'suit-tab suit-tab-display'
     show_change_link = True
@@ -549,7 +549,7 @@ class VideoInline(SortableStackedInline):
     fields = [
         'pagina', 'orden', 'video', (
             'video_', 'mostrar_nombre', 'mostrar_descripcion',
-            'mostrar_publicidad', 'margen', 'tema',
+            'mostrar_publicidad', #TODO: 'margen', 'tema',
             ),
     ]
     show_change_link = True
@@ -564,8 +564,8 @@ class VideoInline(SortableStackedInline):
             im = get_thumbnail(obj.video.imagen.file, '242x136', crop='center')
             return mark_safe(
                 ('<img src="{url}"><div class="titulo" style="width:242px; '
-                 'margin:{margin}">{titulo}</div>').format(
-                    titulo=obj.video.titulo, url=im.url,
+                 'margin:{margin}">[{pk}] {titulo}</div>').format(
+                    titulo=obj.video.titulo, url=im.url, pk=obj.video.pk,
                     margin=margin(im, '242x136')))
 
     def save_model(self, request, obj, form, change):

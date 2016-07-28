@@ -149,7 +149,7 @@ class DisplayableMixin(models.Model):
     mostrar_descripcion = models.NullBooleanField(
         _('mostrar descripción'), choices=ACTIVO_CHOICES, null=True)
     mostrar_paginacion = models.NullBooleanField(
-        _('mostrar paginacón'), choices=ACTIVO_CHOICES, null=True)
+        _('mostrar más'), choices=ACTIVO_CHOICES, null=True)
     texto_paginacion = models.CharField(
         _('texto de paginación'), max_length=64, blank=True,
         help_text=_('Ej: Mostrar más'))
