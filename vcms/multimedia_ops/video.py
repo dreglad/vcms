@@ -144,7 +144,6 @@ def compress_h264mpeg4avc(input_file, output_file, vstats_file, autocrop=True):
     autocrop_filter = autocrop and get_video_autocrop_filter(input_file) or ''
     cmd = ('ffmpeg -y -vstats_file {vstats_file} -i {input_file} '
            '-c:a {codec_audio} -b:a {params[audio_bitrate]}k '
-           #'-c:a aac -b:a {params[audio_bitrate]}k '
            '-ar {params[audio_samplerate]} -c:v libx264 -crf {params[crf]} '
            '-vf "scale=\'min(iw,{params[max_width]})\':-2" '
            '{autocrop_filter} -profile:v {params[profile]} '

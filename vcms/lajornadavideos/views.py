@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*- #
 from cacheback.queryset import QuerySetGetJob, QuerySetFilterJob
 from django.core.cache import cache
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.generic.base import TemplateView
 from haystack.generic_views import SearchView
+from haystack.query import SearchQuerySet
 
 from videos.models import *
 
@@ -117,10 +118,22 @@ class TwitterCardView(PlayerView):
     template_name = 'twitter_card.html'
 
 
+class SimilaresView(PlayerView):
+
+    def render_to_json_response(self, context, **response_kwargs):
+        playlist = [{
+            'sources': [{'file': video.archivo.url, 'type': 'video/mp4'}],
+            'image': video.imagen.url,
+            'title': video.titulo,
+            #'mediaid': "234567"
+        } for video in SearchQuerySet.more_like_this(self.video)[:20]]
+
+        return JsonResponse(playlist, **response_kwargs
+
+
 class VideoView(PlayerView):
 
     template_name = 'video.html'
-
 
 
 def crossdomain(request, **kwargs):

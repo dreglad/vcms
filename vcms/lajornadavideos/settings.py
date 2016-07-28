@@ -151,8 +151,8 @@ MIDDLEWARE_CLASSES = [
     #'django.contrib.auth.middleware.AuthenticationMiddleware',
     #'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     #'django.contrib.messages.middleware.MessageMiddleware',
-    #'django.middleware.locale.LocaleMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    #'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.cache.FetchFromCacheMiddleware'
 ]
 
@@ -203,7 +203,7 @@ HAYSTACK_SEARCH_RESULTS_PER_PAGE = 12
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
-        'URL': 'http://127.0.0.1:8983/solr',
+        'URL': 'http://127.0.0.1:8080/solr',
         'INCLUDE_SPELLING': True,
     },
 }

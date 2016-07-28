@@ -4,10 +4,12 @@
 <html>
 <body>
 <style type="text/css">
-video {  width:100%; max-width:600px; height:auto; }
+video {  width:100%; height:auto; }
 </style>
-<video width="100%" src="https://{{ request.get_host }}{{ video.hls.url }}"
-       poster="https://{{ request.get_host }}{{ im.url }}" type="video/mp4"></video>
+<video width="100%" poster="https://{{ request.get_host }}{{ im.url }}" controls>
+  <source src="https://{{ request.get_host }}{{ video.hls.url }}" type="application/vnd.apple.mpegURL">
+  <source src="https://{{ request.get_host }}{{ video.archivo.url }}" type="video/mp4">
+</video>
 </body>
 </html>
 {% endthumbnail %}

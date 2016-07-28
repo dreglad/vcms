@@ -6,7 +6,7 @@ from django.views.decorators.cache import cache_page
 
 from .views import \
     BusquedaView, SeccionView, HomeView, ListaView, VideoView, \
-    PlayerView, crossdomain, TwitterCardView
+    PlayerView, crossdomain, SimilaresView, TwitterCardView
 
 urlpatterns = [
     url(r'^$', cache_page(30)(HomeView.as_view()),
@@ -26,6 +26,9 @@ urlpatterns = [
     url(r'^twitter_card/(?P<video_uuid>\d+)/(?P<video_slug>.+)/$',
         cache_page(120)(TwitterCardView.as_view()),
         name='twitter_card'),
+    url(r'^similares/(?P<video_uuid>\d+)/(?P<video_slug>.+)/$',
+        cache_page(120)(SimilaresView.as_view()),
+        name='similares'),
 
 
     url(r'^player/(?P<video_uuid>\d+)/(?P<video_slug>.+)/$',

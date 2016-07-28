@@ -129,7 +129,7 @@
 {% more_like_this video as similares limit 8  %}
 {% if similares|result_list %}
   {% get_display_attrs pagina as display_pagina %}
-  {% with display=display_pagina mostrar_nombre=True videos=similares|result_list nombre="Similares" mostrar_paginacion=True %}
+  {% with display=display_pagina mostrar_nombre=True videos=similares|result_list nombre="Similares" mostrar_paginacion=False %}
       {% include "includes/lista.html" %}
   {% endwith %}
 {% endif %}
@@ -156,6 +156,12 @@
 
 {% block ldjson %}{{ block.super }}
 {% thumbnail video.imagen.file "640" as im %}
+
+{% with tags=video.tags.all %}
+{% if tags %}<meta name="keywords" content="{{ tags|join:"," }}">{% endif %}
+{% endwith %}
+<meta name="description" content="{{ video.descripcion_plain }}">
+
 <meta property="og:url"         content="{{ video.url }}" />
 <meta property="og:type"        content="video" />
 <meta property="og:video"       content="https://{{ request.get_host }}{{ video.archivo.url }}" />

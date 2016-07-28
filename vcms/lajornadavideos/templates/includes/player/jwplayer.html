@@ -35,11 +35,17 @@
       idstring: "url",
       label: "url"
     },
+    related: {
+      file: "{{ video.similares }}",
+      onclick: "link",
+      oncomplete: 'autoplay',
+      autoplaytimer: 10
+    }
     // skin: {
     //   name: 'lajornadavideos'
     // },
     sharing: {
-       code: '<iframe src="http://google.com" width="480"  height="270"  frameborder="0"  scrolling="auto" />',
+       code: '<iframe src="{{ video.player }}" width="480" height="100%" frameborder="0"  scrolling="auto" />',
        heading: "Compartir video"
     },
     width: '100%',
