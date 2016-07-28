@@ -4,6 +4,7 @@ git+https://github.com/rfkrocktk/django-locality.git#egg=django-locality
 git+https://github.com/gsmke/django-suit-rq.git#egg=django-suit-rq
 
 django>=1.9
+pytz
 django-analytical
 django-autoslug
 django-cacheback[rq]

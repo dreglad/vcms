@@ -1,6 +1,7 @@
 Django
 django-compressor
 pysolr
+pytz
 django-libsass
 django-rq
 django-cacheback[rq]

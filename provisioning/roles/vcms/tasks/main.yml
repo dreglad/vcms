@@ -38,13 +38,15 @@
 # App server
 - name: latest you-get installed
   command: pip3 install --upgrade you-get creates="/usr/local/bin/you-get"
-  tags: ['python', 'install']
+  tags: ['install', 'pip']
 
 - name: pip at latest version
   pip: name=pip state=latest
+  tags: ['pip']
 
 - name: vcms's Python requirements at their latest version
   pip: requirements=/vagrant/vcms/vcms/requirements.txt state=latest
+  tags: ['pip']
 
 - name: vcms databases created
   mysql_db: name={{ item.name }} login_user=root login_password=pass state=present
@@ -114,7 +116,7 @@
 # La Jornada Videos Frontend
 - name: Install lajornadavideos python requirements
   pip: requirements=/vagrant/vcms/lajornadavideos/requirements.txt state=latest
-  tags: ['python', 'install', 'frontend']
+  tags: ['python', 'install', 'pip']
 
 - name: Collect lajornadavideos static files
   django_manage: command=collectstatic app_path=/vagrant/vcms settings=lajornadavideos.settings
