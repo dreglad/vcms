@@ -52,9 +52,8 @@
     <div class="col-lg-5">
       <div class="labels">
         {% for lista in video.listas.all %}
-          
+          {% if lista.slug != 'formato' %}
             {% with lista.links.latest as link %}
-            {% if lista.slug != 'formato' %}
             {% if link %}
               <a title="{{ link.titulo }}" href="{{ link.url }}"
                  target="{% if link.blank %}_blank{% endif %}">
@@ -73,13 +72,9 @@
             {% else %}
               <span class="label {{ lista.clasificador.nombre }}">{{ lista.nombre }}</span>
             {% endif %}
-
-            
               </a>
-            
-            {% endif %}
             {% endwith %}
-          
+          {% endif %}
         {% endfor %}
       </div>
 
@@ -122,18 +117,21 @@
     </div>
   </article>
 
-{% more_like_this video as similares limit 8  %}
+
 {% cache 120 similares video.pk %}
-{% get_display_attrs pagina as display_pagina %}
-{% with display=display_pagina mostrar_nombre=True videos=similares|result_list nombre="Similares" mostrar_paginacion=True %}
-    {% include "includes/lista.html" %}
-{% endwith %}
+{% more_like_this video as similares limit 8  %}
+{% if similares|result_list %}
+  {% get_display_attrs pagina as display_pagina %}
+  {% with display=display_pagina mostrar_nombre=True videos=similares|result_list nombre="Similares" mostrar_paginacion=True %}
+      {% include "includes/lista.html" %}
+  {% endwith %}
+{% endif %}
 {% endcache %}
 
 {% for lista in video.listas.all %}
     {% cache 120 pagina_lista pagina.pk lista.pk %}
     {% if lista.clasificador.slug != 'autor' and lista.videos.count %}
-    {% with display=display_pagina mostrar_nombre=True videos=lista.videos.publicos nombre=lista.nombre mostrar_maximo=8 %}
+    {% with display=display_pagina mostrar_nombre=True videos=lista.videos.publicos nombre=lista.nombre_plural|default:lista.nombre mostrar_maximo=8 %}
     {% include "includes/lista.html" %}
     {% endwith %}
     {% endif %}
