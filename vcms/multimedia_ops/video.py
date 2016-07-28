@@ -15,8 +15,8 @@ import wget
 logger = logging.getLogger('multimedia_ops')
 
 
-CODEC_AUDIO = 'libvo_aacenc' # included in libacbocdec-extra
-#CODEC_AUDIO = 'libfdk_aac'  # best AAC encode, however not included by default
+#CODEC_AUDIO = 'libvo_aacenc' # included in libacbocdec-extra
+CODEC_AUDIO = 'libfdk_aac'  # best AAC encode, however not included by default
 
 H264_PARAMS = {
     'profile': 'main',
