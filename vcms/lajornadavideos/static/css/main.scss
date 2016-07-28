@@ -126,46 +126,46 @@ body {
 
 
 
-.endless_more, .endless_loading {
-    font-size: 120%;
-    padding: 0.5rem 0 3px 0;
-    color: $rojoColor;
-    font-weight: bold;
-    display: block;
-    margin: 1rem auto;
-    text-align: center;
-    width: 200px;
-    font-style: oblique;
-    margin-bottom: 1rem;
-
-    &:hover, &:active, &:focus, {
-        color: $rojoColor;
-        
-        // border-bottom: 4px solid #DD3937;
-    }
-}
-
-// a.endless_more, .endless_loading {
-//     font-size: 85%;
-//     padding: 8px 0 3px 0;
-//     border-bottom: 4px solid  #AD1000;
-//     background: #DD3937;
-//     color: white;
-//     text-transform: uppercase;
+// .endless_more, .endless_loading {
+//     font-size: 120%;
+//     padding: 0.5rem 0 3px 0;
+//     color: $rojoColor;
 //     font-weight: bold;
 //     display: block;
 //     margin: 1rem auto;
 //     text-align: center;
 //     width: 200px;
-
-//      -webkit-transition: background-color 0.25s ease-out;
-//       -moz-transition: background-color 0.25s ease-out;
-//       -o-transition: background-color 0.25s ease-out;
-//       transition: background-color 0.25s ease-out;
+//     font-style: oblique;
+//     margin-bottom: 1rem;
 
 //     &:hover, &:active, &:focus, {
-//         color: white;
-//         background: #AD1000;
+//         color: $rojoColor;
+        
 //         // border-bottom: 4px solid #DD3937;
 //     }
 // }
+
+a.endless_more, .endless_loading {
+    font-size: 85%;
+    padding: 5px 0 3px 0;
+    border-bottom: 4px solid  #AD1000;
+    background: #DD3937;
+    color: white;
+    text-transform: uppercase;
+    font-weight: bold;
+    display: block;
+    margin: 1rem auto;
+    text-align: center;
+    width: 200px;
+
+     -webkit-transition: background-color 0.25s ease-out;
+      -moz-transition: background-color 0.25s ease-out;
+      -o-transition: background-color 0.25s ease-out;
+      transition: background-color 0.25s ease-out;
+
+    &:hover, &:active, &:focus, {
+        color: white;
+        background: #AD1000;
+        // border-bottom: 4px solid #DD3937;
+    }
+}

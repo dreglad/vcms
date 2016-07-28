@@ -5,6 +5,19 @@
 <head>
 
 <meta charset="utf-8">
+
+<meta property="og:url"         content="{{ video.url }}" />
+<meta property="og:type"        content="video" />
+<meta property="og:video"       content="{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{{ video.archivo.url }}" />
+<meta property="og:video:type"  content="video/mp4" />
+<meta property="og:video"       content="{{ video.player }}" />
+<meta property="og:video:type"  content="text/html" />
+<meta property="og:title"       content="{{ video.titulo }}" />
+<meta property="og:description" content="{{ video.descripcion_plain }}" />
+<meta property="og:image"       content="{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{{ im.url }}" />
+<meta property="og:site_name"   content="La Jornada Videos" />
+
+
 <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
 <script src="//content.jwplatform.com/libraries/Heo8FOlf.js"></script>
 <title>{{ video.titulo }} - La Jornada Videos</title>

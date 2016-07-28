@@ -42,11 +42,13 @@
   <article>
 
     <div class="col-lg-7 player-col">
+      {% with autostart=True %}
       {% if player == "jwplayer" %}
         {% include "includes/player/jwplayer.html" %}
       {% else %}{% if player == "videojs" %}
         {% include "includes/player/videojs.html" %}
       {% endif %}{% endif %}
+      {% endwith %}
     </div>
 
     <div class="col-lg-5">
@@ -80,20 +82,25 @@
 
       <h1>{{ video.titulo }}</h1>
 
-      <div class="compartir">
-        <a class="" href="{{ video.url }}">
+      <div class="compartir a2a_kit">
+        <a class="a2a_button_twitter" href="https://www.twitter.com/share?url={{ video.get_absolute_url }}">
           <span class="fa fa-twitter" aria-hidden="true"></span>
         </a>
-        <a class="" href="{{ video.url }}">
+        <a class="a2a_button_facebook" href="https://www.facebook.com/sharer.php?u={{ video.get_absolute_url }}">
           <span class="fa fa-facebook" aria-hidden="true"></span>
         </a>
-        <a class="" href="{{ video.url }}">
+        <a class="a2a_button_google_plus" href="https://plus.google.com/share?url={{ video.get_absolute_url }}">
           <span class="fa fa-google" aria-hidden="true"></span>
         </a>
-        <a class="" href="{{ video.url }}">
+        <a class="a2a_button_whatsapp" href="whatsapp://send?text={{ video.get_absolute_url }}">
           <span class="fa fa-whatsapp" aria-hidden="true"></span>
         </a>
       </div>
+
+      <script>var a2a_config = a2a_config || {};
+      a2a_config.linkurl = "{{ video.get_absolute_url }}"; a2a_config.locale = "es";
+      </script><script async src="https://static.addtoany.com/menu/page.js"></script>
+      {# <div class="a2a_kit a2a_kit_size_32 a2a_default_style"></div> #}
 
       <div class="sub-titulo">
         <span class="fecha">
@@ -130,9 +137,11 @@
 
 {% for lista in video.listas.all %}
     {% cache 120 pagina_lista pagina.pk lista.pk %}
-    {% if lista.clasificador.slug != 'autor' and lista.videos.count %}
+    {% if lista.clasificador.slug != 'autor' and lista.clasificador.slug != 'formato' and lista.videos.count %}
     {% with display=display_pagina mostrar_nombre=True videos=lista.videos.publicos nombre=lista.nombre_plural|default:lista.nombre mostrar_maximo=8 %}
+    {% with nombre='Más de '|add:nombre %}
     {% include "includes/lista.html" %}
+    {% endwith %}
     {% endwith %}
     {% endif %}
     {% endcache %}
@@ -145,16 +154,38 @@
 {% endblock %}
 
 
-{% block ljjson %}{{ block.super }}
+{% block ldjson %}{{ block.super }}
 {% thumbnail video.imagen.file "640" as im %}
+<meta property="og:url"         content="{{ video.url }}" />
+<meta property="og:type"        content="video" />
+<meta property="og:video"       content="https://{{ request.get_host }}{{ video.archivo.url }}" />
+<meta property="og:video:type"  content="video/mp4" />
+<meta property="og:video"       content="{{ video.player }}" />
+<meta property="og:video:type"  content="text/html" />
+<meta property="og:title"       content="{{ video.titulo }}" />
+<meta property="og:description" content="{{ video.descripcion_plain }}" />
+<meta property="og:image"       content="https://{{ request.get_host }}{{ im.url }}" />
+<meta property="og:site_name"   content="La Jornada Videos" />
+
+<meta name="twitter:card" content="player">
+<meta name="twitter:site" content="@LaJornada">
+<meta name="twitter:title" content="{{ video.titulo }}">
+<meta name="twitter:description" content="{{ video.descripcion_plain }}">
+<meta name="twitter:image" content="https://{{ request.get_host }}{{ im.url }}">
+<meta name="twitter:player" content="{{ video.twitter_card }}">
+<meta name="twitter:player:width" content="480">
+<meta name="twitter:player:height" content="270">
+<meta name="twitter:player:stream" content="https://{{ request.get_host }}{{ video.hls.url }}">
+<meta name="twitter:player:stream:content_type" content="video/mp4; codecs=&quot;avc1.42E01E1, mp4a.40.2&quot;">
+
 <script type="application/ld+json">
 {
     "@context": "http://schema.org",
     "@type": "VideoObject",
     "name": "{{ video.titulo }}",
     "description": "{{ video.descripcion_plain }}",
-    "image": '{{ video.imagen.url }}'
-    "thumbnailUrl": "{{ im.url }}",
+    "image": '{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{{ video.imagen.url }}'
+    "thumbnailUrl": "{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{{ video.imagen.url }}",
     "uploadDate": "{{ video.fecha|date:'c' }}",
     "duration": "{{ video.duracion }}",
     "publisher": {
@@ -167,8 +198,8 @@
             "height": 60
         }
     },
-    "contentUrl": "{{ video.archivo.url }}",
-    "embedUrl": "{{ video.url }}"
+    "contentUrl": "{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{{ video.archivo.url }}",
+    "embedUrl": "{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{{ video.url }}"
 }
 </script>
 {% endthumbnail %}

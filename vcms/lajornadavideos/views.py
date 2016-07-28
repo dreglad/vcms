@@ -112,6 +112,11 @@ class PlayerView(BaseView):
         return context
 
 
+class TwitterCardView(PlayerView):
+
+    template_name = 'twitter_card.html'
+
+
 class VideoView(PlayerView):
 
     template_name = 'video.html'

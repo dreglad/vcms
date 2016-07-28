@@ -1,0 +1,13 @@
+{% load thumbnail %}
+{% thumbnail video.imagen.file "600" as im %}
+<!DOCTYPE html>
+<html>
+<body>
+<style type="text/css">
+video {  width:100%; max-width:600px; height:auto; }
+</style>
+<video width="100%" src="https://{{ request.get_host }}{{ video.hls.url }}"
+       poster="https://{{ request.get_host }}{{ im.url }}" type="video/mp4"></video>
+</body>
+</html>
+{% endthumbnail %}

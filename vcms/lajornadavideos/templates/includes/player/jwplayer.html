@@ -24,6 +24,9 @@
     {% thumbnail video.imagen.file "360" quality=45 as thumb %}
     image: '{{ thumb.url }}',
     {% endthumbnail %}
+    {% if autostart %}
+    autostart: true,
+    {% endif %}
     sources: sources, tracks: tracks,
     preload: 'auto',
     primary: 'html5',
