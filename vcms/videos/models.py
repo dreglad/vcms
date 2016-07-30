@@ -114,6 +114,7 @@ LAYOUT_CHOICES = Choices(
     ('c100', '1'),
     ('c50', '2'),
     ('c33', '3'),
+    ('3a', '3a'),
     ('c25', '4'),
 )
 
@@ -381,6 +382,10 @@ class Lista(ModelBase, NamedMixin, ActivableMixin):
     def __unicode__(self):
         return _('%s: %s') % (self.clasificador, self.nombre)
 
+    @property
+    def descripcion_plain(self):
+        return strip_tags(self.descripcion)
+
     class Meta:
         ordering = ['clasificador', 'nombre', '-fecha_creacion']
         verbose_name = _('lista')
@@ -403,9 +408,17 @@ class Pagina(MPTTModel, SortableMixin, NamedMixin, ActivableMixin, DisplayableMi
     class MPTTMeta:
         order_insertion_by = ['orden']
 
+    @property
+    def descripcion_plain(self):
+        return strip_tags(self.descripcion)
+
     def get_absolute_url(self):
         if settings.FRONTEND_URL:
-            return '%s/secciones/%s?nc=%s' % (settings.FRONTEND_URL, self.slug, uuid.uuid4())
+            if self.slug == 'home':
+                uri = '/'
+            else:
+                uri = '/secciones/%s/' % self.slug
+            return '%s%s' % (settings.FRONTEND_URL, uri)
 
     def save(self, *args, **kwargs):
         super(Pagina, self).save(*args, **kwargs)
@@ -563,10 +576,10 @@ class Video(ModelBase, TitledMixin, DisplayableMixin):
             return '{0}: [{1}]'.format(
                 self.pk, self.PROCESAMIENTO[self.procesamiento])
 
-    def get_absolute_url(self):
+    def get_absolute_url(self, absolute=True):
         url = reverse('video', kwargs={ 'video_slug': self.slug,
                                          'video_uuid': self.uuid })
-        if getattr(settings, 'FRONTEND_URL'):
+        if getattr(settings, 'FRONTEND_URL') and absolute:
             url = settings.FRONTEND_URL + url
         return url
 

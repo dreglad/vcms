@@ -30,7 +30,9 @@ GOOGLE_ANALYTICS_PROPERTY_ID = 'UA-80731325-1'
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.sitemaps',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
     'analytical',
     'cacheback',
@@ -49,6 +51,10 @@ INSTALLED_APPS = [
 
     'videos',
 ]
+
+SITE_ID = 1
+
+TAGGIT_CASE_INSENSITIVE = True
 
 DEFAULT_PLAYER = 'jwplayer'
 
@@ -143,6 +149,8 @@ LOGGING = {
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.cache.UpdateCacheMiddleware',
+    'htmlmin.middleware.HtmlMinifyMiddleware',
+
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     #'django.contrib.sessions.middleware.SessionMiddleware',
@@ -153,7 +161,9 @@ MIDDLEWARE_CLASSES = [
     #'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     #'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware'
+
+    'django.middleware.cache.FetchFromCacheMiddleware',
+    'htmlmin.middleware.MarkRequestMiddleware',
 ]
 
 ROOT_URLCONF = 'lajornadavideos.urls'
@@ -171,6 +181,9 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
                 #'django.contrib.auth.context_processors.auth',
                 #'django.contrib.messages.context_processors.messages',
             ],
@@ -199,7 +212,7 @@ DATABASES = {
 }
 
 
-HAYSTACK_SEARCH_RESULTS_PER_PAGE = 12
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 24
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
@@ -231,7 +244,7 @@ USE_L10N = True
 USE_TZ = True
 
 
-MEDIA_URL = '/media/'
+MEDIA_URL = FRONTEND_URL + '/media/'
 MEDIA_ROOT = '/mnt/media/lajornadavideos'
 
 # Static files (CSS, JavaScript, Images)

@@ -5,6 +5,16 @@
 {% block title %}{{ pagina.nombre }} - La Jornada Videos{% endblock %}
 
 
+{% block extrameta %}
+{% if pagina.meta_descripcion or pagina.descripcion %}
+  <meta name="description" content="{{ pagina.meta_descripcion|default:pagina.descripcion_plain }}">
+{% endif %}
+{% with tags=pagina.tags.names %}
+{% if tags %}<meta name="keywords" content="{{ tags|join:',' }}">{% endif %}
+{% endwith %}
+{% endblock %}
+
+
 {% block content %}
 {% get_display_attrs display_obj as display_pagina %}
 {# {% cache 3600 display_pagina %} #}

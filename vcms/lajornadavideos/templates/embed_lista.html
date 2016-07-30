@@ -1,23 +1,4 @@
 {% load thumbnail %}
-{% thumbnail video.imagen.file "600" as im %}
-<!DOCTYPE html>
-<html>
-<body>
-<style type="text/css">
-video {  width:100%; height:auto; }
-</style>
-
-
-
-</body>
-</html>
-{% endthumbnail %}
-
-
-
-
-
-
 {% load compress %}
 {% load static from staticfiles %}
 {% load analytical %}
@@ -46,20 +27,13 @@ video {  width:100%; height:auto; }
 
 <body>
 <div class="container" id="middle-container">
-  {% block content %}
-
-    <main>
-      <div class="vcms-lista" data-lista="olimpiadas" data-maxvideos="3"></div>
-      {% if listado.lista.descripcion %}
-        <p>{{ listado.lista.descripcion }}</p>
-      {% endif %}
-
-      {% with videos=listado.lista.videos.publicos nombre=listado.nombre|default:listado.lista.nombre_plural|default:listado.lista.nombre %}
-      {% include "includes/lista.html" %}
-      {% endwith %}
-    </main>
-
-  {% endblock %}
+  <main>
+    <section>
+    {% with nolazy=True display=listado mostrar_nombre=False videos=listado.lista.videos.publicos nombre=listado.nombre|default:listado.lista.nombre_plural|default:listado.lista.nombre %}
+    {% include "includes/lista.html" %}
+    {% endwith %}
+    </section>
+  </main>
 </div>
 
 {% block bottom_script %}

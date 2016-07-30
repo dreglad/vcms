@@ -5,7 +5,8 @@ $(function() {
         var lista = $(this);
         lista.imagesLoaded().always(function() {
             lista.masonry({
-                itemSelector: 'li',
+                //itemSelector: 'li',
+                itemSelector: 'li:not(.gid-sizer)',
                 columnWidth: '.grid-sizer',
                 percentPosition: true,
                 transitionDuration: 0
@@ -42,8 +43,6 @@ $(function() {
             // });
 
             $('section.videos.' + data.key + ' img.lazy').lazyload({})
-            
-
             bindsection();
         }
     });

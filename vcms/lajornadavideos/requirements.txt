@@ -4,4 +4,5 @@ pysolr
 pytz
 django-libsass
 django-rq
+django-htmlmin
 django-cacheback[rq]

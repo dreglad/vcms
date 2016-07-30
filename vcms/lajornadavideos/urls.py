@@ -2,8 +2,10 @@
 from django.conf import settings
 from django.conf.urls import url, include
 from django.contrib import admin
+from django.contrib.sitemaps.views import sitemap, index
 from django.views.decorators.cache import cache_page
 
+from .sitemaps import VideoSitemap
 from .views import \
     BusquedaView, SeccionView, HomeView, ListaView, ListaEmbedView, VideoView, \
     PlayerView, crossdomain, SimilaresView, TwitterCardView
@@ -18,7 +20,7 @@ urlpatterns = [
         cache_page(30*2)(ListaView.as_view()),
         name='lista'),
     url(r'^lista_embed/(?P<lista_slug>.+)/$',
-        cache_page(30*2)(ListaView.as_view()),
+        cache_page(30*2)(ListaEmbedView.as_view()),
         name='lista'),
     url(r'^video/(?P<video_uuid>\d+)/(?P<video_slug>.+)/$',
         cache_page(60*60)(VideoView.as_view()),
@@ -33,15 +35,22 @@ urlpatterns = [
         cache_page(60*60)(SimilaresView.as_view()),
         name='similares'),
 
-
     url(r'^player/(?P<video_uuid>\d+)/(?P<video_slug>.+)/$',
         cache_page(60)(PlayerView.as_view()),
         name='web_player'),
 
-    url(r'^busqueda/', BusquedaView.as_view(), name='haystack_search'),
+    url(r'^sitemap\.xml$', index,
+        {'sitemaps': {'video': VideoSitemap }},
+        name='sitemap_index'),
+    url(r'^sitemap-(?P<section>.+)\.xml$', sitemap, {
+            'sitemaps': {'video': VideoSitemap },
+            'template_name': 'video_sitemap.xml',
+        }, name='sitemap_section'),
 
-    url(r'^crossdomain\.xml$', crossdomain),
-    url(r'^crossadomain\.xml$', crossdomain, name='busqueda'),
+    url(r'^busqueda/', cache_page(60*10)(BusquedaView.as_view()),
+        name='haystack_search'),
+
+    url(r'^crossdomain\.xml$', cache_page(3600*24*30)(crossdomain)),
 ]
 
 if settings.DEBUG:

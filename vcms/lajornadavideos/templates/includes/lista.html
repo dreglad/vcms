@@ -56,6 +56,20 @@
     {% endfor %}
     {% endwith %}
 
+
+  {% else %}{% if display.layout == '3a' %}
+
+    <li class="grid-sizer c33"></li>
+    {% for video in videos|slice:":1" %}
+      {% with importante=True %}
+      <li class="c66">{% include "includes/video_en_lista.html" %}</li>
+      {% endwith %}
+    {% endfor %}
+    {% for video in videos|slice:"1:" %}
+      <li class="c33">{% include "includes/video_en_lista.html" %}</li>
+    {% endfor %}
+
+
   {% else %}{% if videos|length_is:"3" or display.layout == 'c33' %}
 
     <li class="grid-sizer c33"></li>
@@ -105,7 +119,7 @@
       <li class="c25">{% include "includes/video_en_lista.html" %}</li>
     {% endfor %}
 
-  {% endif %}{% endif %}{% endif %}{% endif %}{% endif %}
+  {% endif %}{% endif %}{% endif %}{% endif %}{% endif %}{% endif %}
   </ol>
 </section>
 

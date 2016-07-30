@@ -44,7 +44,7 @@ class BaseView(TemplateView):
 
 class BusquedaView(SearchView):
 
-    results_per_page = 5
+    results_per_page = 24
 
     def get_context_data(self, **kwargs):
         context = super(BusquedaView, self).get_context_data(**kwargs)
@@ -57,7 +57,10 @@ class SeccionView(BaseView):
     template_name = 'pagina.html'
 
     def dispatch(self, request, *args, **kwargs):
-        self.pagina = QuerySetGetJob(Pagina).get(slug=kwargs['seccion_slug'])
+        try:
+            self.pagina = QuerySetGetJob(Pagina).get(slug=kwargs['seccion_slug'])
+        except Pagina.DoesNotExist:
+            return redirect(HOME)
         return super(SeccionView, self).dispatch(request, *args, **kwargs)
 
 
@@ -73,19 +76,41 @@ class ListaView(SeccionView):
     template_name = 'lista.html'
 
     def dispatch(self, request, *args, **kwargs):
+        try: 
+            lista = QuerySetGetJob(Lista).get(slug=kwargs['lista_slug'])
+        except Lista.DoesNotExist:
+            return redirect(HOME, permanent=True)
+
         self.listado = {
-            'lista': QuerySetGetJob(Lista).get(slug=kwargs['lista_slug']),
+            'lista': lista,
             'mostrar_nombre': True,
             'mostrar_descripcion': True,
             'mostrar_paginacion': True,
-            'num_videos': request.get('num_videos', 24),
+            'mostrar_maximo': 24,
         }
         return super(SeccionView, self).dispatch(request, *args, **kwargs)
 
 
-class ListaEmbedView(ListaView):
+class ListaEmbedView(SeccionView):
 
-    template_name = 'lista_embed.html'
+    template_name = 'embed_lista.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        try: 
+            lista = QuerySetGetJob(Lista).get(slug=kwargs['lista_slug'])
+        except Lista.DoesNotExist:
+            return redirect(self.video, permanent=True)
+
+        self.listado = {
+            'lista': lista,
+            'mostrar_nombre': request.GET.get('mostrar_nombre', False),
+            'mostrar_descripcion': request.GET.get('mostrar_descripcion', False),
+            'mostrar_paginacion': request.GET.get('mostrar_paginacion', False),
+            'layout': request.GET.get('layout', None),
+            'target': request.GET.get('target', '_top'),
+            'mostrar_maximo': request.GET.get('mostrar_maximo', 24),
+        }
+        return super(SeccionView, self).dispatch(request, *args, **kwargs)
 
 
 class PlayerView(BaseView):

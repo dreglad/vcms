@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load highlight %}
 
 {% block title %}Búsqueda - La Jornada Videos{% endblock %}
 
@@ -18,7 +19,8 @@
       <li class="grid-sizer c100"></li>
       {% with importante=True %}
       {% for result in results %}
-        <li class="c100">{% include "includes/video_en_lista.html" with video=video.object %}</li>
+        {% highlight result.summary with query %}
+        <li class="c100">{% include "includes/video_en_lista.html" with video=video.object titulo=result.summary %}</li>
       {% endfor %}
       {% endwith %}
 
@@ -26,8 +28,9 @@
 
       <li class="grid-sizer c25"></li>
       {% with importante=True %}
-      {% for video in videos %}
-        <li class="c50">{% include "includes/video_en_lista.html" with video=video.object %}</li>
+      {% for result in results %}
+        {% highlight result.summary with query %}
+        <li class="c50">{% include "includes/video_en_lista.html" with video=video.object titulo=result.summary %}</li>
       {% endfor %}
       {% endwith %}
 
@@ -35,19 +38,21 @@
 
       <li class="grid-sizer c33"></li>
       {% for video in videos %}
-        <li class="c33">{% include "includes/video_en_lista.html" with video=video.object %}</li>
+        {% highlight result.summary with query %}
+        <li class="c33">{% include "includes/video_en_lista.html" with video=video.object titulo=result.summary %}</li>
       {% endfor %}
 
 
     {% else %}{% if videos|length_is:"5" or listado.layout == "5" %}
       <li class="grid-sizer c25"></li>
       {% for video in videos|slice:":1" %}
+        {% highlight result.summary with query %}
         {% with importante=True %}
-        <li class="c50">{% include "includes/video_en_lista.html" with video=video.object %}</li>
+        <li class="c50">{% include "includes/video_en_lista.html" with video=video.object titulo=result.summary %}</li>
         {% endwith %}
       {% endfor %}
       {% for video in videos|slice:"1:" %}
-        <li class="c25">{% include "includes/video_en_lista.html" with video=video.object %}</li>
+        <li class="c25">{% include "includes/video_en_lista.html" with video=video.object titulo=result.summary %}</li>
       {% endfor %}
 
 
@@ -85,9 +90,9 @@
 
   {% if page_obj.has_previous or page_obj.has_next %}
       <div>
-        {% if page_obj.has_previous %}<a class="endless_loading" href="?q={{ query }}&amp;page={{ page_obj.previous_page_number }}">{% endif %}&laquo; anterior{% if page_obj.has_previous %}</a>{% endif %}
-        {# | #}
-        {% if page_obj.has_next %}<a class="endless_loading" href="?q={{ query }}&amp;page={{ page_obj.next_page_number }}">{% endif %}siguiente +{% if page_obj.has_next %}</a>{% endif %}
+        {# {% if page_obj.has_previous %}<a class="endless_loading" href="?q={{ query }}&amp;page={{ page_obj.previous_page_number }}">{% endif %}&laquo; anterior{% if page_obj.has_previous %}</a>{% endif %} #}
+
+        {% if page_obj.has_next %}<a class="endless_loading" href="?q={{ query }}&amp;page={{ page_obj.next_page_number }}">siguiente +</a>{% endif %}
       </div>
     {% endif %}
 </form>
@@ -96,7 +101,7 @@
 
 <!--
 <form action="." class="container-fluid">
-   <!--<table>
+    <table>
     {{ form.as_table }}
     <tr>
       <td>&nbsp;</td>
