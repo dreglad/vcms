@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'locality',
     'mptt',
     'rest_framework',
+    'robots',
     'sorl.thumbnail',
     'taggit',
 
@@ -187,9 +188,10 @@ TEMPLATES = [
                 #'django.contrib.auth.context_processors.auth',
                 #'django.contrib.messages.context_processors.messages',
             ],
-            # 'loaders': [
-            #     'django.template.loaders.filesystem.Loader',
-            # ],
+            #'loaders': [
+            #    #'django.template.loaders.app_directories.Loader',
+            #    #'django.template.loaders.filesystem.Loader',
+            #],
         },
     },
 ]
@@ -211,7 +213,7 @@ DATABASES = {
     }
 }
 
-
+ROBOTS_CACHE_TIMEOUT = 60*60*24
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 24
 HAYSTACK_CONNECTIONS = {
     'default': {

@@ -50,6 +50,8 @@ urlpatterns = [
     url(r'^busqueda/', cache_page(60*10)(BusquedaView.as_view()),
         name='haystack_search'),
 
+    url(r'^robots\.txt', include('robots.urls')),
+
     url(r'^crossdomain\.xml$', cache_page(3600*24*30)(crossdomain)),
 ]
 

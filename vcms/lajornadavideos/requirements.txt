@@ -1,8 +1,9 @@
-Django
+django>=1.9
+django-cacheback[rq]
 django-compressor
-pysolr
-pytz
+django-htmlmin
 django-libsass
 django-rq
-django-htmlmin
-django-cacheback[rq]
+django-robots
+pysolr
+pytz
