@@ -157,9 +157,9 @@ class ModelAdminBase(admin.ModelAdmin):
             elif db_field.name in ('meta_descripcion',):
                  kwargs['widget'] = AutosizedTextarea(
                     attrs={'rows': 3, 'class': 'input-block-level'})
-            elif db_field.name in ('tags',):
-                 kwargs['widget'] = Select2TagWidget(
-                    attrs={'data-token-separators': '[","]'})
+            #elif db_field.name in ('tags',):
+            #     kwargs['widget'] = Select2TagWidget(
+            #        attrs={'data-token-separators': '[","]'})
         return super(ModelAdminBase, self).formfield_for_dbfield(db_field,
                                                                  **kwargs)
 
@@ -208,7 +208,7 @@ class VideoChangeForm(ModelForm):
             'resumen': AutosizedTextarea(
                 attrs={'class': 'input-block-level', 'rows': 2}),
             'sprites': AdminImageWidget,
-            'tags': Select2TagWidget(attrs={'data-token-separators': '[","]'}),
+            #'tags': Select2TagWidget(attrs={'data-token-separators': '[","]'}),
             'territorio': Select2Widget(
                 attrs={'data-placeholder': 'Ninguno',
                        'data-minimum-results-for-search': 10}),
