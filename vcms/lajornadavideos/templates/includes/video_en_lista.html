@@ -9,7 +9,7 @@
                 {% if listado.junto or pagina.junto %}junto{% endif %}">
   <a href="{{ video.url }}" target="{{ display.target|default:'_top' }}">
     <figure>
-      {% get_thumb_geometry video "640x360" as geometry %}
+      {% get_thumb_geometry video "480x270" as geometry %}
       {% thumbnail video.imagen.file size|default:geometry crop="center" upscale=True as im %}
       {% if nolazy %}
       <img class="img-fluid lazy" src="{{ im.url }}" alt="{{ video.titulo }}"
