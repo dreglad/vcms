@@ -616,19 +616,19 @@ class Video(ModelBase, TitledMixin, DisplayableMixin):
     @property
     def player(self):
         if settings.FRONTEND_URL:
-            return '{0}/player/{1}/{2}'.format(
+            return '{0}/player/{1}/{2}/'.format(
                 settings.FRONTEND_URL, self.uuid, self.slug)
 
     @property
     def similares(self):
         if settings.FRONTEND_URL:
-            return '{0}/similares/{1}/{2}'.format(
+            return '{0}/similares/{1}/{2}/'.format(
                 settings.FRONTEND_URL, self.uuid, self.slug)
 
     @property
     def twitter_card(self):
         if settings.FRONTEND_URL:
-            return '{0}/twitter_card/{1}/{2}'.format(
+            return '{0}/twitter_card/{1}/{2}/'.format(
                 settings.FRONTEND_URL, self.uuid, self.slug)
     
     @property
