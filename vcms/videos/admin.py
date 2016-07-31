@@ -517,20 +517,18 @@ class ListaInline(SortableStackedInline):
                     'admin:videos_lista_change', args=[obj.lista.pk])))
 
     def videos_(self, obj):
-        videos_url = reverse('admin:videos_video_changelist')
-        result = [
-            '<div class="thumbnails"><div>Videos totales: ',
-            '<a href="{0}?listas__id__exact={1}">{2}</a></div>'.format(
-                videos_url, obj.lista.id, obj.lista.videos.publicos().count())
-        ]
-        for video in obj.lista.videos.publicos()[:20]:
+        result = ['<div class="thumbnails">']
+        for video in obj.lista.videos.publicos()[:min(20, (obj.mostrar_maximo or 0))]:
             url = reverse('admin:videos_video_change', args=[video.id])
             result.append('<a class="video" href="{0}" title="{1}">'.format(
                                                             url, video.titulo))
-            im = get_thumbnail(video.imagen.file, '64x36', crop='center')           
-            result.append('<img src="{0}">').format(im.url)
-            result.append('</a>')
-        result.append('</div>')
+            im = get_thumbnail(video.imagen.file, '64x36', crop='center')
+            result.append('<img style="margin:0 3px" src="{0}"></a>'.format(im.url))
+        result.append(
+            ('<div>Videos totales: <a href="{0}?listas__id__exact={1}">{2}</a>'
+             '</div></div>').format(
+                reverse('admin:videos_video_changelist'), obj.lista.id,
+                obj.lista.videos.publicos().count())
         return mark_safe(''.join(result))
 
     def formfield_for_dbfield(self, db_field, **kwargs):
