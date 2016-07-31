@@ -113,12 +113,13 @@ LAYOUT_CHOICES = Choices(
     (None, _('Automático')),
     ('c100', '01 - Una columna'),
     ('c50', '02 - Dos columnas'),
+    ('2a', '2A - Dos columnas, la 1ª doble'),
     ('c33', '03 - Tres columnas'),
-    ('3a', '3A - Tres columnas, la primera doble'),
-    ('3b', '3B - Tres columnas, la primera y segunda dobles'),
+    ('3a', '3A - Tres columnas, la lª doble'),
+    ('3b', '3B - Tres columnas, la 1ª y 2ª dobles'),
     ('c25', '04 - Cuatro columnas' ),
-    ('4a', '4A - Cuatro columnas, la primera doble'),
-    ('4b', '4B - Cuatro columnas, la primera y cuarta dobles'),
+    ('4a', '4A - Cuatro columnas, la 1ª doble'),
+    ('4b', '4B - Cuatro columnas, la 1ª y 4ª dobles'),
 )
 
 class ModelBase(models.Model):
