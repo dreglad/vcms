@@ -528,7 +528,7 @@ class ListaInline(SortableStackedInline):
             ('<div>Videos totales: <a href="{0}?listas__id__exact={1}">{2}</a>'
              '</div></div>').format(
                 reverse('admin:videos_video_changelist'), obj.lista.id,
-                obj.lista.videos.publicos().count())
+                obj.lista.videos.publicos().count()))
         return mark_safe(''.join(result))
 
     def formfield_for_dbfield(self, db_field, **kwargs):
@@ -562,9 +562,11 @@ class VideoInline(SortableStackedInline):
             im = get_thumbnail(obj.video.imagen.file, '242x136', crop='center')
             return mark_safe(
                 ('<img src="{url}"><div class="titulo" style="width:242px; '
-                 'margin:{margin}">[{pk}] {titulo}</div>').format(
-                    titulo=obj.video.titulo, url=im.url, pk=obj.video.pk,
-                    margin=margin(im, '242x136')))
+                 'margin:{margin};"><a href="{link}">{pk}</a> '
+                 '{titulo}</div>').format(
+                    link=reverse('admin:videos_video_change', args=[obj.video.pk]),
+                    margin=margin(im, '242x136'), url=im.url,
+                    titulo=obj.video.titulo, pk=obj.video.pk))
 
     def save_model(self, request, obj, form, change):
         if (not obj.pk or getattr(obj, self.sortable, None) is None
