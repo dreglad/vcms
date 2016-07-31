@@ -70,6 +70,19 @@
     {% endfor %}
 
 
+  {% else %}{% if display.layout == '3b' %}
+
+    <li class="grid-sizer c33"></li>
+    {% for video in videos|slice:":2" %}
+      {% with importante=True %}
+      <li class="c66">{% include "includes/video_en_lista.html" %}</li>
+      {% endwith %}
+    {% endfor %}
+    {% for video in videos|slice:"2:" %}
+      <li class="c33">{% include "includes/video_en_lista.html" %}</li>
+    {% endfor %}
+
+
   {% else %}{% if videos|length_is:"3" or display.layout == 'c33' %}
 
     <li class="grid-sizer c33"></li>
@@ -78,7 +91,7 @@
     {% endfor %}
 
 
-  {% else %}{% if videos|length_is:"5" or display.layout == "5" %}
+  {% else %}{% if videos|length_is:"5" or display.layout == "4a" %}
     <li class="grid-sizer c25"></li>
     {% for video in videos|slice:":1" %}
       {% with importante=True %}
@@ -90,7 +103,7 @@
     {% endfor %}
 
 
-  {% else %}{% if videos|length_is:"6" or display.layout == "6" %}
+  {% else %}{% if videos|length_is:"6" or display.layout == "4b" %}
     <li class="grid-sizer c25"></li>
     {% for video in videos|slice:":1" %}
       {% with importante=True %}
@@ -119,7 +132,7 @@
       <li class="c25">{% include "includes/video_en_lista.html" %}</li>
     {% endfor %}
 
-  {% endif %}{% endif %}{% endif %}{% endif %}{% endif %}{% endif %}
+  {% endif %}{% endif %}{% endif %}{% endif %}{% endif %}{% endif %}{% endif %}
   </ol>
 </section>
 

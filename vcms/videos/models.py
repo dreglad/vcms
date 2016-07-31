@@ -111,11 +111,14 @@ MOSTRAR_MAXIMO_CHOICES = (
 
 LAYOUT_CHOICES = Choices(
     (None, _('Automático')),
-    ('c100', '1'),
-    ('c50', '2'),
-    ('c33', '3'),
-    ('3a', '3a'),
-    ('c25', '4'),
+    ('c100', '01 - Una columna'),
+    ('c50', '02 - Dos columnas'),
+    ('c33', '03 - Tres columnas'),
+    ('3a', '3A - Tres columnas, la primera doble'),
+    ('3b', '3B - Tres columnas, la primera y segunda dobles'),
+    ('c25', '04 - Cuatro columnas' ),
+    ('4a', '4A - Cuatro columnas, la primera doble'),
+    ('4b', '4B - Cuatro columnas, la primera y cuarta dobles'),
 )
 
 class ModelBase(models.Model):
