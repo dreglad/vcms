@@ -572,6 +572,13 @@ class Video(ModelBase, TitledMixin, DisplayableMixin):
     # Default Manager
     objects = VideoQuerySet.as_manager()
 
+    @property
+    def merged_tags(self):
+        tags = set(self.tags.names())
+        for lista in self.listas.all():
+            tags = tags.union(lista.tags.names())
+        return tags
+
     def __unicode__(self):
         if self.procesamiento == 'listo' and self.titulo:
             return self.titulo

@@ -159,7 +159,7 @@
 {% block ldjson %}{{ block.super }}
 {% thumbnail video.imagen.file "640" as im %}
 
-{% with tags=video.tags.names %}
+{% with tags=video.merged_tags %}
 {% if tags %}<meta name="keywords" content="{{ tags|join:"," }}">{% endif %}
 {% endwith %}
 <meta name="description" content="{{ video.descripcion_plain }}">
