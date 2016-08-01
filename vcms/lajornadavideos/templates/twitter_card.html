@@ -6,9 +6,10 @@
 <style type="text/css">
 video {  width:100%; height:auto; }
 </style>
-<video width="100%" poster="https://{{ request.get_host }}{{ im.url }}" controls>
-  <source src="https://{{ request.get_host }}{{ video.hls.url }}" type="application/vnd.apple.mpegURL">
-  <source src="https://{{ request.get_host }}{{ video.archivo.url }}" type="video/mp4">
+<video width="100%" poster="{{ im.url }}" controls>
+  {% if video.hls %}<source src="{{ video.hls.url }}" type="application/vnd.apple.mpegURL">{% endif %}
+  {% if video.webm %}<source src="{{ video.webm.url }}" type="video/webm">{% endif %}
+  <source src="{{ video.archivo.url }}" type="video/mp4">
 </video>
 </body>
 </html>

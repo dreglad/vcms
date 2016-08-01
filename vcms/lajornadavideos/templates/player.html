@@ -1,4 +1,6 @@
 {% load thumbnail %}
+{% load compress %}
+
 {% thumbnail video.imagen.file "722" as im %}
 <!DOCTYPE html>
 <html>
@@ -8,15 +10,14 @@
 
 <meta property="og:url"         content="{{ video.url }}" />
 <meta property="og:type"        content="video" />
-<meta property="og:video"       content="{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{{ video.archivo.url }}" />
+<meta property="og:video"       content="{{ video.archivo.url }}" />
 <meta property="og:video:type"  content="video/mp4" />
 <meta property="og:video"       content="{{ video.player }}" />
 <meta property="og:video:type"  content="text/html" />
 <meta property="og:title"       content="{{ video.titulo }}" />
 <meta property="og:description" content="{{ video.descripcion_plain }}" />
-<meta property="og:image"       content="{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{{ im.url }}" />
+<meta property="og:image"       content="{{ im.url }}" />
 <meta property="og:site_name"   content="La Jornada Videos" />
-
 
 <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
 <script src="//content.jwplatform.com/libraries/Heo8FOlf.js"></script>
@@ -31,11 +32,13 @@
 <body>
 
 <div id="video"></div>
+{% compress js %}
 <script>
 $(function() {
   jwplayer("video").setup({
     sources: [
         {% if video.hls %}{ file: "{{ video.hls.url }}" },{% endif %}
+        {% if video.webm %}{ file: "{{ video.webm.url }}" },{% endif %}
         { file: "{{ video.archivo.url }}" }
     ],
     {% if video.sprites %}
@@ -43,14 +46,20 @@ $(function() {
     {% endif %}
     image: "{{ im.url }}",
     width: "100%",
-    //ga: {}
+    preload: 'auto',
+    primary: 'html5',
+    hlshtml: true,
+    ga: {},
     aspectratio:"{{ video.width }}:{{ video.height }}"
   });
 });
 </script>
+{% endcompress %}
 <noscript>
-  <video title="{{ video.titulo }}" poster="{{ im.url }}">
-    {% if video.archivo %}<source src="{{ video.archivo.url }}" type="video/mp4">{% endif %}
+  <video title="{{ video.titulo }}" poster="{{ im.url }}" controls>
+    {% if video.hls %}<source src="{{ video.hls.url }}" type="vnd.apple.mpegURL">{% endif %}
+    {% if video.webm %}<source src="{{ video.webm.url }}" type="video/webm">{% endif %}
+    <source src="{{ video.archivo.url }}" type="video/mp4">
   </video>
 </noscript>
 

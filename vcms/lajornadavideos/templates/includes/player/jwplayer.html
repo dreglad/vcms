@@ -1,56 +1,70 @@
 {% load thumbnail %}
+{% load compress %}
 
 <div class="player-wrap player-wrap-jwplayer">
   <div id="video-{{ video.uuid }}"></div>
-</div>
-<script>
-  var sources = [], tracks = [];
+  {% compress js %}
+  <script>
+    var sources = [], tracks = [];
 
-  {% if video.hls %}
-  sources.push({ url:"{{ video.url }}", file: "{{ video.hls.url }}", default: true});
-  {% endif %}
-
-  {% if video.archivo %}
-  sources.push({ file: "{{ video.archivo.url }}", default: false });
-  {% endif %}
-
-  {% if video.sprites %}
-  tracks.push({ file: "{{ video.sprites.url }}", kind: 'thumbnails'});
-  {% endif %}
-
-  jwplayer('video-{{ video.uuid }}').setup({
-    //title: "{{ video.titulo }}",
-    //description: "{{ video.descripcion }}",
-    {% thumbnail video.imagen.file "722" upscale=True as im %}
-    image: '{{ im.url }}',
-    {% endthumbnail %}
-    {% if autostart %}
-    autostart: true,
+    {% if video.hls %}
+    sources.push({ url:"{{ video.url }}", file: "{{ video.hls.url }}", default: true});
     {% endif %}
-    sources: sources, tracks: tracks,
-    preload: 'auto',
-    primary: 'html5',
-    hlshtml: true,
-    ga: {
-      idstring: "url",
-      label: "url"
-    },
-    related: {
-      file: "{{ video.similares }}",
-      onclick: "link",
-      oncomplete: 'show',
-      autoplaytimer: 10,
-      heading: 'Videos relacionados',
-      autoplaymessage: 'Siguiente video se reproducirá en xx segundos...'
-    },
-    // skin: {
-    //   name: 'lajornadavideos'
-    // },
-    sharing: {
-       code: '<iframe src="{{ video.player }}" width="480" height="100%" frameborder="0"  scrolling="auto" />',
-       heading: "Compartir video"
-    },
-    width: '100%',
-    aspectratio: '{{ video.width }}:{{ video.height }}'
-  });
-</script>
+
+    {% if video.webm %}
+    sources.push({ url:"{{ video.url }}", file: "{{ video.hls.url }}", default: true});
+    {% endif %}
+
+    {% if video.archivo %}
+    sources.push({ file: "{{ video.archivo.url }}", default: false });
+    {% endif %}
+
+    {% if video.sprites %}
+    tracks.push({ file: "{{ video.sprites.url }}", kind: 'thumbnails'});
+    {% endif %}
+
+    jwplayer('video-{{ video.uuid }}').setup({
+      //title: "{{ video.titulo }}",
+      //description: "{{ video.descripcion }}",
+      {% thumbnail video.imagen.file "722" upscale=True as im %}
+      image: '{{ im.url }}',
+      {% endthumbnail %}
+      {% if autostart %}
+      autostart: true,
+      {% endif %}
+      sources: sources, tracks: tracks,
+      preload: 'auto',
+      primary: 'html5',
+      hlshtml: true,
+      ga: {
+        idstring: "url",
+        label: "url"
+      },
+      related: {
+        file: "{{ video.similares }}",
+        onclick: "link",
+        oncomplete: 'show',
+        autoplaytimer: 10,
+        heading: 'Videos relacionados',
+        autoplaymessage: 'Siguiente video se reproducirá en xx segundos...'
+      },
+      // skin: {
+      //   name: 'lajornadavideos'
+      // },
+      sharing: {
+         code: '<iframe src="{{ video.player }}" width="480" height="100%" frameborder="0"  scrolling="auto" />',
+         heading: "Compartir video"
+      },
+      width: '100%',
+      aspectratio: '{{ video.width }}:{{ video.height }}'
+    });
+  </script>
+  {% endcompress %}
+  <noscript>
+    <video title="{{ video.titulo }}" poster="{{ im.url }}" controls>
+      {% if video.hls %}<source src="{{ video.hls.url }}" type="vnd.apple.mpegURL">{% endif %}
+      {% if video.webm %}<source src="{{ video.webm.url }}" type="video/webm">{% endif %}
+      <source src="{{ video.archivo.url }}" type="video/mp4">
+    </video>
+  </noscript>
+</div>
