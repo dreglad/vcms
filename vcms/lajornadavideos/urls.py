@@ -7,24 +7,30 @@ from django.views.decorators.cache import cache_page
 
 from .sitemaps import VideoSitemap
 from .views import \
-    BusquedaView, SeccionView, HomeView, ListaView, ListaEmbedView, VideoView, \
-    PlayerView, crossdomain, SimilaresView, TwitterCardView
+    BusquedaView, HomeView, ListaEmbedView, PaginaView, PlayerView, \
+    VideoView, SimilaresView, TwitterCardView
 
 urlpatterns = [
     url(r'^$', cache_page(30)(HomeView.as_view()),
         name='home'),
+
+    url(r'^video/(?P<video_uuid>\d+)/(?P<video_slug>.+)/$',
+        cache_page(60*60)(VideoView.as_view()),
+        name='video'),
+
     url(r'^secciones/(?P<seccion_slug>.+)/$',
         cache_page(30)(SeccionView.as_view()),
         name='seccion'),
     url(r'^listas/(?P<lista_slug>.+)/$',
         cache_page(30*2)(ListaView.as_view()),
         name='lista'),
+
+    url(r'^busqueda/', cache_page(60*10)(BusquedaView.as_view()),
+        name='haystack_search'),
+
     url(r'^lista_embed/(?P<lista_slug>.+)/$',
         cache_page(30*2)(ListaEmbedView.as_view()),
         name='lista'),
-    url(r'^video/(?P<video_uuid>\d+)/(?P<video_slug>.+)/$',
-        cache_page(60*60)(VideoView.as_view()),
-        name='video'),
     url(r'^pplayer/(?P<video_uuid>\d+)/(?P<video_slug>.+)/$',
         cache_page(60*60)(PlayerView.as_view()),
         name='video_player'),
@@ -34,7 +40,6 @@ urlpatterns = [
     url(r'^similares/(?P<video_uuid>\d+)/(?P<video_slug>.+)/$',
         cache_page(60*60)(SimilaresView.as_view()),
         name='similares'),
-
     url(r'^player/(?P<video_uuid>\d+)/(?P<video_slug>.+)/$',
         cache_page(60)(PlayerView.as_view()),
         name='web_player'),

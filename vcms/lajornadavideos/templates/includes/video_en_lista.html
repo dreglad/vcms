@@ -30,12 +30,15 @@
             {% endif %}
           </span>
         {% endif %}
-        <span class="titulo">
+        <span class="titulo" itemprop="name">
           {{ titulo|default:video.titulo|truncatewords:20|breaksentence }}
         </span>
         <div class="detalle">
           {# <span class="icon fa fa-youtube-play" aria-hidden="true"></span> #}
+          <meta itemprop="contentURL" content="{{ MEDIA_URL }}{{ video.archivo.url }}" />
+          <meta itemprop="uploadDate" content="{{ video.fecha|date:'c' }}" />
           <span class="fecha">{{ video.fecha|date:"N j, Y" }}</span>
+          <meta itemprop="duration" content="{{ video.duracion }}" />
           <span class="duracion">{{ video.duracion|duration }}</span>
           <span class="serie">
             {% get_clasificacion video 'serie' as serie %}

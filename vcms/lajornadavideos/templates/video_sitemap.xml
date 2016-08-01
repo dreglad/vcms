@@ -6,7 +6,7 @@
   <url>
     <loc>{{ url.location }}</loc>
     <video:video>
-      {% thumbnail url.item.imagen.file "640" as im %}
+      {% thumbnail url.item.imagen.file "722" as im %}
       <video:thumbnail_loc>{{ im.url }}</video:thumbnail_loc>
       {% endthumbnail %}
       <video:title>{{ url.item.titulo }}</video:title>

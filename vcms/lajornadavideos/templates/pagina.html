@@ -2,7 +2,7 @@
 {% load videos_tags %}
 {% load cache %}
 
-{% block title %}{{ pagina.nombre }} - La Jornada Videos{% endblock %}
+{% block title %}{{ pagina.nombre|default:lista.nombre }} - La Jornada Videos{% endblock %}
 
 
 {% block extrameta %}

@@ -11,7 +11,6 @@ django-cacheback[rq]
 django-crispy-forms
 django-cors-middleware
 django-countries
-django-el-pagination
 django-filter
 django-location-field
 django-model-utils

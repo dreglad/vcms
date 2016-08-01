@@ -39,7 +39,16 @@
 
 {% block content %}
 <main id="video">
-  <article>
+  <article itemprop="video" itemscope itemtype="http://schema.org/VideoObject">
+    <meta itemprop="contentURL" content="{{ video.archivo.url }}" />
+    <meta itemprop="embedURL" content="{{ video.player }}" />
+    <meta itemprop="uploadDate" content="{{ video.fecha|date:'c' }}" />
+    <meta itemprop="height" content="{{ video.height }}" />
+    <meta itemprop="width" content="{{ video.width }}" />
+    <meta itemprop="transcript" content="{{ video.meta_descripcion|linebreaks|striptags }}" />
+    {% thumbnail video.imagen.file "722x431" as im %}
+    <meta itemprop="thumbnailUrl" content="{{ im.url }}" />
+    {% endthumbnail %}
 
     <div class="col-lg-7 player-col">
       {% with autostart=True %}
@@ -80,7 +89,7 @@
         {% endfor %}
       </div>
 
-      <h1>{{ video.titulo }}</h1>
+      <h1 itemprop="name">{{ video.titulo }}</h1>
 
       <div class="compartir a2a_kit">
         <a class="a2a_button_twitter" href="https://www.twitter.com/share?url={{ video.get_absolute_url }}">
@@ -107,14 +116,14 @@
           <i class="fa fa-calendar" aria-hidden="true"></i>
           {{ video.fecha|date:"j \d\e N, Y" }}
         </span>
+        <meta itemprop="duration" content="{{ video.duracion }}" />
         <span class="duracion">
           <i class="fa fa-clock-o" aria-hidden="true"></i>
           {{ video.duracion|duration }}
         </span>
       </div>
 
-
-      <div class="descripcion">
+      <div class="descripcion" itemprop="description">
         {{ video.descripcion|safe }}
       </div>
       <ul class="links">
@@ -149,15 +158,13 @@
     {% endcache %}
 {% endfor %}
 
-
-
 </main>
 
 {% endblock %}
 
 
 {% block ldjson %}{{ block.super }}
-{% thumbnail video.imagen.file "640" as im %}
+{% thumbnail video.imagen.file "722x431" as im %}
 
 {% with tags=video.merged_tags %}
 {% if tags %}<meta name="keywords" content="{{ tags|join:"," }}">{% endif %}
@@ -166,24 +173,24 @@
 
 <meta property="og:url"         content="{{ video.url }}" />
 <meta property="og:type"        content="video" />
-<meta property="og:video"       content="https://{{ request.get_host }}{{ video.archivo.url }}" />
+<meta property="og:video"       content="{{ video.archivo.url }}" />
 <meta property="og:video:type"  content="video/mp4" />
 <meta property="og:video"       content="{{ video.player }}" />
 <meta property="og:video:type"  content="text/html" />
 <meta property="og:title"       content="{{ video.titulo }}" />
 <meta property="og:description" content="{{ video.descripcion_plain }}" />
-<meta property="og:image"       content="https://{{ request.get_host }}{{ im.url }}" />
+<meta property="og:image"       content="{{ im.url }}" />
 <meta property="og:site_name"   content="La Jornada Videos" />
 
 <meta name="twitter:card" content="player">
 <meta name="twitter:site" content="@LaJornada">
 <meta name="twitter:title" content="{{ video.titulo }}">
 <meta name="twitter:description" content="{{ video.descripcion_plain }}">
-<meta name="twitter:image" content="https://{{ request.get_host }}{{ im.url }}">
+<meta name="twitter:image" content="{{ im.url }}">
 <meta name="twitter:player" content="{{ video.twitter_card }}">
 <meta name="twitter:player:width" content="480">
 <meta name="twitter:player:height" content="270">
-<meta name="twitter:player:stream" content="https://{{ request.get_host }}{{ video.hls.url }}">
+<meta name="twitter:player:stream" content="{{ video.hls.url }}">
 <meta name="twitter:player:stream:content_type" content="video/mp4; codecs=&quot;avc1.42E01E1, mp4a.40.2&quot;">
 
 <script type="application/ld+json">
@@ -192,8 +199,7 @@
     "@type": "VideoObject",
     "name": "{{ video.titulo }}",
     "description": "{{ video.descripcion_plain }}",
-    "image": '{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{{ video.imagen.url }}'
-    "thumbnailUrl": "{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{{ video.imagen.url }}",
+    "thumbnailUrl": "{{ video.imagen.url }}",
     "uploadDate": "{{ video.fecha|date:'c' }}",
     "duration": "{{ video.duracion }}",
     "publisher": {
@@ -206,8 +212,10 @@
             "height": 60
         }
     },
-    "contentUrl": "{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{{ video.archivo.url }}",
-    "embedUrl": "{% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{{ video.url }}"
+    "contentUrl": "{{ video.archivo.url }}",
+    "embedUrl": "{{ video.player }}",
+    "width": "{{ video.width }}",
+    "height": "{{ video.height }}"
 }
 </script>
 {% endthumbnail %}
