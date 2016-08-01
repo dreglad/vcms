@@ -18,6 +18,7 @@ section.videos { /* grupo de videos */
             &.c33  { width: 33.333%; font-size: 110%; }
             &.c50  { width: 50%;     font-size: 130%; }
             &.c66  { width: 66.666%; font-size: 150%; }
+            &.c75  { width: 75%;     font-size: 175%; }
             &.c100 { width: 100%;    font-size: 200%; }
 
             @include media-breakpoint-down(md) {
@@ -25,6 +26,7 @@ section.videos { /* grupo de videos */
                 &.c33  { width: 33.333%; font-size: 85%; }
                 &.c50  { width: 50%;     font-size: 100%; }
                 &.c66  { width: 66.666%; font-size: 120%; }
+                &.c75  { width: 75%;     font-size: 130%; }
                 &.c100 { width: 100%;    font-size: 140%; }
             }
 
@@ -33,6 +35,7 @@ section.videos { /* grupo de videos */
                 &.c33  { width: 100%; font-size: 120%;}
                 &.c50  { width: 100%; font-size: 120%;}
                 &.c66  { width: 100%; font-size: 120%;}
+                &.c75  { width: 100%; font-size: 120%;}
                 &.c100 { width: 100%; font-size: 130%;}
             }
 
@@ -41,6 +44,7 @@ section.videos { /* grupo de videos */
                 &.c33  { width: 100%; font-size: 100%; }
                 &.c50  { width: 100%; font-size: 100%; }
                 &.c66  { width: 100%; font-size: 100%; }
+                &.c75  { width: 100%; font-size: 100%; }
                 &.c100 { width: 100%; font-size: 100%; }
             }
         }

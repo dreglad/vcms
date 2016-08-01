@@ -105,8 +105,8 @@ ACTIVO_CHOICES = (
 MOSTRAR_MAXIMO_CHOICES = (
     (None, _('Automático')),
     (1, '1'), (2, '2'), (3, '3'), (4, '4'), (5, '5'), (6, '6'), (7, '7'),
-    (8, '8'), (9, '9'), (10, '10'), (12, '12'), (18, '18'), (24, '24'),
-    (36, '36'), (48, '48')
+    (8, '8'), (9, '9'), (10, '10'), (12, '12'), (13, '13'), (14, '14'),
+    (18, '18'), (24, '24'), (36, '36'), (48, '48'),
 )
 
 LAYOUT_CHOICES = Choices(
@@ -117,9 +117,14 @@ LAYOUT_CHOICES = Choices(
     ('c33', '03 - Tres columnas'),
     ('3a', '3A - Tres columnas, la lª doble'),
     ('3b', '3B - Tres columnas, la 1ª y 2ª dobles'),
+    ('3c', '3C - Tres columnas, la lª tripe'),
     ('c25', '04 - Cuatro columnas' ),
     ('4a', '4A - Cuatro columnas, la 1ª doble'),
-    ('4b', '4B - Cuatro columnas, la 1ª y 4ª dobles'),
+    ('4b', '4B - Cuatro columnas, la 1ª y 2ª dobles'),
+    ('4c', '4C - Cuatro columnas, la 1ª y 4ª dobles'),
+    ('4d', '4D - Cuatro columnas, la 1ª y 8ª dobles'),
+    ('4e', '4E - Cuatro columnas, la 1ª triple'),
+    ('4f', '4F - Cuatro columnas, la 1ª cuádruple'),
 )
 
 class ModelBase(models.Model):

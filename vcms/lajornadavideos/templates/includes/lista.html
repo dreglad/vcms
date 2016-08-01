@@ -83,6 +83,19 @@
     {% endfor %}
 
 
+  {% else %}{% if display.layout == '3c' %}
+
+    <li class="grid-sizer c33"></li>
+    {% for video in videos|slice:":1" %}
+      {% with importante=True %}
+      <li class="c100">{% include "includes/video_en_lista.html" %}</li>
+      {% endwith %}
+    {% endfor %}
+    {% for video in videos|slice:"1:" %}
+      <li class="c33">{% include "includes/video_en_lista.html" %}</li>
+    {% endfor %}
+
+
   {% else %}{% if videos|length_is:"3" or display.layout == 'c33' %}
 
     <li class="grid-sizer c33"></li>
@@ -103,7 +116,19 @@
     {% endfor %}
 
 
-  {% else %}{% if videos|length_is:"6" or display.layout == "4b" %}
+  {% else %}{% if display.layout == "4b" %}
+    <li class="grid-sizer c25"></li>
+    {% for video in videos|slice:":2" %}
+      {% with importante=True %}
+      <li class="c50">{% include "includes/video_en_lista.html" %}</li>
+      {% endwith %}
+    {% endfor %}
+    {% for video in videos|slice:"2:" %}
+      <li class="c25">{% include "includes/video_en_lista.html" %}</li>
+    {% endfor %}
+
+
+  {% else %}{% if videos|length_is:"6" or display.layout == "4c" %}
     <li class="grid-sizer c25"></li>
     {% for video in videos|slice:":1" %}
       {% with importante=True %}
@@ -118,12 +143,54 @@
       <li class="c50">{% include "includes/video_en_lista.html" %}</li>
       {% endwith %}
     {% endfor %}
-    {% for video in videos|slice:"4:6" %}
+    {% for video in videos|slice:"4:" %}
       <li class="c25">{% include "includes/video_en_lista.html" %}</li>
     {% endfor %}
-    {% for video in videos|slice:"6:" %}
+
+
+  {% else %}{% if display.layout == "4d" %}
+    <li class="grid-sizer c25"></li>
+    {% for video in videos|slice:":1" %}
+      {% with importante=True %}
+      <li class="c50">{% include "includes/video_en_lista.html" %}</li>
+      {% endwith %}
+    {% endfor %}
+    {% for video in videos|slice:"1:7" %}
       <li class="c25">{% include "includes/video_en_lista.html" %}</li>
     {% endfor %}
+    {% for video in videos|slice:"7:8" %}
+      {% with importante=True %}
+      <li class="c50">{% include "includes/video_en_lista.html" %}</li>
+      {% endwith %}
+    {% endfor %}
+    {% for video in videos|slice:"8:" %}
+      <li class="c25">{% include "includes/video_en_lista.html" %}</li>
+    {% endfor %}
+
+
+  {% else %}{% if display.layout == "4e" %}
+    <li class="grid-sizer c25"></li>
+    {% for video in videos|slice:":1" %}
+      {% with importante=True %}
+      <li class="c75">{% include "includes/video_en_lista.html" %}</li>
+      {% endwith %}
+    {% endfor %}
+    {% for video in videos|slice:"1:" %}
+      <li class="c25">{% include "includes/video_en_lista.html" %}</li>
+    {% endfor %}
+
+
+  {% else %}{% if display.layout == "4f" %}
+    <li class="grid-sizer c25"></li>
+    {% for video in videos|slice:":1" %}
+      {% with importante=True %}
+      <li class="c100">{% include "includes/video_en_lista.html" %}</li>
+      {% endwith %}
+    {% endfor %}
+    {% for video in videos|slice:"1:" %}
+      <li class="c25">{% include "includes/video_en_lista.html" %}</li>
+    {% endfor %}
+
 
   {% else %}
 
@@ -132,7 +199,7 @@
       <li class="c25">{% include "includes/video_en_lista.html" %}</li>
     {% endfor %}
 
-  {% endif %}{% endif %}{% endif %}{% endif %}{% endif %}{% endif %}{% endif %}
+  {% endif %}{% endif %}{% endif %}{% endif %}{% endif %}{% endif %}{% endif %}{% endif %}{% endif %}{% endif %}{% endif %}{% endif %}
   </ol>
 </section>
 
