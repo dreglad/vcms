@@ -57,6 +57,18 @@ def make_sprites_job(video_pk):
         sprites=os.path.join('sprites', video.uuid, 's.vtt'))
 
 
+@job('low', timeout=3600)
+def make_webm_job(video_pk):
+    connection.close() # force re-connnect to avoid DB tomeout issues
+    video = Video.objects.get(pk=video_pk)
+    webm_uri = os.path.join('webm', '%s.webm' % video.uuid)
+    if video_ops.compress_webmopus(
+            input_file=video.archivo.path,
+            output_file=os.path.join(settings.MEDIA_ROOT, webm_uri)):
+        connection.close()
+        Video.objects.filter(pk=video.pk).update(webm=webm_uri)
+
+
 @job('low', timeout=3*3600)
 def make_hls_job(video_pk):
     connection.close() # force re-connnect to avoid DB tomeout issues
@@ -173,6 +185,7 @@ def create_new_video_job(video_pk):
     # Launch subtasks for sprites and segments
     make_sprites_job.delay(video.pk)
     make_hls_job.delay(video.pk)
+    make_webm_job.delay(video.pk)
 
 
 def error_handler(job, *exc_info):

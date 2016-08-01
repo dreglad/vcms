@@ -15,49 +15,53 @@ import wget
 logger = logging.getLogger('multimedia_ops')
 
 
-#CODEC_AUDIO = 'libvo_aacenc' # included in libacbocdec-extra
-CODEC_AUDIO = 'libfdk_aac'  # best AAC encode, however not included by default
-
 H264_PARAMS = {
     'profile': 'main',
     'level': '3.1',
     'crf': 22,
     'max_width': 3840,
+    'audio_codec': 'libfdk_aac',
     'audio_bitrate': 192,
     'audio_samplerate': 44100,
 }
 
+WEBM_PARAMS = {
+    'crf': 22,
+    'audio_codec': 'libopus',
+    'audio_bitrate': 192,
+    'audio_samplerate': 44100,
+    'max_width': 3840,
+}
+
 HLS_MODES = [  # must be ordered with highest height first
-    {'height': 2160, 'cut_height': 2000,     'profile': 'high',     'level': 42,
+    {'height': 2160, 'cut_height': 2000,     'profile': 'high',    'level': 42,
          'fps': 30,   'bandwidth': 16000000, 'bitrate': 15000,     'gop': 72 },
 
-    {'height': 1440, 'cut_height': 1400,     'profile': 'high',     'level': 42,
-         'fps': 30,   'bandwidth': 9000000, 'bitrate': 6000,       'gop': 72 },
+    {'height': 1440, 'cut_height': 1400,     'profile': 'high',    'level': 42,
+         'fps': 30,   'bandwidth': 10000000, 'bitrate': 6000,      'gop': 72 },
 
     {'height': 1080, 'cut_height': 960,     'profile': 'main',     'level': 32,
-         'fps': 30,   'bandwidth': 6000000, 'bitrate': 3500,       'gop': 72 },
+         'fps': 30,   'bandwidth': 7000000, 'bitrate': 3500,       'gop': 72 },
 
     { 'height': 720, 'cut_height': 650,     'profile': 'main',     'level': 32,
-         'fps': 24,   'bandwidth': 3000000, 'bitrate': 1500,       'gop': 72 },
+         'fps': 24,   'bandwidth': 3500000, 'bitrate': 1500,       'gop': 72 },
 
     { 'height': 480, 'cut_height': 420,     'profile': 'baseline', 'level': 31,
-         'fps': 24,   'bandwidth': 1500000, 'bitrate': 900,        'gop': 72 },
+         'fps': 24,   'bandwidth': 2100000, 'bitrate': 900,        'gop': 72 },
 
     { 'height': 360, 'cut_height': 320,    'profile': 'baseline',  'level': 31,
-         'fps': 24,   'bandwidth': 1000000, 'bitrate': 600,         'gop': 72 },
+         'fps': 24,   'bandwidth': 1500000, 'bitrate': 600,        'gop': 72 },
 
     { 'height': 240, 'cut_height': 200,    'profile': 'baseline',  'level': 31,
-         'fps': 12,   'bandwidth': 600000, 'bitrate': 270,         'gop': 36 },
+         'fps': 12,   'bandwidth': 800000, 'bitrate': 270,         'gop': 36 },
 ]
 
 HLS_PARAMS = {
-    'time': 9,
-    'list_size' : 0,
+    'time': 4,
+    'list_size': 0,
 }
 
-
-# TODO: WEBM/DASH
-WEBM_PARAMS = {}  
+# TODO: DASH
 DASH_MODES = []  
 DASH_PARAMS = {}
 
@@ -66,7 +70,6 @@ VIDEO_EXTENSIONS = (
     '.3gp', '.asf', '.avi', '.avi', '.flv', '.m4v', '.mkv', '.mov', 'mpeg',
     '.mp4', '.mpg', '.ogg', '.ogv', '.rm', '.swf', '.vob', '.webm', '.wmv',
 )
-
 
 
 def get_video_stream_info(file):
@@ -125,14 +128,35 @@ def extract_video_image(input_file, output_file, offset=-1, autocrop=True):
     cmd = ('ffmpeg -y -ss {offset} -i {input_file} -vframes 1 {crop_filter} '
            '-an {output_file}').format(
                 input_file=input_file, output_file=output_file,
-                offset=offset, crop_filter=crop_filter
-                )
+                offset=offset, crop_filter=crop_filter)
     logger.debug('Extracting iamge with command: %s' % cmd)
     call(cmd, shell=True)
     cmd = ('convert -strip -interlace Plane -gaussian-blur 0.025 '
            '-quality 99% {img} {img}').format(img=output_file)
     logger.debug('Optimizing iamge with command: %s' % cmd)
     return (call(cmd, shell=True) == 0)
+
+
+def compress_webmopus(input_file, output_file, autocrop=True):
+    autocrop_filter = autocrop and get_video_autocrop_filter(input_file) or ''
+    cmd = ('ffmpeg -y -i {input_file} -c:v libvpx-vp9 -pass 1 -b:v 0 '
+           '-crf {params[crf]} -threads 8 -speed 4 -tile-columns 6 '
+           '-frame-parallel 1 {autocrop_filter} -an -f webm /dev/null').format(
+               input_file=input_file, params=WEBM_PARAMS,
+               autocrop_filter=autocrop_filter)
+    logger.info('Executing first-pass WebM compression with cmd: %s' % cmd)
+
+    if call(cmd, shell=True) == 0:
+        cmd = ('ffmpeg -y -i {input_file} -c:v libvpx-vp9 -pass 2 -b:v 0 '
+               '-crf {params[crf]} -threads 8 -speed 2 -tile-columns 6 '
+               '-frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25 '
+               '-c:a {params[audio_codec]} -b:a {params[audio_bitrate]}k '
+               '{autocrop_filter} -f webm {output_file}').format(
+                   input_file=input_file, output_file=output_file,
+                   params=WEBM_PARAMS, autocrop_filter=autocrop_filter)
+        
+        logger.info('Executing second-pass WebM compression with cmd: %s' % cmd)
+        return (call(cmd, shell=True) == 0)
 
 
 def compress_h264mpeg4avc(input_file, output_file, vstats_file, autocrop=True):
@@ -146,7 +170,7 @@ def compress_h264mpeg4avc(input_file, output_file, vstats_file, autocrop=True):
         os.makedirs(os.path.dirname(vstats_file))
     autocrop_filter = autocrop and get_video_autocrop_filter(input_file) or ''
     cmd = ('ffmpeg -y -vstats_file {vstats_file} -i {input_file} '
-           '-c:a {codec_audio} -b:a {params[audio_bitrate]}k '
+           '-c:a {params[audio_codec]} -b:a {params[audio_bitrate]}k '
            '-ar {params[audio_samplerate]} -c:v libx264 -crf {params[crf]} '
            '-vf "scale=\'min(iw,{params[max_width]})\':-2" '
            '{autocrop_filter} -profile:v {params[profile]} '
@@ -154,8 +178,7 @@ def compress_h264mpeg4avc(input_file, output_file, vstats_file, autocrop=True):
            '-movflags +faststart {output_file}'
                 ).format(input_file=input_file, output_file=output_file,
                          params=H264_PARAMS, autocrop_filter=autocrop_filter,
-                         vstats_file=vstats_file or '/dev/null',
-                         codec_audio=CODEC_AUDIO)
+                         vstats_file=vstats_file or '/dev/null')
     logger.info('Compressing with command: %s' % cmd)
     return (call(cmd, shell=True) == 0)
 
@@ -223,11 +246,6 @@ def make_hls_segments(input_file, output_dir, progress_fn=None):
     progress_fn and progress_fn(playlist='playlist.m3u8')
     logger.debug('Finished HLS segmentation to %s' % output_dir)
     return os.path.exists(os.path.join(output_dir, 'playlist.m3u8'))
-
-
-def compress_dashavc264( input_file, output_file, vstats_file, autocrop=True):
-    """Not implemented"""
-    pass
 
 
 def make_dash_segments():
