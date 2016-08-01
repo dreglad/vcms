@@ -26,7 +26,11 @@ def get_display_attrs(obj):
 
 
 @register.assignment_tag(takes_context=True)
-def get_thumb_geometry(context, video, default='480x270'):
+def get_thumb_geometry(context, video, default='328x180'):
+    display = context.get('display', { 'layout': 'c33'})
+    # 430x236  <- c33
+    # 636x360  <-  c50
+    # 320x180  <-  x25
     large = '1280x720'
     if context.get('importante'):
         return large

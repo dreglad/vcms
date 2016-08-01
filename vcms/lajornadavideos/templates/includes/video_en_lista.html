@@ -8,7 +8,7 @@
   class="video video-{{ video.uuid }}
         {% if listado.invertido or pagina.invertido %}invertido{% else %}noinvertido{% endif %}
         {% if listado.junto or pagina.junto %}junto{% endif %}">
-  <a href="{{ video.url }}" target="{{ display.target|default:'_top' }}">
+  <a href="{{ video.url }}"{% if display.target %} target="{{ display.target|default:'_top' }}"{% endif %}>
     <figure>
       {% get_thumb_geometry video "328x180" as geometry %}
       {% thumbnail video.imagen.file size|default:geometry crop="center" upscale=True as im %}
