@@ -30,6 +30,10 @@ $(function() {
               transitionDuration: 0
             });
 
+            listas.imagesLoaded().progress(function() {
+              listas.masonry('layout');
+            });
+
             // $('section.videos.' + data.key).each(function() {
             //     if ($(this).prev().hasClass('noinvertido')) {
             //         $(this).find('article').addClass('noinvertido');
