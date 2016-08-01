@@ -231,7 +231,7 @@ class VideoAdmin(VersionAdmin, ModelAdminBase, AdminImageMixin):
         'origen', 'origen_url', 'archivo_original', 'duracion', 'procesamiento',
         'usuario_creacion', 'fecha_creacion', 'usuario_modificacion',
         'fecha_modificacion', 'archivo', 'width', 'resolucion_', 'height',
-        'max_resolucion', 'hls', 'dash', 'dimensiones', 'fps',
+        'max_resolucion', 'hls', 'dash', 'webm', 'youtube_id', 'dimensiones', 'fps',
     ]
     readonly_fields_new = []
     info_fields = (
@@ -307,8 +307,9 @@ class VideoAdmin(VersionAdmin, ModelAdminBase, AdminImageMixin):
             'fields': [
                 ('procesamiento', 'duracion'),
                 ('origen', 'origen_url'),
-                ('dimensiones', 'hls'),
-                ('resolucion_', 'dash'),
+                ('youtube_id', 'hls'),
+                ('dimensiones', 'dash'),
+                ('resolucion_', 'webm'),
                 ('fps', 'captions'),
             ]
         }),

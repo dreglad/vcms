@@ -728,3 +728,4 @@ class Video(ModelBase, TitledMixin, DisplayableMixin):
         ordering = ('-fecha', '-fecha_creacion', '-pk')
         verbose_name = _('video')
         verbose_name_plural = _('videos')
+
