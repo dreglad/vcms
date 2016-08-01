@@ -2,7 +2,7 @@
 {% with pagina_param=lista.slug videos=lista.videos.publicos %}
 
 
-{% paginate 12 videos using pagina_param %}
+{% lazy_paginate 12 videos using pagina_param %}
 
 <section class="lista videos {{ pagina_param }}
                {% if lista.invertido or lista.pagina.invertido %}invertido{% endif %}

@@ -4,19 +4,19 @@
 
 {% with video=video.video %}
 
-<article class="video video-{{ video.uuid }}
-                {% if listado.invertido or pagina.invertido %}invertido{% else %}noinvertido{% endif %}
-                {% if listado.junto or pagina.junto %}junto{% endif %}">
+<article itemprop="video" itemscope itemtype="http://schema.org/VideoObject"
+  class="video video-{{ video.uuid }}
+        {% if listado.invertido or pagina.invertido %}invertido{% else %}noinvertido{% endif %}
+        {% if listado.junto or pagina.junto %}junto{% endif %}">
   <a href="{{ video.url }}" target="{{ display.target|default:'_top' }}">
     <figure>
       {% get_thumb_geometry video "328x180" as geometry %}
       {% thumbnail video.imagen.file size|default:geometry crop="center" upscale=True as im %}
-      {% if nolazy %}
-      <img class="img-fluid lazy" src="{{ im.url }}" alt="{{ video.titulo }}"
-            title="{{ video.titulo }}">
+      {% if nolazy or request.is_ajax %}
+      <img class="img-fluid lazy" src="{{ im.url }}" alt="{{ video.titulo }}">
       {% else %}
-      <img class="img-fluid lazy" data-original="{{ im.url }}" alt="{{ video.titulo }}"
-            title="{{ video.titulo }}" src="{% static 'img/lazy.jpg' %}">
+      <img class="img-fluid lazy" data-original="{{ im.url }}"
+           alt="{{ video.titulo }}" src="{% static 'img/lazy.jpg' %}">
       {% endif %}
       {% endthumbnail %}
       <span class="icon fa fa-play play" aria-hidden="true"></span>

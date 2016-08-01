@@ -1,5 +1,5 @@
 {% load thumbnail %}
-
+{% thumbnail video.imagen.file "722" upscale=True as im %}
 <div class="player-wrap player-wrap-jwplayer">
   <div id="video-{{ video.uuid }}"></div>
 </div>
@@ -20,10 +20,8 @@
 
   jwplayer('video-{{ video.uuid }}').setup({
     //title: "{{ video.titulo }}",
-    //description: "{{ video.resumen }}",
-    {% thumbnail video.imagen.file "360" quality=45 as thumb %}
-    image: '{{ thumb.url }}',
-    {% endthumbnail %}
+    //description: "{{ video.descripcion }}",
+    image: '{{ im.url }}',
     {% if autostart %}
     autostart: true,
     {% endif %}
@@ -54,3 +52,4 @@
     aspectratio: '{{ video.width }}:{{ video.height }}'
   });
 </script>
+{% endthumbnail %}

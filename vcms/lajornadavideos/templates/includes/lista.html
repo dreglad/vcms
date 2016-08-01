@@ -6,9 +6,9 @@
 {# {% cache 3600 pagina display %} #}
 
 {% if mostrar_maximo %}
-  {% paginate mostrar_maximo videos using page_param %}
+  {% lazy_paginate mostrar_maximo videos using page_param %}
 {% else %}
-  {% paginate mostrar_maximo_final videos using page_param %}
+  {% lazy_paginate mostrar_maximo_final videos using page_param %}
 {% endif %}
 
 <section class="lista videos margen-{{ display.margen }} tema-{{ display.tema }}
