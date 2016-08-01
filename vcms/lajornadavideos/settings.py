@@ -70,7 +70,7 @@ CACHES = {
 
 CACHEBACK_TASK_QUEUE = 'rq'
 
-RQ_QUEUES_DB = 2
+RQ_QUEUES_DB = 1
 RQ_QUEUES = {
     'default': {
         'HOST': 'localhost',
@@ -289,18 +289,13 @@ REST_FRAMEWORK = {
 
 #THUMBNAIL_FORMAT = 'png'
 THUMBNAIL_PRESERVE_FORMAT = True
+THUMBNAIL_UPSCALE = False
 THUMBNAIL_KVSTORE = 'sorl.thumbnail.kvstores.redis_kvstore.KVStore'
 THUMBNAIL_KEY_PREFIX = 'lajornadavideos-thumbs'
 THUMBNAIL_PREFIX = 'thumbs/'
 THUMBNAIL_REDIS_PASSWORD = ''
 THUMBNAIL_REDIS_HOST = 'localhost'
 THUMBNAIL_PADDING_COLOR = "#000000"
-THUMBNAIL_OPTIONS_DICT = {
-    'figure': {
-        'geometry': '500x334',
-        'crop': 'center',
-    }
-}
 
 try:
     from settings_local import *

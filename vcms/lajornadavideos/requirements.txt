@@ -1,6 +1,7 @@
 django>=1.9
 django-cacheback[rq]
 django-compressor
+django-el-pagination
 django-htmlmin
 django-libsass
 django-rq
