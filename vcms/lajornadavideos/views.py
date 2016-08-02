@@ -151,9 +151,10 @@ class TwitterCardView(PlayerView):
 class SimilaresView(PlayerView):
 
     def render_to_response(self, context, **response_kwargs):
+        im = get_thumbnail(result.object.imagen.file, '320x180')
         playlist = [{
             'sources': [{'file': result.object.archivo.url, 'type': 'video/mp4'}],
-            'image': result.object.imagen.url,
+            'image': im.url,
             'link': result.object.url,
             'title': result.object.titulo,
         } for result in list(SearchQuerySet().more_like_this(self.video)[:9])]
