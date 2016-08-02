@@ -279,6 +279,16 @@ class ListaEnPagina(ModelBase, SortableMixin, DisplayableMixin):
         verbose_name_plural = _('liestas en página')
 
 
+class VideoEnPaginaQuerySet(models.query.QuerySet):
+    """
+    Lógica de consulta de videos en pagina
+    """
+    def publicos(self):
+        return self.filter(
+            video__estado=Video.ESTADO.publicado,
+            video__fecha__lte=datetime.now()
+        ).prefetch_related('video__listas')
+
 class VideoEnPagina(ModelBase, SortableMixin, DisplayableMixin):
     """ManyToMany relation's 'thtough' class between Video and Pagina"""
     video = models.ForeignKey(
@@ -287,6 +297,8 @@ class VideoEnPagina(ModelBase, SortableMixin, DisplayableMixin):
     pagina = models.ForeignKey(
         'Pagina', models.CASCADE,
         related_name='videos_en_pagina', verbose_name=_('página'))
+
+    objects = VideoEnPaginaQuerySet.as_manager()
 
     def get_display_parent(self):
         return self.pagina
