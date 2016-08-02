@@ -5,15 +5,15 @@
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
-Vagrant.configure(2) do |config|
+Vagrant.configure("2") do |config|
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  #config.vm.box = "ubuntu/trusty64"
-  config.vm.box = "bento/ubuntu-16.04"
+  #config.vm.box = "dreglad/ubuntu-16.04-ffmpeg"
+  config.vm.box = "BaseUbuntuVCMS"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -23,15 +23,11 @@ Vagrant.configure(2) do |config|
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
-
-  # config.vm.network "private_network", ip: "192.168.6.88"
-  # config.vm.network "private_network", ip: "192.168.6.88"
-
-  config.vm.network "private_network", ip: "10.11.12.13"
+  # config.vm.network "forwarded_port", guest: 80, host: 8080
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
-  # config.vm.network "private_network", ip: "192.168.33.10"
+  config.vm.network "private_network", ip: "10.11.12.13"
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
@@ -46,15 +42,10 @@ Vagrant.configure(2) do |config|
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
-  # Example for VirtualBox:
   #
   config.vm.provider "virtualbox" do |vb|
-    # Display the VirtualBox GUI when booting the machine
-    # vb.gui = true
-
-    # Customize the amount of memory on the VM:
     vb.memory = "2048"
-    vb.cpus = 2
+    vb.cpus = 4
   end
   #
   # View the documentation for the provider you are using for more
@@ -66,29 +57,21 @@ Vagrant.configure(2) do |config|
   # config.push.define "atlas" do |push|
   #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
   # end
-
-  # Enable provisioning with a shell script. Additional provisioners such as
-  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
-  # documentation for more information about their specific syntax and use.
-  # config.vm.provision "shell", inline: <<-SHELL
-  #   sudo apt-get update
-  #   sudo apt-get install -y python python-pip python-dev
-  #   sudo pip install --upgrade ansible
-  # SHELL
+ 
+  # Startup (dependant on /vagrant share)
+  config.vm.provision "shell", run: "once", inline: <<-SHELL
+    export DEBIAN_FRONTEND=noninteractive
+    sudo apt-get update
+    sudo apt-get -y dist-upgrade
+    sudo apt-get install -y python
+  SHELL
 
   # Ansible provisioning
   config.vm.provision "ansible_local", run: "always" do |ansible|
     ansible.playbook = "provisioning/playbook.yml"
     ansible.sudo = true
     #ansible.verbose = true
-    #ansible.tags = ''  # specific tag(s)
+    #ansible.tags = 'nginx'  # specific tag(s)
   end
 
-  # # Startup (dependant on /vagrant share)
-  # config.vm.provision "shell", run: "oncse", inline: <<-SHELL
-  #   apt-get update
-  #   apt-get -y dist-upgrade
-  #   apt-get -y install python python-pip bash-completion build-essential python-dev
-  #   pip install --upgrade ansible
-  # SHELL
 end
