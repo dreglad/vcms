@@ -75,6 +75,13 @@
 #   when: database.changed
 #   with_items: {{ vcms_apps }}
 
+- name: Supervisor frontend configuration
+  template: src=etc/supervisor-lajornadavideos.conf.j2 dest=/etc/supervisor/conf.d/lajornadavideos.conf
+  tags: ['supervisor', 'frontend']
+  register: supervisor
+  notify:
+    - restart supervisor
+
 - name: Supervisor vcms configuration
   template: src=etc/supervisor-vcms.conf.j2 dest=/etc/supervisor/conf.d/vcms_{{ item.name }}.conf
   with_items: "{{ vcms_apps }}"
