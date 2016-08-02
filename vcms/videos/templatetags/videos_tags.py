@@ -1,6 +1,7 @@
 import os
 from math import ceil, floor
 import random
+import re
 
 from django import template
 from django.utils.safestring import mark_safe
@@ -26,12 +27,9 @@ def get_display_attrs(obj):
 
 
 @register.assignment_tag(takes_context=True)
-def get_thumb_geometry(context, video, default='328x180'):
+def get_thumb_geometry(context, video, default='320x180'):
     display = context.get('display', { 'layout': 'c33'})
-    # 430x236  <- c33
-    # 636x360  <-  c50
-    # 320x180  <-  x25
-    large = '1280x720'
+    large = '640x360'
     if context.get('importante'):
         return large
     return default
@@ -51,6 +49,15 @@ def clasificacion(video, clasificador=None):
         return video.get_clasificacion(clasificador)
     except:
         return None
+
+
+@register.filter()
+def nodate(txt):
+    m = re.match(r'([^\d\s,.]*)\,*\s*\d{1,2}\s*(de|/)\s*(\d{1,2}|[^\s]+)\s*(de|/)\s*201\d\s*[.,]*\s*(.+)', txt)
+    if m:
+        return m.group(5)
+    return txt
+    
 
 
 @register.filter(name='getattr')

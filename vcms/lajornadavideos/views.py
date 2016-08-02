@@ -154,6 +154,7 @@ class SimilaresView(PlayerView):
         playlist = [{
             'sources': [{'file': result.object.archivo.url, 'type': 'video/mp4'}],
             'image': result.object.imagen.url,
+            'link': result.object.url,
             'title': result.object.titulo,
         } for result in list(SearchQuerySet().more_like_this(self.video)[:9])]
 

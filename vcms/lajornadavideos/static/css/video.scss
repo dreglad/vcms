@@ -26,13 +26,14 @@ main#video {
             -webkit-box-shadow: rgba(0,0,0,0.4) 0 0 16px;
             box-shadow: rgba(0,0,0,0.4) 0 0 6px;
             margin-bottom: 20px;
+            min-height: 300px;
         }
     }
 
     
-    .fa {
-        color: $azulColor;
-    }
+    // .fa {
+    //     color: $azulColor;
+    // }
 
     h1 {
         // color: $fontColor;

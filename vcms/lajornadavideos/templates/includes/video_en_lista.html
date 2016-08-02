@@ -9,9 +9,18 @@
         {% if listado.invertido or pagina.invertido %}invertido{% else %}noinvertido{% endif %}
         {% if listado.junto or pagina.junto %}junto{% endif %}">
   <a href="{{ video.url }}"{% if display.target %} target="{{ display.target|default:'_top' }}"{% endif %}>
+    {% if display.inline and importante %}
+      <script>
+        $('.video.video-{{ video.uuid }}').on('click', function(ev) {
+          ev.preventDefault();
+          $(this).html('<div style="position:relative;padding-bottom: 56.25%;height:0;overflow:hidden;"><iframe src="{{ video.player }}?autostart=1&aspectratio=320:180" frameborder="0" scrolling="no" style="position:absolute; top:0; left:0; width:98%; height: 100%; border:0;margin:0 0.25rem; padding:0;"></iframe></div>');
+        })
+      </script>
+    {% endif %}
     <figure>
-      {% get_thumb_geometry video "328x180" as geometry %}
+      {% get_thumb_geometry video "320x180" as geometry %}
       {% thumbnail video.imagen.file size|default:geometry crop="center" upscale=True as im %}
+      {# {% thumbnail video.imagen.file "320x180" crop="center" upscale=True as im %} #}
       {% if nolazy or request.is_ajax %}
       <img class="img-fluid lazy" src="{{ im.url }}" alt="{{ video.titulo }}">
       {% else %}
@@ -19,7 +28,7 @@
            alt="{{ video.titulo }}" src="{% static 'img/lazy.jpg' %}">
       {% endif %}
       {% endthumbnail %}
-      <span class="icon fa fa-play play" aria-hidden="true"></span>
+      <span class="icon fa fa-play play" {% if display.inline and importante %} data-uno="22" style="left:50%;top:30%;font-size:400%;"{% endif %} aria-hidden="true"></span>
       <figcaption>
         {% if importante %}
           <span class="descripcion solo">
@@ -49,7 +58,7 @@
       {# {% if listado.invertido or pagina.invertido %} #}
       <div class="invertido_caption">
         <span class="titulo">
-          <span class="icon fa fa-play" aria-hidden="true"></span> {{ titulo|default:video.titulo|truncatewords:20|breaksentence }}
+          <span class="icon fa fa-play" {% if display.inline and importante %} data-uno="22" style="left:50%;top:50%;"{% endif %} aria-hidden="true"></span> {{ titulo|default:video.titulo|truncatewords:20|breaksentence }}
         </span>
         <div class="detalle">
           {# <span class="icon fa fa-youtube-play" aria-hidden="true"></span> #}

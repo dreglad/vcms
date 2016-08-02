@@ -2,6 +2,8 @@ article.video {
     i {
         font-size: 30px;
     }
+    // margin-bottom: 0.5rem;
+    margin-top: 0;
 
     // margin: 0 0.1rem;
     a {
@@ -10,7 +12,10 @@ article.video {
         color: white;
         display: block;
         position: relative;
-        margin: 0.5rem 0.25rem 0 0.25rem;
+        margin: 0 0.5rem;
+        // margin-bottom: 0.5rem;
+        // margin: 0 0.25rem;
+        // margin: 0 0.25rem;
 
         .icon.play {
             position: absolute;

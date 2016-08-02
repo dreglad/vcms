@@ -33,7 +33,7 @@
             title: "{{ clip.titulo }}",
             description: "{{ clip.descripcion }}",
             width: "100%",
-            aspectratio:"{{ clip.aspect|default:"4:3" }}"
+            aspectratio: "{{ clip.aspect|default:'16:9' }}"
         });
     };
 

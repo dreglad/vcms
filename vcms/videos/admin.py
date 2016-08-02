@@ -235,8 +235,8 @@ class VideoAdmin(VersionAdmin, ModelAdminBase, AdminImageMixin):
     ]
     readonly_fields_new = []
     info_fields = (
-        'fecha', 'titulo', 'descripcion', 'estado', 'duracion_iso', 'pais',
-        'territorio', 'ciudad', 'listas', 'tags'
+        'fecha', 'titulo', 'descripcion', 'estado', 'duracion_iso', 'ciudad', 'pais',
+        'territorio', 'listas', 'tags'
     )
     info_fields_procesando = (
         'origen_url', 'duracion_iso', 'fecha_creacion'

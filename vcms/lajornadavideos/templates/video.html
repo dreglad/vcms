@@ -111,20 +111,27 @@
       </script><script async src="https://static.addtoany.com/menu/page.js"></script>
       {# <div class="a2a_kit a2a_kit_size_32 a2a_default_style"></div> #}
 
+
       <div class="sub-titulo">
+        {% if video.ciudad %}
+          <span class="ubicacion">
+            <i class="fa fa-globe" aria-hidden="true"></i>
+            {{ video.ciudad }}
+          </span>
+        {%endif%}
         <span class="fecha">
           <i class="fa fa-calendar" aria-hidden="true"></i>
-          {{ video.fecha|date:"j \d\e N, Y" }}
+          {{ video.fecha|date:"j \d\e F, Y"|lower }}
         </span>
         <meta itemprop="duration" content="{{ video.duracion }}" />
-        <span class="duracion">
+        <!-- <span class="duracion">
           <i class="fa fa-clock-o" aria-hidden="true"></i>
           {{ video.duracion|duration }}
-        </span>
+        </span> -->
       </div>
 
       <div class="descripcion" itemprop="description">
-        {{ video.descripcion|safe }}
+        {{ video.descripcion|nodate|safe }}
       </div>
       <ul class="links">
           {% for link in video.links.all %}

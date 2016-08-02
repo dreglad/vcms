@@ -30,7 +30,7 @@
 
 
 <body>
-
+<style type="text/css">.jw-dock-button[button=related] { display: none; }</style>
 <div id="video"></div>
 {% compress js %}
 <script>
@@ -49,8 +49,23 @@ $(function() {
     preload: 'auto',
     primary: 'html5',
     hlshtml: true,
+    {% if request.GET.autostart %}
+    autostart: true,
+    {% endif %}
     ga: {},
-    aspectratio:"{{ video.width }}:{{ video.height }}"
+    related: {
+      file: "{{ video.similares }}",
+      onclick: "link",
+      oncomplete: 'show',
+      //autoplaytimer: 10
+      heading: 'Videos similares'
+      //autoplaymessage: 'Siguiente video se reproducirá en xx segundos...'
+    },
+    {% if request.GET.aspectratio %}
+    aspectratio: "{{ request.GET.aspectratio }}"
+    {% else %}
+    aspectratio: "{{ video.width }}:{{ video.height }}"
+    {% endif %}
   });
 });
 </script>
