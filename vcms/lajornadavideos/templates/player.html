@@ -1,10 +1,12 @@
 {% load thumbnail %}
 {% load compress %}
+{% load analytical %}
 
 {% thumbnail video.imagen.file "722" as im %}
 <!DOCTYPE html>
 <html>
 <head>
+{% analytical_head_top %}
 
 <meta charset="utf-8">
 
@@ -25,11 +27,12 @@
 <style type="text/css">
   body { padding:0; margin:0; }
 </style>
-
+{% analytical_head_bottom %}
 </head>
 
 
 <body>
+{% analytical_body_top %}
 <style type="text/css">.jw-dock-button[button=related] { display: none; }</style>
 <div id="video"></div>
 {% compress js %}
@@ -78,6 +81,7 @@ $(function() {
   </video>
 </noscript>
 
+{% analytical_body_bottom %}
 </body>
 </html>
 {% endthumbnail %}
