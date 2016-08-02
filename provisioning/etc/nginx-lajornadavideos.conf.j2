@@ -27,10 +27,18 @@ server {
     # max upload size
     client_max_body_size 10M;
 
+    access_log  /var/log/nginx/lajornadavideos.access main;
+
     location /media  {
         alias /mnt/media/lajornadavideos;
 
+        location ~* /hls/ {
+            expires 1w;
+            access_log  /var/log/nginx/hls-lajornadavideos.access main buffer=1k;
+        }
+
         location ~* \.mp4$ {
+            expires 1w;
             mp4;
             gzip off;
             mp4_buffer_size     2m;
@@ -42,8 +50,9 @@ server {
         }
 
         location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
-            expires 1w;
+            expires       30d;
             log_not_found off;
+            access_log    off;
         }
     }
     
